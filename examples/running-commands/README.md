@@ -2,7 +2,7 @@
 
 An example of a response that depends on a command.
 
-See `server/src/Main.gren`
+See [`server/src/Main.gren`](server/src/Main.gren).
 
 ```
 npm install

@@ -2,7 +2,7 @@
 
 Example of sending different types of responses.
 
-See `server/src/Main.gren`
+See [`server/src/Main.gren`](server/src/Main.gren)
 
 ```
 npm install

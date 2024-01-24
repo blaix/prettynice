@@ -1,6 +1,6 @@
 # Routing Example
 
-See `server/src/Main.gren`
+See [`server/src/Main.gren`](server/src/Main.gren).
 
 ```
 npm install

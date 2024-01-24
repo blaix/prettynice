@@ -1,4 +1,4 @@
-# Routing Example
+# TEA Module Routing Example
 
 This is an example of routing a request to a module with its own [TEA](https://guide.elm-lang.org/architecture/)-style init/update cycle.
 The wiring is done manually. There's nothing special in Prettynice for this (yet?).

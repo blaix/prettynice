@@ -1,4 +1,4 @@
-# Response Types Example
+# Content Type Example
 
 Example of sending different types of responses.
 

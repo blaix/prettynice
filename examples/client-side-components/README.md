@@ -1,4 +1,4 @@
-# Bare Bones Example
+# Component Example
 
 Example of using components, which are `Browser.element`s you can init from the server.
 

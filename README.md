@@ -1,13 +1,20 @@
 # Pretty Nice Framework
 
-A purely functional, fully type-safe, full-stack web framework using [gren](https://gren-lang.org/).
+A purely functional, fully type-safe, full-stack web framework for [Gren](https://gren-lang.org/).
 
 ## In early proof of concept stage!
 
-Not ready for real world use.
-Currently playing around with what the API might look like and proving out some ideas.
+Things are still very foundational.
+Currently working on the API and what level of control the framework should have over your app.
 
-You can look at the [`examples/`](examples/) for examples of using the in-progress API.
+Right now it's a thin wrapper over a [Node.Program](https://packages.gren-lang.org/package/gren-lang/node/version/3.0.1/module/Node#Program) that adds the following features:
+
+* Manages server lifecycle. Your program only needs to handle the request message.
+* Client-side components (wrappers around a Browser.element) can be dropped into server-side HTML, with flags passed in from the server that are type-checked at compile time and automatically encoded.
+* Automatically wire up a server-side ports.js file.
+* Wrappers around node's Request and Response to make it easier to route requests and send responses.
+
+**See [`examples/`](examples/) for working examples of the current functionality.**
 
 ## Short term goals
 

@@ -3,7 +3,7 @@
 - [X] Kill exploration history and move to github
 - [X] Add example with FE components
 - [X] Mount handlers as full tea modules? Manual example only for now.
-- [ ] Update main project README
+- [X] Update main project README
 - [ ] === Get feedback on the API ===
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Built-in handlers for common use-cases? At least a NotFound handler.

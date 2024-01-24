@@ -4,6 +4,8 @@ A purely functional, fully type-safe, full-stack web framework for [Gren](https:
 
 ## In early proof of concept stage!
 
+**See [`examples/`](examples/) for working examples of the current functionality.**
+
 Things are still very foundational.
 Currently working on the API and what level of control the framework should have over your app.
 
@@ -13,8 +15,6 @@ Right now it's a thin wrapper over a [Node.Program](https://packages.gren-lang.o
 * Client-side components (wrappers around a Browser.element) can be dropped into server-side HTML, with flags passed in from the server that are type-checked at compile time and automatically encoded.
 * Automatically wire up a server-side ports.js file.
 * Wrappers around node's Request and Response to make it easier to route requests and send responses.
-
-**See [`examples/`](examples/) for working examples of the current functionality.**
 
 ## Short term goals
 

@@ -6,4 +6,3 @@ import Prettynice.Response exposing (Response)
 
 type Msg
     = GotRequest Request Response
-    | NoOp

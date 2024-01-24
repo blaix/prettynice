@@ -52,18 +52,16 @@ update msg model =
                         notFound request.url.path response
             }
 
-        -- TODO: remove the need for this (see the mapping below)
-        NoOp ->
-            { model = model
-            , command = Cmd.none
-            }
+
+-- NOTE: msg, not Msg in the response type signatures.
+-- Otherwise we'd need to map the body in a Msg.NoOp
 
 
-home : Response -> Cmd Msg
+home : Response -> Cmd msg
 home =
     Response.sendHtml
         { title = "Welcome!"
-        , body = view <|
+        , body =
             H.main_ []
                 [ H.h1 [] [ H.text "Welcome!" ]
                 , H.p [] [ H.a [ A.href "/hello/World" ] [ H.text "Say hello." ] ]
@@ -72,22 +70,16 @@ home =
         }
 
 
-sayHello : String -> Response -> Cmd Msg
+sayHello : String -> Response -> Cmd msg
 sayHello name =
     Response.sendHtml
         { title = "Hello!"
-        , body = view <| H.text ("Hello, " ++ name ++ "!")
+        , body = H.text ("Hello, " ++ name ++ "!")
         }
 
 
-notFound : String -> Response -> Cmd Msg
+notFound : String -> Response -> Cmd msg
 notFound path response =
     response
         |> Response.setStatus 404
         |> Response.sendText ("Can't find " ++ path)
-
-
--- TODO: remove the need for this
-view : Html {} -> Html Msg
-view html =
-    H.map (\_ -> NoOp) html

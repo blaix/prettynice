@@ -61,27 +61,15 @@ update msg model =
                         home response
             }
 
-        -- TODO: remove the need for this (see the mapping below)
-        NoOp ->
-            { model = model
-            , command = Cmd.none
-            }
 
-
-home : Response -> Cmd Msg
+home : Response -> Cmd msg
 home =
     Response.sendHtml
         { title = "Welcome!"
-        , body = view <|
+        , body =
             H.main_ []
                 [ H.h1 [] [ H.text "Welcome!" ]
                 , H.p [] [ H.a [ A.href "/json" ] [ H.text "json" ] ]
                 , H.p [] [ H.a [ A.href "/text" ] [ H.text "text" ] ]
                 ]
         }
-
-
--- TODO: remove the need for this
-view : Html {} -> Html Msg
-view html =
-    H.map (\_ -> NoOp) html

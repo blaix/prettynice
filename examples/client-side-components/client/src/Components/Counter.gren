@@ -1,0 +1,77 @@
+module Components.Counter exposing (component, Msg)
+
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Events as E
+import Prettynice.Component exposing (Component)
+
+
+{-| A component is a wrapper around Browser.element.
+-}
+component : Component Int Model Msg
+component =
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+
+-- MODEL
+
+
+type alias Model =
+    Int
+
+
+{-| A server-side init for this component will be generated to match this type signature.
+
+Calling the server-side init with some value will render the js for this component,
+passing the value encoded as flags.
+-}
+init : Int -> { model : Model, command : Cmd Msg }
+init start =
+    { model = start, command = Cmd.none }
+
+
+-- UPDATE
+
+
+type Msg
+    = Increment
+    | Decrement
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        Increment ->
+            { model = model + 1
+            , command = Cmd.none
+            }
+
+        Decrement ->
+            { model = model - 1
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+-- VIEW
+
+
+view : Model -> Html Msg
+view model =
+    H.p []
+        [ H.button
+            [ E.onClick Decrement ]
+            [ H.text "-" ]
+        , H.text <| String.fromInt model
+        , H.button
+            [ E.onClick Increment ]
+            [ H.text "+" ]
+        ]
+

@@ -1,10 +1,11 @@
 # TODO
 
-- [ ] Mount handlers as full tea modules
-- [ ] Change examples to use local package path for prettynice instead of src in gren.json
-- [ ] Add example with FE components
+- [X] Kill exploration history and move to github
+- [X] Add example with FE components
+- [ ] Mount handlers as full tea modules?
 - [ ] Update main project README
 - [ ] === Get feedback on the API ===
+- [ ] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Try a FE component that communicates with the server with Msg/update
 - [ ] Add an optional ports.js for the client-side?
 - [ ] Remove unused code
@@ -28,6 +29,7 @@
 - [ ] Decide on a license
 - [ ] Gren packages decoupled from github? https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Decoupling.20packages.20from.20github/near/411042679
 - [ ] === release 0.1 ===
+- [ ] doc site
 - [ ] blaix.com post
 - [ ] cli command to codegen new handlers
 - [ ] response types that depend on request types (e.g. 404 that returns html, string, or json)

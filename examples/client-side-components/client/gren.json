@@ -1,0 +1,21 @@
+{
+    "type": "application",
+    "platform": "browser",
+    "source-directories": [
+        "src",
+        "gen",
+        "../../../prettynice/lib/src"
+    ],
+    "gren-version": "0.3.0",
+    "dependencies": {
+        "direct": {
+            "gren-lang/browser": "3.0.0",
+            "gren-lang/core": "4.0.1",
+            "gren-lang/url": "3.0.0",
+            "icidasset/html-gren": "2.0.0",
+            "icidasset/html-virtualdom-gren": "1.0.1"
+        },
+        "indirect": {}
+    }
+}
+

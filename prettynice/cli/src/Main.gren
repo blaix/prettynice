@@ -208,7 +208,7 @@ toServerComponent name flagType =
     import Transmutable.Html as H exposing (Html)
     import Transmutable.Html.Attributes as A
 
-    init : {{INPUT_TYPE}} -> Html {}
+    init : {{INPUT_TYPE}} -> Html msg
     init a =
         let
             flags = Encode.{{FLAG_ENCODER}} a

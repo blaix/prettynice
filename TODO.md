@@ -2,10 +2,11 @@
 
 - [X] Kill exploration history and move to github
 - [X] Add example with FE components
-- [ ] Mount handlers as full tea modules?
+- [X] Mount handlers as full tea modules? Manual example only for now.
 - [ ] Update main project README
 - [ ] === Get feedback on the API ===
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
+- [ ] Built-in handlers for common use-cases? At least a NotFound handler.
 - [ ] Try a FE component that communicates with the server with Msg/update
 - [ ] Add an optional ports.js for the client-side?
 - [ ] Remove unused code

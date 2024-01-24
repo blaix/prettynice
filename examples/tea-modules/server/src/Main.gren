@@ -1,0 +1,101 @@
+module Main exposing (main)
+
+import Handlers.RandomNumber as RandomNumber
+import Msg exposing (Msg(..))
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+--
+-- Right now this is just an example of how to do this manually.
+-- TODO: Determine if or how Prettynice should simplify this.
+--
+
+
+type alias Model =
+    { handler : Maybe Handler
+    }
+
+
+type Handler
+    = RandomNumber RandomNumber.Model
+
+
+main : Prettynice.Program Model
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        , onRequest = GotRequest
+        }
+
+
+init : Environment -> Prettynice.Init Model
+init env =
+    Prettynice.startProgram
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        , model = { handler = Nothing }
+        }
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            case request.path of
+                [] ->
+                    { model = model
+                    , command = home response
+                    }
+
+                [ "random" ] ->
+                    let
+                        randInit = RandomNumber.init response
+                    in
+                    { model = { handler = Just (RandomNumber randInit.model) }
+                    , command = Cmd.map RandomNumberMsg randInit.command
+                    }
+
+                _ ->
+                    { model = model
+                    , command = notFound request.url.path response
+                    }
+
+        RandomNumberMsg randMsg ->
+            case model.handler of
+                Nothing ->
+                    { model = model
+                    , command = Cmd.none
+                    }
+
+                Just (RandomNumber randModel) ->
+                    let
+                        randUpdate = RandomNumber.update randMsg randModel
+                    in
+                    { model = { handler = Just (RandomNumber randUpdate.model) }
+                    , command = Cmd.map RandomNumberMsg randUpdate.command
+                    }
+
+
+home : Response -> Cmd msg
+home =
+    Response.sendHtml
+        { title = "Welcome!"
+        , body =
+            H.main_ []
+                [ H.h1 [] [ H.text "Welcome!" ]
+                , H.p [] [ H.a [ A.href "/random" ] [ H.text "Get a random number from a standalone handler module." ] ]
+                ]
+        }
+
+
+notFound : String -> Response -> Cmd msg
+notFound path response =
+    response
+        |> Response.setStatus 404
+        |> Response.sendText ("Can't find " ++ path)

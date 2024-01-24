@@ -1,0 +1,35 @@
+module Handlers.RandomNumber exposing (init, update, Model, Msg(..))
+
+import Node exposing (Environment)
+import Prettynice.Response as Response exposing (Response)
+import Random
+
+
+type alias Model =
+    { response : Response
+    }
+
+
+init : Response -> { model : Model, command : Cmd Msg }
+init response =
+    { model = { response = response }
+    , command =
+        Random.int 1 9999999
+            |> Random.generate GotRandomNumber
+    }
+
+
+type Msg
+    = GotRandomNumber Int
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRandomNumber num ->
+            { model = model
+            , command = 
+                Response.sendText
+                    (String.fromInt num)
+                    model.response
+            }

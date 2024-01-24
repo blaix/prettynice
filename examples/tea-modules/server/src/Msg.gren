@@ -1,0 +1,10 @@
+module Msg exposing (Msg(..))
+
+import Handlers.RandomNumber as RandomNumber
+import Prettynice.Request exposing (Request)
+import Prettynice.Response exposing (Response)
+
+
+type Msg
+    = GotRequest Request Response
+    | RandomNumberMsg RandomNumber.Msg

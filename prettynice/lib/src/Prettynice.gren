@@ -10,7 +10,7 @@ import FileSystem
 import HttpServer as Http exposing (ServerError(..), Method(..))
 import HttpServer.Response as HttpResponse 
 import Init
-import Msg as AppMsg -- TODO: make this less awkward
+import Msg as AppMsg -- TODO: helpful error if this isn't available
 import Node exposing (Environment, Program)
 import Prettynice.Request exposing (Request)
 import Prettynice.Response exposing (Response)

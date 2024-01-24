@@ -1,7 +1,8 @@
 # TODO
 
-- [ ] Add simpler layers over TEA for apps that don't need the complexity (e.g. Program.simpleRouter)
+- [ ] Mount handlers as full tea modules
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
+- [ ] Add example with FE components
 - [ ] Update main project README
 - [ ] === Get feedback on the API ===
 - [ ] Try a FE component that communicates with the server with Msg/update

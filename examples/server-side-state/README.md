@@ -2,7 +2,7 @@
 
 An example of holding state in memory on the server.
 
-See [`src/server/Main.gren`](src/server/Main.gren).
+See [`server/src/Main.gren`](server/src/Main.gren).
 
 ```
 npm install

@@ -1,0 +1,37 @@
+module Prettynice.Request exposing 
+    ( Request
+    , new
+    )
+
+import Array exposing (Array)
+import Bytes exposing (Bytes)
+import Dict exposing (Dict)
+import Url exposing (Url)
+
+-- Not sure about this..
+-- Importing a server-only package in a common package.
+-- But this should only ever be imported in server-compiled code so maybe fine?
+-- Can probably improve this when we get structural tags: https://github.com/gren-lang/compiler/issues/218
+import HttpServer as Http
+
+
+type alias Request =
+    { headers : Dict String String
+    , body : Bytes
+    , url : Url
+    , path : Array String
+    , method : Http.Method
+    }
+
+
+new : Http.Request -> Request
+new r =
+    { headers = r.headers
+    , body = r.body
+    , url = r.url
+    , method = r.method
+    , path = 
+        r.url.path
+            |> String.split "/"
+            |> Array.filter (\s -> s /= "")
+    }

@@ -1,0 +1,11 @@
+module Prettynice.Component exposing (Component)
+
+import Transmutable.Html exposing (Html)
+
+
+type alias Component flags model msg =
+    { init : flags -> { model : model, command : Cmd msg }
+    , view : model -> Html msg
+    , update : msg -> model -> { model : model, command : Cmd msg }
+    , subscriptions : model -> Sub msg
+    }

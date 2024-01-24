@@ -1,0 +1,35 @@
+module Main exposing (main)
+
+import Msg exposing (Msg(..))
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Response as Response
+
+
+main : Prettynice.Program {}
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        , onRequest = GotRequest
+        }
+
+
+init : Environment -> Prettynice.Init {}
+init env =
+    Prettynice.startProgram
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        , model = {}
+        }
+
+
+update : Msg -> {} -> { model : {}, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            { model = model
+            , command = Response.sendText "Hello!" response
+            }

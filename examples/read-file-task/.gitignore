@@ -1,0 +1,6 @@
+.gren
+build
+dist
+node_modules
+server/gen/*
+client/gen/*

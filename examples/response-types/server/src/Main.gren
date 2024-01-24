@@ -1,0 +1,87 @@
+module Main exposing (main)
+
+import Json.Encode as Json
+import Msg exposing (Msg(..))
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+main : Prettynice.Program {}
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        , onRequest = GotRequest
+        }
+
+
+init : Environment -> Prettynice.Init {}
+init env =
+    Prettynice.startProgram
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        , model = {}
+        }
+
+
+update : Msg -> {} -> { model : {}, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            { model = model
+            , command = 
+                case request.path of
+
+                    -- 
+                    -- Response.sendText, .sendHtml, etc. are helpers around .setBody and .send
+                    -- For example:
+                    --   response |> Response.sendText "text"
+                    -- is equivalent to:
+                    --   response |> Response.setBody (TextBody "text") |> Response.send    
+                    --
+
+                    [ "text" ] ->
+                        response
+                            |> Response.sendText
+                                "This is text. <i>Not</i> HTML."
+
+                    [ "json" ] ->
+                        response
+                            |> Response.sendJson
+                                (Json.array Json.int [1, 2, 3])
+
+                    -- TODO: Bytes
+
+                    _ ->
+                        home response
+            }
+
+        -- TODO: remove the need for this (see the mapping below)
+        NoOp ->
+            { model = model
+            , command = Cmd.none
+            }
+
+
+home : Response -> Cmd Msg
+home =
+    Response.sendHtml
+        { title = "Welcome!"
+        , body = view <|
+            H.main_ []
+                [ H.h1 [] [ H.text "Welcome!" ]
+                , H.p [] [ H.a [ A.href "/json" ] [ H.text "json" ] ]
+                , H.p [] [ H.a [ A.href "/text" ] [ H.text "text" ] ]
+                ]
+        }
+
+
+-- TODO: remove the need for this
+view : Html {} -> Html Msg
+view html =
+    H.map (\_ -> NoOp) html

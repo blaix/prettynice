@@ -1,0 +1,20 @@
+module Prettynice.Flags.Encode exposing
+    ( null
+    , int
+    , string
+    )
+
+
+null : {} -> String
+null _ =
+    "null"
+
+
+int : Int -> String
+int i =
+    String.fromInt i
+
+
+string : String -> String
+string s =
+    "\"" ++ s ++ "\""

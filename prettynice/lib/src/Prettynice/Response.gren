@@ -1,0 +1,121 @@
+module Prettynice.Response exposing 
+    ( Response
+    , Body(..)
+    , new
+    , send
+    , sendText
+    , sendHtml
+    , sendJson
+    -- TODO: sendBytes
+    , setBody
+    , setHeader
+    , setStatus
+    ) 
+
+
+import HttpServer.Response as Http
+import Prettynice.Request exposing (Request)
+import Json.Encode
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+type Response
+    = Response Http.Response
+
+
+type Body msg
+    = HtmlBody { title : String, body : Html msg }
+    | JsonBody Json.Encode.Value
+    | TextBody String
+
+
+new : Http.Response -> Response
+new httpResponse =
+    Response httpResponse
+
+
+send : Response -> Cmd a
+send response =
+    response
+        |> getHttpResponse
+        |> Http.send
+
+
+sendText : String -> Response -> Cmd a
+sendText text response =
+    response
+        |> setBody (TextBody text)
+        |> send
+
+
+sendJson : Json.Encode.Value -> Response -> Cmd a
+sendJson json response =
+    response
+        |> setBody (JsonBody json)
+        |> send
+
+
+sendHtml : { title : String, body : Html msg } -> Response -> Cmd msg
+sendHtml { title, body } response =
+    response
+        |> setBody (HtmlBody { title = title, body = body })
+        |> send
+
+
+setBody : Body msg -> Response -> Response
+setBody bodyVariant response =
+    let
+        { contentType, rawBody } =
+            case bodyVariant of
+                HtmlBody { title, body } ->
+                    { contentType = "text/html"
+                    , rawBody =
+                        ( H.toString
+                            ( H.html [ A.lang "en" ]
+                                [ H.head []
+                                    [ H.node "script" [ A.src "/main.js" ] []
+                                    , H.title [ H.text title ]
+                                    ]
+                                , H.body [] [ body ]
+                                ]
+                            )
+                        )
+                    }
+
+                JsonBody json ->
+                    { contentType = "application/json"
+                    , rawBody = Json.Encode.encode 2 json
+                    }
+
+                TextBody text ->
+                    { contentType = "text/plain"
+                    , rawBody = text
+                    }
+
+    in
+    response
+        |> getHttpResponse
+        |> Http.setHeader "Content-type" contentType
+        |> Http.setBody rawBody
+        |> new
+
+
+setHeader : String -> String -> Response -> Response
+setHeader key val (Response httpResponse) =
+    httpResponse
+        |> Http.setHeader key val
+        |> Response
+    
+
+setStatus : Int -> Response -> Response
+setStatus status (Response httpResponse) =
+    httpResponse
+        |> Http.setStatus status
+        |> Response
+
+
+getHttpResponse : Response -> Http.Response
+getHttpResponse (Response httpResponse) =
+    httpResponse

@@ -1,0 +1,56 @@
+module Main exposing (main)
+
+import Msg exposing (Msg(..))
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Response as Response
+import Stream exposing (Stream)
+import Task
+
+
+main : Prettynice.Program Model
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        , onRequest = GotRequest
+        }
+
+
+type alias Model =
+    { count : Int
+    , stdout : Stream
+    }
+
+
+init : Environment -> Prettynice.Init Model
+init env =
+    Prettynice.startProgram
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        , model = 
+            { count = 0
+            , stdout = env.stdout
+            }
+        }
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            let
+                count =
+                    model.count + 1
+
+                message =
+                    "Visits to this process: " ++ (String.fromInt count)
+            in
+            { model = { model | count = count }
+            , command = Cmd.batch
+                [ Stream.sendLine model.stdout message
+                , Response.sendText message response
+                ]
+            }

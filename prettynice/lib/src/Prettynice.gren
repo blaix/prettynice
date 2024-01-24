@@ -1,0 +1,203 @@
+module Prettynice exposing 
+ ( Program
+ , Config
+ , Init
+ , defineProgram
+ , startProgram
+ )
+
+import FileSystem
+import HttpServer as Http exposing (ServerError(..), Method(..))
+import HttpServer.Response as HttpResponse 
+import Init
+import Msg as AppMsg -- TODO: make this less awkward
+import Node exposing (Environment, Program)
+import Prettynice.Request exposing (Request)
+import Prettynice.Response exposing (Response)
+import Server.Static as Static exposing (ReadFileError, Mode(..))
+import Stream exposing (Stream)
+import Task exposing (Task)
+import Transmutable.Html as H
+import Transmutable.Html.Attributes as A
+import Url exposing (Url)
+
+
+type alias Program appModel =
+    Node.Program (Model appModel) (Msg appModel)
+
+
+type alias Init appModel =
+    Init.Task { model : Model appModel, command : Cmd (Msg appModel) }
+
+
+type alias Model appModel =
+    { server : Maybe Http.Server
+    , stdout : Stream
+    , stderr : Stream
+    , host : String
+    , port_ : Int
+    , env : Environment
+    , appModel : appModel
+    , fsPermission : FileSystem.Permission
+    }
+
+
+type alias Config appModel =
+    { host : String
+    , port_ : Int
+    , env : Environment
+    , model : appModel
+    }
+
+
+type alias AppUpdate appModel =
+    AppMsg.Msg -> appModel -> { model : appModel, command : Cmd AppMsg.Msg }
+
+
+defineProgram :
+    { init : Environment -> Init appModel
+    , update : AppUpdate appModel
+    , subscriptions : appModel -> Sub AppMsg.Msg
+    , onRequest : Request -> Response -> AppMsg.Msg
+    } -> Program appModel
+defineProgram app =
+    Node.defineProgram
+        { init = app.init
+        , update = update app.update app.onRequest
+        , subscriptions = subscriptions app.subscriptions
+        }
+
+
+startProgram : Config appModel -> Init appModel
+startProgram config =
+    Init.await Http.initialize <| \serverPermission ->
+        Init.await FileSystem.initialize <| \fsPermission ->
+            Node.startProgram
+                { model =
+                    { server = Nothing
+                    , stdout = config.env.stdout
+                    , stderr = config.env.stderr
+                    , host = config.host
+                    , port_ = config.port_
+                    , env = config.env
+                    , appModel = config.model
+                    , fsPermission = fsPermission
+                    }
+                , command =
+                    Task.attempt CreateServerResult <|
+                        Http.createServer serverPermission
+                            { host = config.host
+                            , port_ = config.port_
+                            }
+                }
+
+
+type Msg appModel
+    = CreateServerResult (Result Http.ServerError Http.Server)
+    | GotRequest Http.Request HttpResponse.Response
+    | ResponseReady Request { model : appModel, command : Cmd (Msg appModel) }
+    | MsgToApp AppMsg.Msg
+
+
+update : 
+    AppUpdate appModel
+    -> (Request -> Response -> AppMsg.Msg)
+    -> Msg appModel
+    -> Model appModel
+    -> { model : Model appModel, command : Cmd (Msg appModel) }
+update appUpdate onRequest msg model =
+    case msg of
+        CreateServerResult result ->
+            case result of
+                Ok server ->
+                    { model = { model | server = Just server }
+                    , command = Stream.sendLine model.stdout <|
+                        "Server started on http://" ++ model.host ++ ":" ++ String.fromInt model.port_
+                    }
+                Err (ServerError code message) ->
+                    { model = model
+                    , command = Stream.sendLine model.stderr <|
+                        "Server failed to start: " ++ code ++ "\n" ++ message
+                    }
+        
+        GotRequest req res ->
+            let
+                request = 
+                    Prettynice.Request.new req
+
+                response =
+                    Prettynice.Response.new res
+
+                appMsg =
+                    onRequest request response
+
+                appUpdateReturn =
+                    appUpdate appMsg model.appModel
+
+                appUpdateTask =
+                    Task.succeed
+                        { model = appUpdateReturn.model
+                        , command = 
+                            Cmd.batch
+                                [ Stream.sendLine model.stdout <|
+                                    "Letting app respond to " ++ req.url.path
+                                , Cmd.map MsgToApp appUpdateReturn.command
+                                ]
+                        }
+
+                tryStaticResponse =
+                    Static.response
+                        { fileSystemPermission = model.fsPermission
+                        , httpResponse = res
+                        , directory = "./dist/client"
+                        , mode = Normal
+                        }
+                        req.url
+                        |> Task.map 
+                            (\staticResponse ->
+                                { model = model.appModel
+                                , command =
+                                    Cmd.batch
+                                        [ Stream.sendLine model.stdout <|
+                                            "Responding with static file for " ++ req.url.path
+                                        , HttpResponse.send staticResponse
+                                        ]
+                                }
+                            )
+            in
+            { model = model
+            , command = 
+                    tryStaticResponse
+                        |> Task.onError (\_ -> appUpdateTask)
+                        |> Task.perform (ResponseReady request)
+            }
+
+        ResponseReady req result ->
+            { model = { model | appModel = result.model }
+            , command = result.command
+            }
+
+        MsgToApp appMsg ->
+            let
+                appUpdateReturn =
+                    appUpdate appMsg model.appModel
+            in
+            { model = { model | appModel = appUpdateReturn.model }
+            , command = Cmd.map MsgToApp appUpdateReturn.command
+            }
+
+
+-- SUBS
+
+
+subscriptions : (appModel -> Sub AppMsg.Msg) -> Model appModel -> Sub (Msg appModel)
+subscriptions appSubs model =
+    case model.server of
+        Just server ->
+            Sub.batch
+                [ Http.onRequest server GotRequest
+                , Sub.map MsgToApp <| appSubs model.appModel
+                ]
+
+        Nothing ->
+            Sub.none

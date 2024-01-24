@@ -1,0 +1,231 @@
+module Main exposing (main)
+
+import Bytes exposing ( Bytes )
+import Bytes.Decode
+import Bytes.Encode
+import Node
+import Prettynice.Flags as Flags exposing (FlagType(..))
+import Set
+import Shikensu
+import Shikensu.Contrib as Shikensu
+import Shikensu.Bundle as Shikensu
+import Shikensu.Definition as Shikensu
+import Shikensu.Error as Error exposing (Error(..))
+import Shikensu.Focus as Shikensu exposing ( Focus(..) )
+import Shikensu.Focus
+import Shikensu.Path as Path
+import Stream
+import Task exposing (Task)
+
+
+main : Shikensu.Program
+main =
+    let
+        collection =
+            [ { focus = source
+              , sequence = clientSequence
+              }
+            , { focus = source
+              , sequence = serverSequence
+              }
+            ]
+    in
+    Shikensu.perform
+        { onSuccess = 
+            ( \env _ -> Stream.sendLine env.stdout "🧪 Sequence completed" )
+        , onError =
+            ( \env err ->
+                Cmd.batch
+                    [ Stream.sendLine env.stderr ("🚨 " ++ Error.toString err)
+                    , Node.setExitCode 1
+                    ]
+            )
+        }
+        (\fsPermission ->
+            collection
+                |> Array.map
+                        (\{ focus, sequence } ->
+                            focus
+                                |> Shikensu.list fsPermission
+                                |> sequence
+                        )
+                |> Task.sequence
+        )
+
+
+source : Shikensu.Focus
+source =
+    [ "client/src/Components"
+    ]
+        |> Path.directory
+        |> Relative
+
+
+serverDestination : Shikensu.Focus
+serverDestination =
+    [ "server/gen/Gen/Components"
+    ]
+        |> Path.directory
+        |> Relative
+
+
+clientDestination : Shikensu.Focus
+clientDestination =
+    [ "client/gen/Gen/Components"
+    ]
+        |> Path.directory
+        |> Relative
+
+
+readFiles : Shikensu.Task -> Shikensu.Task
+readFiles task =
+     task
+        |> Task.map (Shikensu.withExtension "gren")
+        |> Task.andThen Shikensu.read
+
+
+serverSequence : Shikensu.Task -> Shikensu.Task
+serverSequence task =
+    task
+        |> readFiles
+        |> Task.andThen genServerComponent
+        |> Task.andThen (Shikensu.write serverDestination)
+
+
+clientSequence : Shikensu.Task -> Shikensu.Task
+clientSequence task =
+    task
+        |> readFiles
+        |> Task.map (Shikensu.renderContent clientComponentFromDef)
+        |> Task.andThen (Shikensu.write clientDestination)
+
+
+clientComponentFromDef : Shikensu.Definition -> Maybe Bytes
+clientComponentFromDef def =
+    def.content
+        |> Maybe.andThen toString
+        |> Maybe.map (toClientComponent def)
+        |> Maybe.map toBytes
+
+
+toString : Bytes -> Maybe String
+toString bytes =
+    bytes
+        |> Bytes.width
+        |> Bytes.Decode.string
+        |> (\decoder -> Bytes.Decode.decode decoder bytes)
+
+
+toBytes : String -> Bytes
+toBytes string =
+    string
+        |> Bytes.Encode.string
+        |> Bytes.Encode.encode
+
+
+toClientComponent : Shikensu.Definition -> String -> String
+toClientComponent def contents =
+    """
+    module Gen.Components.{{NAME}} exposing (main)
+
+    import Transmutable.Html.VirtualDom exposing (toVirtualDom)
+    import Components.{{NAME}} as {{NAME}}
+    import Browser
+
+    main =
+        let
+            e = {{NAME}}.component
+        in
+        Browser.element
+            { init = e.init
+            , update = e.update
+            , subscriptions = e.subscriptions
+            , view = e.view >> toVirtualDom
+            }
+    """
+        |> String.replace "{{NAME}}" def.baseName
+
+
+genServerComponent : Shikensu.Bundle -> Task Error Shikensu.Bundle
+genServerComponent bundle =
+    let
+        newBundle =
+            bundle
+                |> Shikensu.mapCompendium
+                    ( Array.map
+                        ( \def ->
+                            let
+                                content =
+                                    def.content
+                                        |> Maybe.andThen toString
+                                        |> Maybe.withDefault ""
+
+                                flagType =
+                                    Flags.getType content
+                            in
+                            { def
+                                | content =
+                                    case flagType of
+                                        Unknown ->
+                                            Nothing
+
+                                        _ ->
+                                            toServerComponent def.baseName flagType
+                                                |> toBytes
+                                                |> Just
+                            }
+                        )
+                    )
+        
+        badDef =
+            newBundle.compendium
+                |> Array.findFirst
+                    (\def -> def.content == Nothing)
+    in
+    case badDef of
+        Nothing ->
+            Task.succeed newBundle
+        
+        Just def ->
+            Task.fail
+                ( ErrorMessage <|
+                    String.replace "{{COMPONENT}}" def.baseName
+                        -- TODO: improve error message
+                        """
+                        Oops! I don't know how to parse the init flags for the {{COMPONENT}} component.
+                           Either the init function type signature is missing, or it's using types I don't support yet.
+                           TODO: highlight problem and link to docs.\n
+                        """
+                )
+
+
+toServerComponent : String -> FlagType -> String
+toServerComponent name flagType =
+    """
+    module Gen.Components.{{NAME}} exposing (init)
+
+    import Prettynice.Flags.Encode as Encode
+    import Transmutable.Html as H exposing (Html)
+    import Transmutable.Html.Attributes as A
+
+    init : {{INPUT_TYPE}} -> Html {}
+    init a =
+        let
+            flags = Encode.{{FLAG_ENCODER}} a
+        in
+        H.div []
+            [ H.div [ A.id "prettynice-component-{{NAME}}" ] []
+            , H.node "script" []
+                [ H.text <|
+                    \"""
+                    Gren.Gen.Components.{{NAME}}.init({
+                        node: document.getElementById("prettynice-component-{{NAME}}"),
+                        flags: \""" ++ flags ++ \""",
+                    })
+                    \"""
+                ]
+            ]
+    """
+        |> String.replace "{{NAME}}" name
+        |> String.replace "{{INPUT_TYPE}}" (Flags.typeName flagType)
+        |> String.replace "{{FLAG_ENCODER}}" (Flags.encoderName flagType)

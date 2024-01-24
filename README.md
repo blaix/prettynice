@@ -7,8 +7,7 @@ A purely functional, fully type-safe, full-stack web framework using [gren](http
 Not ready for real world use.
 Currently playing around with what the API might look like and proving out some ideas.
 
-I'm taking a doc-driven approach though, so you should be able to use [`docs/GUIDE.md`](docs/GUIDE.md) for current usage.
-You can also take a look at the [`examples/`](examples/).
+You can look at the [`examples/`](examples/) for examples of using the in-progress API.
 
 ## Short term goals
 

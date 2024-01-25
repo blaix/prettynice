@@ -1,85 +1,33 @@
 module Main exposing (main)
 
-import Msg exposing (Msg(..))
 import Node exposing (Environment)
-import Prettynice
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
-import Transmutable.Html as H exposing (Html)
-import Transmutable.Html.Attributes as A
 
 
-main : Prettynice.Program {}
+main : Router.Program
 main =
-    Prettynice.defineProgram
+    Router.defineProgram
         { init = init
-        , update = update
-        , subscriptions = (\_ -> Sub.none)
-        , onRequest = GotRequest
+        , router = router
         }
 
 
-init : Environment -> Prettynice.Init {}
+init : Environment -> Router.Init
 init env =
-    Prettynice.startProgram
+    Router.startProgram
         { host = "0.0.0.0"
         , port_ = 3000
         , env = env
-        , model = {}
         }
 
 
-update : Msg -> {} -> { model : {}, command : Cmd Msg }
-update msg model =
-    case msg of
-        GotRequest request response ->
-            { model = model
-            , command = 
+router : Request -> Response -> Cmd msg
+router request response =
+    case request.path of
+        [ name ] ->
+            Response.sendText ("Hello, " ++ name) response
 
-                --
-                -- Prettynice wraps HttpServer's request to add a .path that's
-                -- split into parts for easier pattern matching. But you can
-                -- also match on anything else in the request (e.g. .method).
-                --
-
-                case request.path of
-                    [] ->
-                        home response
-
-                    [ "hello", name ] ->
-                        sayHello name response
-
-                    _ ->
-                        notFound request.url.path response
-            }
-
-
--- NOTE: msg, not Msg in the response type signatures.
--- Otherwise we'd need to map the body in a Msg.NoOp
-
-
-home : Response -> Cmd msg
-home =
-    Response.sendHtml
-        { title = "Welcome!"
-        , body =
-            H.main_ []
-                [ H.h1 [] [ H.text "Welcome!" ]
-                , H.p [] [ H.a [ A.href "/hello/World" ] [ H.text "Say hello." ] ]
-                , H.p [] [ H.a [ A.href "/notfound" ] [ H.text "See a 404." ] ]
-                ]
-        }
-
-
-sayHello : String -> Response -> Cmd msg
-sayHello name =
-    Response.sendHtml
-        { title = "Hello!"
-        , body = H.text ("Hello, " ++ name ++ "!")
-        }
-
-
-notFound : String -> Response -> Cmd msg
-notFound path response =
-    response
-        |> Response.setStatus 404
-        |> Response.sendText ("Can't find " ++ path)
+        _ ->
+            Response.sendText "Hello!" response

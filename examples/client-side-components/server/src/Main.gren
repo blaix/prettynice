@@ -4,50 +4,39 @@ module Main exposing (main)
 import Gen.Components.Counter as Counter
 
 import Transmutable.Html as H exposing (Html)
-import Msg exposing (Msg(..))
 import Node exposing (Environment)
-import Prettynice
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
 
 
-main : Prettynice.Program {}
+main : Router.Program
 main =
-    Prettynice.defineProgram
+    Router.defineProgram
         { init = init
-        , update = update
-        , subscriptions = (\_ -> Sub.none)
-        , onRequest = GotRequest
+        , router = router
         }
 
 
-init : Environment -> Prettynice.Init {}
+init : Environment -> Router.Init
 init env =
-    Prettynice.startProgram
+    Router.startProgram
         { host = "0.0.0.0"
         , port_ = 3000
         , env = env
-        , model = {}
         }
 
 
-update : Msg -> {} -> { model : {}, command : Cmd Msg }
-update msg model =
-    case msg of
-        GotRequest request response ->
-            { model = model
-            , command = view response
+router : Request -> Response -> Cmd msg
+router request response =
+    response
+        |> Response.sendHtml
+            { title = "Component Example"
+            , body =
+                H.main_ []
+                    [ H.p [] [ H.text "Client-side components embedded in server-rendered HTML:" ]
+                    , Counter.init 0
+                    , H.p [] [ H.text "Multiple instances of the same component with different flags, passed from the server, automatically encoded, and type-checked at compile time:" ]
+                    , Counter.init 123
+                    ]
             }
-
-
-view : Response -> Cmd msg
-view =
-    Response.sendHtml
-        { title = "Component Example"
-        , body =
-            H.main_ []
-                [ H.p [] [ H.text "Client-side components embedded in server-rendered HTML:" ]
-                , Counter.init 0
-                , H.p [] [ H.text "Multiple instances of the same component with different flags, passed from the server, automatically encoded, and type-checked at compile time:" ]
-                , Counter.init 123
-                ]
-        }

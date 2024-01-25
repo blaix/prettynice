@@ -1,71 +1,63 @@
 module Main exposing (main)
 
 import Json.Encode as Json
-import Msg exposing (Msg(..))
 import Node exposing (Environment)
-import Prettynice
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
 import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
 
 
-main : Prettynice.Program {}
+main : Router.Program
 main =
-    Prettynice.defineProgram
+    Router.defineProgram
         { init = init
-        , update = update
-        , subscriptions = (\_ -> Sub.none)
-        , onRequest = GotRequest
+        , router = router
         }
 
 
-init : Environment -> Prettynice.Init {}
+init : Environment -> Router.Init
 init env =
-    Prettynice.startProgram
+    Router.startProgram
         { host = "0.0.0.0"
         , port_ = 3000
         , env = env
-        , model = {}
         }
 
 
-update : Msg -> {} -> { model : {}, command : Cmd Msg }
-update msg model =
-    case msg of
-        GotRequest request response ->
-            { model = model
-            , command = 
-                case request.path of
+router : Request -> Response -> Cmd msg
+router request response =
+    case request.path of
 
-                    -- 
-                    -- Response.sendText, .sendHtml, etc. are helpers around .setBody and .send
-                    -- For example:
-                    --   response |> Response.sendText "text"
-                    -- is equivalent to:
-                    --   response |> Response.setBody (TextBody "text") |> Response.send    
-                    --
+        -- 
+        -- Response.sendText, .sendHtml, etc. are helpers around .setBody and .send
+        -- For example:
+        --   response |> Response.sendText "text"
+        -- is equivalent to:
+        --   response |> Response.setBody (TextBody "text") |> Response.send    
+        --
 
-                    [ "text" ] ->
-                        response
-                            |> Response.sendText
-                                "This is text. <i>Not</i> HTML."
+        [ "text" ] ->
+            response
+                |> Response.sendText
+                    "This is text. <i>Not</i> HTML."
 
-                    [ "json" ] ->
-                        response
-                            |> Response.sendJson
-                                (Json.array Json.int [1, 2, 3])
+        [ "json" ] ->
+            response
+                |> Response.sendJson
+                    (Json.array Json.int [1, 2, 3])
 
-                    -- TODO: Bytes
+        -- TODO: Bytes
 
-                    _ ->
-                        response
-                            |> Response.sendHtml
-                                { title = "Welcome!"
-                                , body =
-                                    H.main_ []
-                                        [ H.h1 [] [ H.text "Welcome!" ]
-                                        , H.p [] [ H.a [ A.href "/json" ] [ H.text "json" ] ]
-                                        , H.p [] [ H.a [ A.href "/text" ] [ H.text "text" ] ]
-                                        ]
-                                }
-            }
+        _ ->
+            response
+                |> Response.sendHtml
+                    { title = "Welcome!"
+                    , body =
+                        H.main_ []
+                            [ H.h1 [] [ H.text "Welcome!" ]
+                            , H.p [] [ H.a [ A.href "/json" ] [ H.text "json" ] ]
+                            , H.p [] [ H.a [ A.href "/text" ] [ H.text "text" ] ]
+                            ]
+                    }

@@ -1,35 +1,30 @@
 module Main exposing (main)
 
-import Msg exposing (Msg(..))
 import Node exposing (Environment)
-import Prettynice
-import Prettynice.Response as Response
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
 
 
-main : Prettynice.Program {}
+main : Router.Program
 main =
-    Prettynice.defineProgram
+    Router.defineProgram
         { init = init
-        , update = update
-        , subscriptions = (\_ -> Sub.none)
-        , onRequest = GotRequest
+        , router = router
         }
 
 
-init : Environment -> Prettynice.Init {}
+init : Environment -> Router.Init
 init env =
-    Prettynice.startProgram
+    Router.startProgram
         { host = "0.0.0.0"
         , port_ = 3000
         , env = env
-        , model = {}
         }
 
 
-update : Msg -> {} -> { model : {}, command : Cmd Msg }
-update msg model =
-    case msg of
-        GotRequest request response ->
-            { model = model
-            , command = Response.sendText "Hello!" response
-            }
+router : Request -> Response -> Cmd msg
+router request response =
+    Response.sendText "Hello!" response
+    -- You can also sendHtml and sendJson.
+    -- See examples/content-types

@@ -64,7 +64,7 @@ For example:
 Response.sendHtml
     { title = "Home"
     , body =
-        main_ []
+        div []
             [ h1 [] [ text "Welcome!" ]
             , p [] [ text "It's a website!" ]
             ]
@@ -133,7 +133,7 @@ Dropping a component in `client/src/Components/` makes it available to embed in 
 Response.sendHtml
     { title = "Component Example"
     , body =
-        main_ []
+        div []
             [ p [] [ text "Counter starting at zero:" ]
             , Counter.init 0
             , p [] [ text "Counter starting at not zero:" ]

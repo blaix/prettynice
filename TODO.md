@@ -5,6 +5,7 @@
 - [X] Mount handlers as full tea modules? Manual example only for now.
 - [X] Update main project README
 - [ ] === Get feedback on the API ===
+- [ ] Client-side ports
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Document how to use framework before a package is released
 - [ ] Document how to actually compile and run the server

@@ -7,6 +7,7 @@
 - [ ] === Get feedback on the API ===
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Document how to use framework before a package is released
+- [ ] Document how to actually compile and run the server
 - [ ] Update gren guide? Understanding the framework requires an understanding of Gren, but that still requires an understanding of elm.
 - [ ] Built-in handlers for common use-cases? At least a NotFound handler.
 - [ ] Try a FE component that communicates with the server with Msg/update

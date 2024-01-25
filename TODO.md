@@ -24,7 +24,7 @@
 - [ ] Unit Tests
 - [ ] Handle TODO comments in code
 - [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
-- [ ] Docs & gren-doc-preview:
+- [ ] Docs (reminder: use gren-doc-preview):
   - [ ] API
   - [ ] Adding handlers
   - [ ] Using components

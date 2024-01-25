@@ -64,9 +64,9 @@ For example:
 Response.sendHtml
     { title = "Home"
     , body =
-        Html.main_ []
-            [ Html.h1 [] [ Html.text "Welcome!" ]
-            , Html.p [] [ Html.text "It's a website!" ]
+        main_ []
+            [ h1 [] [ text "Welcome!" ]
+            , p [] [ text "It's a website!" ]
             ]
     }
 ```
@@ -109,14 +109,14 @@ update msg model =
             { model = model - 1, command = Cmd.none }
 
 view model =
-    Html.p []
-        [ Html.button
-            [ Events.onClick Decrement ]
-            [ Html.text "-" ]
-        , Html.text <| String.fromInt model
-        , Html.button
-            [ Events.onClick Increment ]
-            [ Html.text "+" ]
+    p []
+        [ button
+            [ onClick Decrement ]
+            [ text "-" ]
+        , text <| String.fromInt model
+        , button
+            [ onClick Increment ]
+            [ text "+" ]
         ]
 
 subscriptions _ =
@@ -133,10 +133,10 @@ Dropping a component in `client/src/Components/` makes it available to embed in 
 Response.sendHtml
     { title = "Component Example"
     , body =
-        H.main_ []
-            [ H.p [] [ H.text "Counter starting at zero:" ]
+        main_ []
+            [ p [] [ text "Counter starting at zero:" ]
             , Counter.init 0
-            , H.p [] [ H.text "Counter starting at not zero:" ]
+            , p [] [ text "Counter starting at not zero:" ]
             , Counter.init 123
             ]
     }

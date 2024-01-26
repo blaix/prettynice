@@ -6,6 +6,8 @@
 - [X] Update main project README
 - [ ] === Get feedback on the API ===
 - [ ] Client-side ports
+- [ ] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
+- [ ] Websockets example? (https://guide.elm-lang.org/interop/ports)
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Document how to use framework before a package is released
 - [ ] Document how to actually compile and run the server

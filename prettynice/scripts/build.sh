@@ -11,11 +11,11 @@ mkdir -p dist/client
 mkdir -p dist/server
 mkdir -p server/gen
 
+rm -r {client,server}/gen/* &> /dev/null || printf ""
+rm -r dist/* &> /dev/null || printf ""
+
 # public assets
 cp -r public/* dist/client/ &> /dev/null || printf ""
-
-# clean slate for components
-rm -r {client,server}/gen/Gen/Components/* &> /dev/null || printf ""
 
 # build components
 if [[ -d client/src/Components ]]; then

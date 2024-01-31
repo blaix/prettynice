@@ -9,6 +9,7 @@
 - [ ] Client-side ports
 - [ ] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
+- [ ] Justfile and entr for build commands and reload local dev server on file change?
 - [ ] Websockets example? (https://guide.elm-lang.org/interop/ports)
 - [ ] SSE example?
 - [ ] Document how to use framework before a package is released

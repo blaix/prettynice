@@ -1,6 +1,6 @@
 {
     "type": "application",
-    "platform": "node",
+    "platform": "browser",
     "source-directories": [
         "src",
         "gen",
@@ -9,12 +9,13 @@
     "gren-version": "0.3.0",
     "dependencies": {
         "direct": {
+            "gren-lang/browser": "3.0.0",
             "gren-lang/core": "4.0.1",
-            "gren-lang/node": "3.0.1",
             "gren-lang/url": "3.0.0",
             "icidasset/html-gren": "2.0.0",
-            "joeybright/gren-static-serve": "2.0.1"
+            "icidasset/html-virtualdom-gren": "1.0.1"
         },
         "indirect": {}
     }
 }
+

@@ -15,7 +15,7 @@ rm -r {client,server}/gen/* &> /dev/null || printf ""
 rm -r dist/* &> /dev/null || printf ""
 
 # public assets
-cp -r public/* dist/client/ &> /dev/null || printf ""
+cp -r public/* dist/client/ &> /dev/null || printf "No public assets"
 
 # build components
 if [[ -d client/src/Components ]]; then
@@ -30,6 +30,8 @@ if [[ -d client/src/Components ]]; then
     node $PROJECT_ROOT/prettynice/cli/build/app
     cd $EXAMPLE_ROOT/client
     npx gren make $(find gen/Gen/Components -name "*.gren") --output=../dist/client/main.js
+    # TODO: nested components+ports (e.g. Components/My/Component.gren/js)
+    cp src/Components/*.js ../dist/client/ &> /dev/null || printf "No component ports."
   fi
 fi
 

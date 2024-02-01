@@ -1,0 +1,43 @@
+module Main exposing (main)
+
+import Gen.Components.Alert as Alert
+import Node exposing (Environment)
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H
+
+
+main : Router.Program
+main =
+    Router.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Router.Init
+init env =
+    Router.startProgram
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        }
+
+
+router : Request -> Response -> Cmd msg
+router _ =
+    Response.sendHtml
+        { title = "Alert"
+        , body = 
+            H.div []
+                [ H.p []
+                    [ H.text "Message 1: "
+                    , Alert.init "A message from the server."
+                    ]
+                , H.p []
+                    [ H.text "Message 2: "
+                    , Alert.init "A different message from the server."
+                    ]
+                ]
+        }

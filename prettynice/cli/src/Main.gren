@@ -26,6 +26,9 @@ main =
               , sequence = clientSequence
               }
             , { focus = source
+              , sequence = clientPortsSequence
+              }
+            , { focus = source
               , sequence = serverSequence
               }
             ]
@@ -77,6 +80,14 @@ clientDestination =
         |> Relative
 
 
+clientPortsDestination : Shikensu.Focus
+clientPortsDestination =
+    [ "dist/client"
+    ]
+        |> Path.directory
+        |> Relative
+
+
 readFiles : Shikensu.Task -> Shikensu.Task
 readFiles task =
      task
@@ -98,6 +109,23 @@ clientSequence task =
         |> readFiles
         |> Task.map (Shikensu.renderContent clientComponentFromDef)
         |> Task.andThen (Shikensu.write clientDestination)
+
+
+{-| For every component, clone the corresponding js ports file if it exists.
+    Otherwise create an empty one.
+-}
+clientPortsSequence : Shikensu.Task -> Shikensu.Task
+clientPortsSequence task =
+    task
+        |> Task.map (Shikensu.withExtension "gren")
+        |> Task.map (Shikensu.renameExtension "gren" "js")
+        |> Task.andThen
+            (\bundle ->
+                Task.onError
+                    (\_ -> Task.succeed bundle)
+                    (Shikensu.read bundle)
+            )
+        |> Task.andThen (Shikensu.write clientPortsDestination)
 
 
 clientComponentFromDef : Shikensu.Definition -> Maybe Bytes
@@ -213,15 +241,19 @@ toServerComponent name flagType =
         let
             flags = Encode.{{FLAG_ENCODER}} a
         in
-        H.div []
-            [ H.div [ A.id "prettynice-component-{{NAME}}" ] []
+        H.span []
+            [ H.span [ A.class "prettynice-component-{{NAME}}" ] []
             , H.node "script" []
                 [ H.text <|
                     \"""
-                    Gren.Gen.Components.{{NAME}}.init({
-                        node: document.getElementById("prettynice-component-{{NAME}}"),
-                        flags: \""" ++ flags ++ \""",
-                    })
+                    var $__components = $__components || {};
+                    $__components["{{NAME}}"] = $__components["{{NAME}}"] || [];
+                    $__components["{{NAME}}"].push(
+                        Gren.Gen.Components.{{NAME}}.init({
+                            node: document.currentScript.parentNode.getElementsByClassName("prettynice-component-{{NAME}}")[0],
+                            flags: \""" ++ flags ++ \""",
+                        })
+                    );
                     \"""
                 ]
             ]

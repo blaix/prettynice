@@ -84,6 +84,7 @@ If you aren't familiar, you can read [this guide](https://elmprogramming.com/mod
 ```elm
 -- client/src/Components/Counter.gren
 
+component : Component Int Model Msg
 component =
         { init = init
         , update = update
@@ -94,6 +95,7 @@ component =
 type alias Model =
     Int
 
+init : Int -> { model : Model, command : Cmd Msg }
 init start =
     { model = start, command = Cmd.none }
 
@@ -101,6 +103,7 @@ type Msg
     = Increment
     | Decrement
 
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         Increment ->
@@ -108,6 +111,7 @@ update msg model =
         Decrement ->
             { model = model - 1, command = Cmd.none }
 
+view : Model -> Html Msg
 view model =
     p []
         [ button
@@ -119,6 +123,7 @@ view model =
             [ text "+" ]
         ]
 
+subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
 ```
@@ -158,6 +163,7 @@ If you aren't familiar with ports, you can read [this section of the elm guide](
 
 ```js
 // client/src/Components/Alert.js
+
 export function init(component) {
     component.ports.sendAlert.subscribe(function(message) {
         alert(message);
@@ -167,6 +173,9 @@ export function init(component) {
 
 ```elm
 -- client/src/Components/Alert.gren
+
+port sendAlert : String -> Cmd msg
+
 update msg model =
     case msg of
         ClickedAlert ->

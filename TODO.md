@@ -5,9 +5,10 @@
 - [X] Mount handlers as full tea modules? Manual example only for now.
 - [X] Update main project README
 - [X] Helpful error message when compile fails from unsupported loader type
-- [ ] === Get feedback on the API ===
-- [ ] Client-side ports
-- [ ] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
+- [X] === Get feedback on the API ===
+- [X] Client-side ports
+- [X] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
+- [ ] Improve component codegen with a required Props record?
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Justfile and entr for build commands and reload local dev server on file change?
 - [ ] Websockets example? (https://guide.elm-lang.org/interop/ports)

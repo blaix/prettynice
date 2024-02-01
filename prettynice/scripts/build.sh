@@ -7,12 +7,12 @@ set -eu
 EXAMPLE_ROOT="$(pwd)"
 PROJECT_ROOT="${EXAMPLE_ROOT}/../.." 
 
+rm -r {client,server}/gen/* &> /dev/null || printf ""
+rm -r dist/* &> /dev/null || printf ""
+
 mkdir -p dist/client
 mkdir -p dist/server
 mkdir -p server/gen
-
-rm -r {client,server}/gen/* &> /dev/null || printf ""
-rm -r dist/* &> /dev/null || printf ""
 
 # public assets
 cp -r public/* dist/client/ &> /dev/null || printf "No public assets"

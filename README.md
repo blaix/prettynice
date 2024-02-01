@@ -175,7 +175,7 @@ update msg model =
             }
 ```
 
-See [examples/client-side-ports](examples/client/side-ports).
+See [examples/client-side-ports](examples/client-side-ports).
 
 ## More Control
 

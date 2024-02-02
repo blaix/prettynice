@@ -33,11 +33,11 @@ router _ =
             H.div []
                 [ H.p []
                     [ H.text "Message 1: "
-                    , Alert.init "A message from the server."
+                    , Alert.init { message = "A message from the server." }
                     ]
                 , H.p []
                     [ H.text "Message 2: "
-                    , Alert.init "A different message from the server."
+                    , Alert.init { message = "A different message from the server." }
                     ]
                 ]
         }

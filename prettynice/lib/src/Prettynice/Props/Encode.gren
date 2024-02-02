@@ -1,4 +1,4 @@
-module Prettynice.Flags.Encode exposing
+module Prettynice.Props.Encode exposing
     ( null
     , int
     , string

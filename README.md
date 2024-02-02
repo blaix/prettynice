@@ -84,7 +84,7 @@ If you aren't familiar, you can read [this guide](https://elmprogramming.com/mod
 ```elm
 -- client/src/Components/Counter.gren
 
-component : Component Int Model Msg
+component : Component Props Model Msg
 component =
         { init = init
         , update = update
@@ -92,10 +92,17 @@ component =
         , subscriptions = subscriptions
         }
 
+-- Model holds component state
 type alias Model =
-    Int
+    { count : Int }
 
-init : Int -> { model : Model, command : Cmd Msg }
+-- Props define the arguments passed in to your component
+type alias Props =
+    { start : Int }
+
+-- A corresponding init will be generated server-side
+-- that takes Props and renders the js for this component.
+init : Props -> { model : Model, command : Cmd Msg }
 init start =
     { model = start, command = Cmd.none }
 
@@ -107,9 +114,13 @@ update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         Increment ->
-            { model = model + 1, command = Cmd.none }
+            { model = { model | count = model.count + 1
+            , command = Cmd.none
+            }
         Decrement ->
-            { model = model - 1, command = Cmd.none }
+            { model = { model | count = model.count - 1
+            , command = Cmd.none
+            }
 
 view : Model -> Html Msg
 view model =
@@ -117,7 +128,7 @@ view model =
         [ button
             [ onClick Decrement ]
             [ text "-" ]
-        , text <| String.fromInt model
+        , text <| String.fromInt model.count
         , button
             [ onClick Increment ]
             [ text "+" ]
@@ -130,28 +141,42 @@ subscriptions _ =
 
 See [examples/client-side-components/client/src/Components/Counter.gren](examples/client-side-components/client/src/Components/Counter.gren).
 
-Dropping a component in `client/src/Components/` makes it available to embed in your server-side HTML:
+Dropping a component in `client/src/Components/` makes it available to embed in
+your server-side HTML:
 
 ```elm
 -- in server/src/Main.gren:
 
-Response.sendHtml
-    { title = "Component Example"
-    , body =
-        div []
-            [ p [] [ text "Counter starting at zero:" ]
-            , Counter.init 0
-            , p [] [ text "Counter starting at not zero:" ]
-            , Counter.init 123
-            ]
+import Gen.Components.Counter as Counter
+
+myResponse =
+    Response.sendHtml
+        { title = "Component Example"
+        , body =
+            div []
+                
+                -- Counter.init takes Props as defined in the Counter component,
+                -- and returns HTML/JS to render the component,
+                -- including automatic encoding of the props.
+                
+                [ p [] [ text "Counter starting at zero:" ]
+                , Counter.init { start = 0 }
+                
+                , p [] [ text "Counter starting at not zero:" ]
+                , Counter.init { start = 123 }
+                ]
     }
 ```
 
 See [examples/client-side-components/server/src/Main.gren](examples/client-side-components/server/src/Main.gren).
 
-Because you can initialize your client-side components with data from the server, **you don't need loading states or encoders, and the data will be type-checked at compile time.**
+Because you can initialize your client-side components with data from the
+server, **you don't need loading states or encoders, and the data will be
+type-checked at compile time.**
 
-Note: This is still a work-in-progress, and only works with certain types. See [examples/client-side-components/README.md](examples/client-side-components/README.md) for details.
+Note: This is still a work-in-progress, and only works with certain types. See
+[examples/client-side-components/README.md](examples/client-side-components/README.md)
+for details.
 
 ## Client-side Ports
 

@@ -8,9 +8,12 @@
 - [X] === Get feedback on the API ===
 - [X] Client-side ports
 - [X] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
-- [ ] Improve component codegen with a required Props record?
+- [X] Improve component codegen with a required Props record
+- [ ] More supported component prop types
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
+- [ ] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [ ] Justfile and entr for build commands and reload local dev server on file change?
+- [ ] just [example name] to run an example (cd examples/[name] && npm install && npm start)
 - [ ] Websockets example? (https://guide.elm-lang.org/interop/ports)
 - [ ] SSE example?
 - [ ] Document how to use framework before a package is released

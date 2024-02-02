@@ -7,7 +7,7 @@ import Prettynice.Component exposing (Component)
 
 {-| A component is a wrapper around Browser.element.
 -}
-component : Component Int Model Msg
+component : Component Props Model Msg
 component =
         { init = init
         , update = update
@@ -20,17 +20,29 @@ component =
 
 
 type alias Model =
-    Int
+    { count : Int
+    }
 
 
-{-| A server-side init for this component will be generated to match this type signature.
+{-| A Props record is required.
 
-Calling the server-side init with some value will render the js for this component,
-passing the value encoded as flags.
+Prettynice will look for this so it knows how to encode data passed in
+server-side. Only certain types are supported. The build script will fail and
+tell you if you use one it doesn't recognize (yet).
 -}
-init : Int -> { model : Model, command : Cmd Msg }
-init start =
-    { model = start, command = Cmd.none }
+type alias Props =
+    { start : Int
+    }
+
+
+{-| A server-side init for this component will be generated so you can embed
+this in your server-side HTML and pass in the props.
+-}
+init : Props -> { model : Model, command : Cmd Msg }
+init props =
+    { model = { count = props.start }
+    , command = Cmd.none
+    }
 
 
 -- UPDATE
@@ -45,12 +57,12 @@ update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         Increment ->
-            { model = model + 1
+            { model = { model | count = model.count + 1 }
             , command = Cmd.none
             }
 
         Decrement ->
-            { model = model - 1
+            { model = { model | count = model.count - 1 }
             , command = Cmd.none
             }
 
@@ -69,7 +81,7 @@ view model =
         [ H.button
             [ E.onClick Decrement ]
             [ H.text "-" ]
-        , H.text <| String.fromInt model
+        , H.text <| String.fromInt model.count
         , H.button
             [ E.onClick Increment ]
             [ H.text "+" ]

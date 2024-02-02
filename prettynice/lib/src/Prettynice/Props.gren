@@ -1,0 +1,149 @@
+module Prettynice.Props exposing 
+    ( Props
+    , get
+    , encoder
+    , typeSig
+    )
+
+import Dict exposing (Dict)
+import Parser as P exposing ((|.), (|=), Parser, Trailing(..))
+import Set
+
+
+type FieldType
+    = IntType
+    | StringType
+    -- TODO: more types
+
+
+type alias Props =
+    Dict String FieldType
+
+
+typeSig : Props -> String
+typeSig props =
+    let
+        fields =
+            props
+                |> Dict.foldl addFieldSig []
+                |> String.join ", "
+    in
+    "{ " ++ fields ++ " }"
+
+
+addFieldSig : String -> FieldType -> Array String -> Array String
+addFieldSig name fieldType sigs =
+    let
+        field =
+            name ++ " : " ++ (fieldTypeToString fieldType)
+    in
+    Array.pushLast field sigs
+
+
+fieldTypeToString : FieldType -> String
+fieldTypeToString fieldType =
+    case fieldType of
+        IntType ->
+            "Int"
+
+        StringType ->
+            "String"
+
+
+encoder : Props -> String
+encoder props =
+    let
+        fields =
+            props
+                |> Dict.foldl addFieldEncoder []
+                |> String.join "\n        , "
+    in
+    String.replace "{{FIELDS}}" fields
+        """
+        Encode.object 
+                [ {{FIELDS}}
+                ]
+        """
+
+
+addFieldEncoder : String -> FieldType -> Array String -> Array String
+addFieldEncoder name fieldType encoders =
+    let
+        field =
+            -- Weird indentation is to look right in generated output
+            """
+            { key = "{{NAME}}"
+                      , value = Encode.{{ENCODER}} props.{{NAME}}
+                      }
+            """
+                |> String.replace "{{NAME}}" name
+                |> String.replace "{{ENCODER}}" (fieldTypeToEncoder fieldType)
+    in
+    Array.pushLast field encoders
+
+
+fieldTypeToEncoder : FieldType -> String
+fieldTypeToEncoder fieldType =
+    case fieldType of
+        IntType ->
+            "int"
+        
+        StringType ->
+            "string"
+
+
+parser : Parser (Dict String FieldType)
+parser =
+    P.succeed Dict.fromArray
+        |. P.chompUntil "type alias Props"
+        |. P.token "type alias Props"
+        |. P.spaces
+        |. P.symbol "="
+        |. P.spaces
+        |= P.sequence
+            { start = "{"
+            , end = "}"
+            , spaces = P.spaces
+            , separator = ","
+            , trailing = Forbidden
+            , item =
+                P.succeed 
+                    (\field fieldType -> 
+                        { key = field, value = fieldType }
+                    )
+                    |= P.variable
+                        { start = Char.isLower
+                        , inner = 
+                            (\c -> Char.isAlphaNum c || c == '_')
+                        , reserved = Set.empty
+                        }
+                    |. P.spaces
+                    |. P.symbol ":"
+                    |. P.spaces
+                    |= P.oneOf
+                        [ P.succeed IntType |. P.keyword "Int"
+                        , P.succeed StringType |. P.keyword "String"
+                        -- TODO: Bool, Float, Maybe, Array, Dict
+                        -- Maybe: records and custom types.
+                        -- Might want to wait for gren-in-gren compiler packages.
+                        ]
+            }
+
+
+get: String -> Result (Array P.DeadEnd) (Dict String FieldType)
+get content =
+    let
+        normalized =
+            content
+                -- Normalize whitespace
+                -- so we can safely do things like
+                -- chomp until "type alias Props"
+                |> String.words
+                |> String.join " "
+    in
+    -- TODO: add a parser to verify module exposes component function.
+    -- TODO: add a parser to verify that init takes Props.
+    --       Maybe via "component : Component Props " where Component
+    --       is parsed from the import Prerttynice.Component ... line.
+    -- TODO: Helpful errors if any of the parsing here fails.
+    P.run parser normalized

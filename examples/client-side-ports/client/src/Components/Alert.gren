@@ -5,7 +5,7 @@ import Transmutable.Html.Events as E
 import Prettynice.Component exposing (Component)
 
 
-component : Component String Model Msg
+component : Component Props Model Msg
 component =
         { init = init
         , update = update
@@ -18,8 +18,12 @@ type alias Model =
     String
 
 
-init : String -> { model : Model, command : Cmd Msg }
-init message =
+type alias Props =
+    { message : String }
+
+
+init : Props -> { model : Model, command : Cmd Msg }
+init { message } =
     { model = message, command = Cmd.none }
 
 

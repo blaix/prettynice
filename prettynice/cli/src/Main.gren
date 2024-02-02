@@ -4,7 +4,7 @@ import Bytes exposing ( Bytes )
 import Bytes.Decode
 import Bytes.Encode
 import Node
-import Prettynice.Flags as Flags exposing (FlagType(..))
+import Prettynice.Props as Props exposing (Props)
 import Set
 import Shikensu
 import Shikensu.Contrib as Shikensu
@@ -188,19 +188,19 @@ genServerComponent bundle =
                                         |> Maybe.andThen toString
                                         |> Maybe.withDefault ""
 
-                                flagType =
-                                    Flags.getType content
+                                propsResult =
+                                    Props.get content
                             in
                             { def
                                 | content =
-                                    case flagType of
-                                        Unknown ->
-                                            Nothing
-
-                                        _ ->
-                                            toServerComponent def.baseName flagType
+                                    case propsResult of
+                                        Ok props ->
+                                            toServerComponent def.baseName props
                                                 |> toBytes
                                                 |> Just
+
+                                        e ->
+                                            Nothing
                             }
                         )
                     )
@@ -220,26 +220,42 @@ genServerComponent bundle =
                     String.replace "{{COMPONENT}}" def.baseName
                         -- TODO: improve error message
                         """
-                        Oops! I don't know how to parse the init flags for the {{COMPONENT}} component.
-                           Either the init function type signature is missing, or it's using types I don't support yet.
-                           TODO: highlight problem and link to docs.\n
+                        Oops! I can't find props for the {{COMPONENT}} component.
+                           I'm looking for a type alias that looks like this:
+
+                                type alias Props =
+                                    { myField : String
+                                    , myOtherField : Int
+                                    }
+
+                           It either doesn't exist, is formatted in a way I
+                           can't recognize, or it uses unsupported field types.
+                           TODO: link to documentation for this.\n
                         """
                 )
 
 
-toServerComponent : String -> FlagType -> String
-toServerComponent name flagType =
+toServerComponent : String -> Props -> String
+toServerComponent name props =
     """
     module Gen.Components.{{NAME}} exposing (init)
 
-    import Prettynice.Flags.Encode as Encode
+    import Json.Encode as Encode
+    import Prettynice.Props as Props
     import Transmutable.Html as H exposing (Html)
     import Transmutable.Html.Attributes as A
 
-    init : {{INPUT_TYPE}} -> Html msg
-    init a =
+    type alias Props =
+        {{PROPS_TYPE}}
+
+    encoder : Props -> Encode.Value
+    encoder props =
+        {{PROPS_ENCODER}}
+
+    init : Props -> Html msg
+    init props =
         let
-            flags = Encode.{{FLAG_ENCODER}} a
+            propJson = Encode.encode 0 (encoder props)
         in
         H.span []
             [ H.span [ A.class "prettynice-component-{{NAME}}" ] []
@@ -251,7 +267,7 @@ toServerComponent name flagType =
                     $__components["{{NAME}}"].push(
                         Gren.Gen.Components.{{NAME}}.init({
                             node: document.currentScript.parentNode.getElementsByClassName("prettynice-component-{{NAME}}")[0],
-                            flags: \""" ++ flags ++ \""",
+                            flags: \""" ++ propJson ++ \""",
                         })
                     );
                     \"""
@@ -259,5 +275,5 @@ toServerComponent name flagType =
             ]
     """
         |> String.replace "{{NAME}}" name
-        |> String.replace "{{INPUT_TYPE}}" (Flags.typeName flagType)
-        |> String.replace "{{FLAG_ENCODER}}" (Flags.encoderName flagType)
+        |> String.replace "{{PROPS_TYPE}}" (Props.typeSig props)
+        |> String.replace "{{PROPS_ENCODER}}" (Props.encoder props)

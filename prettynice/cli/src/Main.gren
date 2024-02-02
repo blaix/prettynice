@@ -220,7 +220,7 @@ genServerComponent bundle =
                     String.replace "{{COMPONENT}}" def.baseName
                         -- TODO: improve error message
                         """
-                        Oops! I can't find props for the {{COMPONENT}} component.
+                        Oops! I can't parse props for the {{COMPONENT}} component.
                            I'm looking for a type alias that looks like this:
 
                                 type alias Props =

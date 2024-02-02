@@ -12,8 +12,12 @@ import Set
 
 type FieldType
     = IntType
+    | FloatType
     | StringType
-    -- TODO: more types
+    | BoolType
+    -- TODO: MaybeType
+    -- TODO: ArrayType
+    -- TODO: RecordType
 
 
 type alias Props =
@@ -46,8 +50,14 @@ fieldTypeToString fieldType =
         IntType ->
             "Int"
 
+        FloatType ->
+            "Float"
+
         StringType ->
             "String"
+        
+        BoolType ->
+            "Bool"
 
 
 encoder : Props -> String
@@ -87,9 +97,15 @@ fieldTypeToEncoder fieldType =
     case fieldType of
         IntType ->
             "int"
+
+        FloatType ->
+            "float"
         
         StringType ->
             "string"
+
+        BoolType ->
+            "bool"
 
 
 parser : Parser (Dict String FieldType)
@@ -122,10 +138,9 @@ parser =
                     |. P.spaces
                     |= P.oneOf
                         [ P.succeed IntType |. P.keyword "Int"
+                        , P.succeed FloatType |. P.keyword "Float"
                         , P.succeed StringType |. P.keyword "String"
-                        -- TODO: Bool, Float, Maybe, Array, Dict
-                        -- Maybe: records and custom types.
-                        -- Might want to wait for gren-in-gren compiler packages.
+                        , P.succeed BoolType |. P.keyword "Bool"
                         ]
             }
 

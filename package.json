@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "gren-lang": "^0.3.0"
+  }
+}

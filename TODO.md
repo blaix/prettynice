@@ -9,7 +9,7 @@
 - [X] Client-side ports
 - [X] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
 - [X] Improve component codegen with a required Props record
-- [ ] More supported component prop types
+- [X] More supported component prop types
 - [ ] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [ ] Justfile and entr for build commands and reload local dev server on file change?

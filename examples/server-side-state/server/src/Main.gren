@@ -1,14 +1,14 @@
 module Main exposing (main)
 
-import Msg exposing (Msg(..))
 import Node exposing (Environment)
 import Prettynice
-import Prettynice.Response as Response
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
 import Stream exposing (Stream)
 import Task
 
 
-main : Prettynice.Program Model
+main : Prettynice.Program Model Msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -24,7 +24,7 @@ type alias Model =
     }
 
 
-init : Environment -> Prettynice.Init Model
+init : Environment -> Prettynice.Init Model Msg
 init env =
     Prettynice.startProgram
         { host = "0.0.0.0"
@@ -35,6 +35,10 @@ init env =
             , stdout = env.stdout
             }
         }
+
+
+type Msg
+    = GotRequest Request Response
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }

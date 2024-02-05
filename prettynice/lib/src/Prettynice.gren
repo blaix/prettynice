@@ -10,7 +10,6 @@ import FileSystem
 import HttpServer as Http exposing (ServerError(..), Method(..))
 import HttpServer.Response as HttpResponse 
 import Init
-import Msg as AppMsg -- TODO: helpful error if this isn't available
 import Node exposing (Environment, Program)
 import Prettynice.Request exposing (Request)
 import Prettynice.Response exposing (Response)
@@ -22,12 +21,12 @@ import Transmutable.Html.Attributes as A
 import Url exposing (Url)
 
 
-type alias Program appModel =
-    Node.Program (Model appModel) (Msg appModel)
+type alias Program appModel appMsg =
+    Node.Program (Model appModel) (Msg appModel appMsg)
 
 
-type alias Init appModel =
-    Init.Task { model : Model appModel, command : Cmd (Msg appModel) }
+type alias Init appModel appMsg =
+    Init.Task { model : Model appModel, command : Cmd (Msg appModel appMsg) }
 
 
 type alias Model appModel =
@@ -50,16 +49,16 @@ type alias Config appModel =
     }
 
 
-type alias AppUpdate appModel =
-    AppMsg.Msg -> appModel -> { model : appModel, command : Cmd AppMsg.Msg }
+type alias AppUpdate appModel appMsg =
+    appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
 
 
 defineProgram :
-    { init : Environment -> Init appModel
-    , update : AppUpdate appModel
-    , subscriptions : appModel -> Sub AppMsg.Msg
-    , onRequest : Request -> Response -> AppMsg.Msg
-    } -> Program appModel
+    { init : Environment -> Init appModel appMsg
+    , update : AppUpdate appModel appMsg
+    , subscriptions : appModel -> Sub appMsg
+    , onRequest : Request -> Response -> appMsg
+    } -> Program appModel appMsg
 defineProgram app =
     Node.defineProgram
         { init = app.init
@@ -68,7 +67,7 @@ defineProgram app =
         }
 
 
-startProgram : Config appModel -> Init appModel
+startProgram : Config appModel -> Init appModel appMsg
 startProgram config =
     Init.await Http.initialize <| \serverPermission ->
         Init.await FileSystem.initialize <| \fsPermission ->
@@ -92,19 +91,19 @@ startProgram config =
                 }
 
 
-type Msg appModel
+type Msg appModel appMsg
     = CreateServerResult (Result Http.ServerError Http.Server)
     | GotRequest Http.Request HttpResponse.Response
-    | ResponseReady Request { model : appModel, command : Cmd (Msg appModel) }
-    | MsgToApp AppMsg.Msg
+    | ResponseReady Request { model : appModel, command : Cmd (Msg appModel appMsg) }
+    | MsgToApp appMsg
 
 
 update : 
-    AppUpdate appModel
-    -> (Request -> Response -> AppMsg.Msg)
-    -> Msg appModel
+    AppUpdate appModel appMsg
+    -> (Request -> Response -> appMsg)
+    -> Msg appModel appMsg
     -> Model appModel
-    -> { model : Model appModel, command : Cmd (Msg appModel) }
+    -> { model : Model appModel, command : Cmd (Msg appModel appMsg) }
 update appUpdate onRequest msg model =
     case msg of
         CreateServerResult result ->
@@ -190,7 +189,7 @@ update appUpdate onRequest msg model =
 -- SUBS
 
 
-subscriptions : (appModel -> Sub AppMsg.Msg) -> Model appModel -> Sub (Msg appModel)
+subscriptions : (appModel -> Sub appMsg) -> Model appModel -> Sub (Msg appModel appMsg)
 subscriptions appSubs model =
     case model.server of
         Just server ->

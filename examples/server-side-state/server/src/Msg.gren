@@ -1,8 +1,0 @@
-module Msg exposing (Msg(..))
-
-import Prettynice.Request exposing (Request)
-import Prettynice.Response exposing (Response)
-
-
-type Msg
-    = GotRequest Request Response

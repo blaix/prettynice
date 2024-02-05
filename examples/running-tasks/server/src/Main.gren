@@ -2,11 +2,11 @@ module Main exposing (main)
 
 import Bytes exposing (Bytes) 
 import Bytes.Decode as Decode
-import FileSystem exposing (ReadableFileHandle)
 import Init
-import Msg exposing (FileError(..), Msg(..))
+import FileSystem exposing (AccessError, ReadableFileHandle, UnknownFileSystemError)
 import Node exposing (Environment)
 import Prettynice
+import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Body(..), Response)
 import Task exposing (Task)
 
@@ -15,7 +15,7 @@ type alias Model =
     { fsPermission : FileSystem.Permission }
 
 
-main : Prettynice.Program Model
+main : Prettynice.Program Model Msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -25,7 +25,7 @@ main =
         }
 
 
-init : Environment -> Prettynice.Init Model
+init : Environment -> Prettynice.Init Model Msg
 init env =
     Init.await FileSystem.initialize <| \fsPermission ->
         Prettynice.startProgram
@@ -35,6 +35,17 @@ init env =
             , model = 
                 { fsPermission = fsPermission }
             }
+
+
+type FileError
+    = OpenError AccessError
+    | ReadError UnknownFileSystemError
+    | DecodeError
+
+
+type Msg
+    = GotRequest Request Response
+    | GotReadResult Response (Result FileError String)
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }

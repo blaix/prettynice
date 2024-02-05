@@ -1,8 +1,8 @@
 port module Main exposing (main)
 
-import Msg exposing (Msg(..))
 import Node exposing (Environment)
 import Prettynice
+import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
 import Random
 
@@ -12,7 +12,7 @@ type alias Model =
     }
 
 
-main : Prettynice.Program Model
+main : Prettynice.Program Model Msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -22,7 +22,7 @@ main =
         }
 
 
-init : Environment -> Prettynice.Init Model
+init : Environment -> Prettynice.Init Model Msg
 init env =
     Prettynice.startProgram
         { host = "0.0.0.0"
@@ -30,6 +30,11 @@ init env =
         , env = env
         , model = { response = Nothing }
         }
+
+
+type Msg
+    = GotRequest Request Response
+    | GotUuid Response String
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }

@@ -1,9 +1,9 @@
 module Main exposing (main)
 
 import Handlers.RandomNumber as RandomNumber
-import Msg exposing (Msg(..))
 import Node exposing (Environment)
 import Prettynice
+import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
 import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
@@ -23,7 +23,7 @@ type Handler
     = RandomNumber RandomNumber.Model
 
 
-main : Prettynice.Program Model
+main : Prettynice.Program Model Msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -33,7 +33,7 @@ main =
         }
 
 
-init : Environment -> Prettynice.Init Model
+init : Environment -> Prettynice.Init Model Msg
 init env =
     Prettynice.startProgram
         { host = "0.0.0.0"
@@ -41,6 +41,11 @@ init env =
         , env = env
         , model = { handler = Nothing }
         }
+
+
+type Msg
+    = GotRequest Request Response
+    | RandomNumberMsg RandomNumber.Msg
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }

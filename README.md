@@ -2,9 +2,9 @@
 
 A purely functional, fully type-safe, full-stack web framework for [Gren](https://gren-lang.org/).
 
-**Still in early proof of concept stage!**
+**Things are still very early!**
 
-Currently working on buttoning things up and packaging this into something installable.
+All the [examples](/examples) work in the conext of this repo, but still working on buttoning things up and packaging this into something installable.
 
 Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zulip](https://gren.zulipchat.com/) for updates.
 

@@ -104,8 +104,10 @@ type alias Props =
 -- A corresponding init will be generated server-side
 -- that takes Props and renders the js for this component.
 init : Props -> { model : Model, command : Cmd Msg }
-init start =
-    { model = start, command = Cmd.none }
+init props =
+    { model = { model | count = props.start }
+    , command = Cmd.none
+    }
 
 type Msg
     = Increment

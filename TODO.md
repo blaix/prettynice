@@ -24,6 +24,7 @@
 - [ ] Try a FE component that communicates with the server with Msg/update
 - [ ] Remove unused code
 - [ ] Replace build.sh with prettynice cli commands (see joeybright/gren-args)
+- [ ] Friendly cli interface and output (with glow?)
 - [ ] Release a pre-1.0 alpha for testing/feedback?
 - [ ] e2e tests (Gren package that uses [playwright lib](https://playwright.dev/docs/library) through ports?)
 - [ ] Components with custom js and ports? (consider Mario's elm-pkg-js proposal)
@@ -71,4 +72,3 @@
     - Running services: https://www.jetpack.io/devbox/docs/guides/services/
     - Generating a dockerfile: https://www.jetpack.io/devbox/docs/cli_reference/devbox_generate_dockerfile/
 - [ ] Prometheus for server metrics with Caddy? https://caddyserver.com/docs/metrics
-- [ ] Look at https://charm.sh/ for nicer cli interface. Especially glow.

@@ -10,7 +10,7 @@
 - [X] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
 - [X] Improve component codegen with a required Props record
 - [X] More supported component prop types
-- [ ] Change examples to use local package path for prettynice instead of src in gren.json
+- [X] Change examples to use local package path for prettynice instead of src in gren.json
 - [ ] Now that I don't need to import the app's Msg, can I merge SimpleRouter into Prettynice to remove the duplicated logic?
 - [ ] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [ ] Justfile and entr for build commands and reload local dev server on file change?
@@ -24,6 +24,7 @@
 - [ ] Try a FE component that communicates with the server with Msg/update
 - [ ] Remove unused code
 - [ ] Replace build.sh with prettynice cli commands (see joeybright/gren-args)
+- [ ] Release a pre-1.0 alpha for testing/feedback?
 - [ ] e2e tests (Gren package that uses [playwright lib](https://playwright.dev/docs/library) through ports?)
 - [ ] Components with custom js and ports? (consider Mario's elm-pkg-js proposal)
 - [ ] start migrating pencils

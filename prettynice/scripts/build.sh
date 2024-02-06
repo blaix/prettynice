@@ -7,20 +7,35 @@ set -eu
 EXAMPLE_ROOT="$(pwd)"
 PROJECT_ROOT="${EXAMPLE_ROOT}/../.." 
 
-rm -r {client,server}/gen/* &> /dev/null || printf ""
-rm -r dist/* &> /dev/null || printf ""
+# clean slate
+if [[ -d dist ]]; then
+    rm -rf dist
+fi
+if [[ -d server/.prettynice ]]; then
+    rm -rf server/.prettynice
+fi
+if [[ -d client/.prettynice ]]; then
+    rm -rf client/.prettynice
+fi
 
+# expected directories
+mkdir -p public
 mkdir -p dist/client
 mkdir -p dist/server
-mkdir -p server/gen
+mkdir -p server/.prettynice/Prettynice
+mkdir -p server/.prettynice/Gen/Components
 
 # public assets
-cp -r public/* dist/client/ &> /dev/null || printf "No public assets"
+if [[ "$(ls public/)" ]]; then 
+    cp -r public/* dist/client/
+fi
 
 # build components
 if [[ -d client/src/Components ]]; then
   if [[ "$(ls client/src/Components)" ]]; then
-    mkdir -p {client,server}/gen/Gen/Components
+    mkdir -p client/.prettynice/Prettynice
+    mkdir -p client/.prettynice/Gen/Components
+    cp "$PROJECT_ROOT/src/Prettynice/Component.gren" client/.prettynice/Prettynice/
     cd $PROJECT_ROOT/prettynice/cli
     npm install
     npx gren make src/Main.gren
@@ -29,9 +44,11 @@ if [[ -d client/src/Components ]]; then
     cd $EXAMPLE_ROOT
     node $PROJECT_ROOT/prettynice/cli/build/app
     cd $EXAMPLE_ROOT/client
-    npx gren make $(find gen/Gen/Components -name "*.gren") --output=../dist/client/main.js
+    npx gren make $(find .prettynice/Gen/Components -name "*.gren") --output=../dist/client/main.js
     # TODO: nested components+ports (e.g. Components/My/Component.gren/js)
-    cp src/Components/*.js ../dist/client/ &> /dev/null || printf "No component ports."
+    if [[ "$(ls src/Components/*.js)" ]]; then
+        cp src/Components/*.js ../dist/client/
+    fi
   fi
 fi
 
@@ -41,4 +58,4 @@ if [[ -f src/ports.js ]]; then
     cp src/ports.js ../dist/server/ports.js
 fi
 npx gren make src/Main.gren --output=../dist/server/main.js
-cp $PROJECT_ROOT/prettynice/lib/src/server.js ../dist/server/app
+cp $PROJECT_ROOT/src/server.js ../dist/server/app

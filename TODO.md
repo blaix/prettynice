@@ -11,7 +11,6 @@
 - [X] Improve component codegen with a required Props record
 - [X] More supported component prop types
 - [X] Change examples to use local package path for prettynice instead of src in gren.json
-- [ ] Now that I don't need to import the app's Msg, can I merge SimpleRouter into Prettynice to remove the duplicated logic?
 - [ ] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [ ] Justfile and entr for build commands and reload local dev server on file change?
 - [ ] just [example name] to run an example (cd examples/[name] && npm install && npm start)
@@ -66,6 +65,7 @@
 
 ## Open questions and future ideas
 
+- [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Package with bun? https://codeberg.org/blaix/public-wiki/wiki/Gren-snippets#compile-standalone-executable
 - [ ] Postmark for email? https://postmarkapp.com/ (Mario from Lamdera recommends)
 - [ ] Consider devbox: https://www.jetpack.io/devbox/:

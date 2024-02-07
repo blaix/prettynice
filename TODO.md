@@ -11,7 +11,7 @@
 - [X] Improve component codegen with a required Props record
 - [X] More supported component prop types
 - [X] Change examples to use local package path for prettynice instead of src in gren.json
-- [ ] Clean up all the scattered gren.json, package.json, node_modules, etc.
+- [X] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [ ] Justfile and entr for build commands and reload local dev server on file change?
 - [ ] just [example name] to run an example (cd examples/[name] && npm install && npm start)
 - [ ] Websockets example? (https://guide.elm-lang.org/interop/ports)

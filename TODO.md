@@ -20,14 +20,14 @@
   - [ ] Think about HTMX
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
-- [ ] New project generator with variants for:
+- [ ] Improve cli interface and server startup output (with charm.sh/gum?)
+- [ ] New project generator (charm.sh/gum?) with variants for:
   - [ ] Single file - Router
   - [ ] Single File - Program
   - [ ] Multi-file - Router
   - [ ] Multi-file - Program
 - [ ] Document how to use framework without an official package released
 - [ ] === Pre-release for testing / feedback ===
-- [ ] Improve cli interface and server startup output (with glow?)
 - [ ] Unit Tests
 - [ ] Start migrating pencils.dev
 - [ ] API Docs (reminder: use gren-doc-preview):

@@ -376,13 +376,11 @@ and you'll need to manually [install gren](https://gren-lang.org/install).
 See directories under [`examples/`](/examples).
 You can `cd` to a directory and run `npm start`, or use [`just`](https://github.com/casey/just) from the root of the repo:
 
-Run a single example with `just example [EXAMPLE NAME]` (e.g. `just example hello-world`).
-
-Run an example and reload the server on file changes with `just watch [EXAMPLE NAME]`.
-You'll still need to manually refresh the web page (this is a feature).
-
-Iterate through all the examples with `just examples`.
-Ctrl-c to kill the current example and start the next one.
-Great for testing.
+* Run a single example with `just example [EXAMPLE NAME]` (e.g. `just example hello-world`).
+* Run an example and reload the server on file changes with `just watch [EXAMPLE NAME]`.
+  You'll still need to manually refresh the web page (this is a feature).
+* Iterate through all the examples with `just examples`.
+  Ctrl-c to kill the current example and start the next one.
+  Great for testing.
 
 See [`Justfile`](/Justfile) for details.

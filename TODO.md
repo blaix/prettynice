@@ -13,7 +13,7 @@
 - [X] Change examples to use local package path for prettynice instead of src in gren.json
 - [X] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [X] Justfile and entr for running/watching examples
-- [ ] Add a form example (see elm & elm-pages form APIs, and https://kit.svelte.dev/docs/form-actions)
+- [ ] Add a form example (think about htmx) (see elm[-pages] form APIs, and https://kit.svelte.dev/docs/form-actions)
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] New project generator with variants for:

@@ -13,61 +13,40 @@
 - [X] Change examples to use local package path for prettynice instead of src in gren.json
 - [X] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [X] Justfile and entr for running/watching examples
-- [ ] Websockets example? (https://guide.elm-lang.org/interop/ports)
-- [ ] SSE example?
-- [ ] Document how to use framework before a package is released
-- [ ] Document how to actually compile and run the server
-- [ ] Update gren guide? Understanding the framework requires an understanding of Gren, but that still requires an understanding of elm.
-- [ ] Built-in handlers for common use-cases? At least a NotFound handler.
-- [ ] Try a FE component that communicates with the server with Msg/update
-- [ ] Remove unused code
-- [ ] Replace build.sh with prettynice cli commands (see joeybright/gren-args)
-- [ ] Friendly cli interface and server startup output (with glow?)
-- [ ] Release a pre-1.0 alpha for testing/feedback?
-- [ ] e2e tests (Gren package that uses [playwright lib](https://playwright.dev/docs/library) through ports?)
-- [ ] Components with custom js and ports? (consider Mario's elm-pkg-js proposal)
-- [ ] start migrating pencils
-- [ ] Support more loader types in codegen
-- [ ] Model an example page that submits a form to the server like sveltekit: https://kit.svelte.dev/docs/form-actions
+- [ ] Add a form example (see elm & elm-pages form APIs, and https://kit.svelte.dev/docs/form-actions)
+- [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
+- [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
+- [ ] New project generator with variants for:
+  - [ ] Single file - Router
+  - [ ] Single File - Program
+  - [ ] Multi-file - Router
+  - [ ] Multi-file - Program
+- [ ] Document how to use framework without an official package released
+- [ ] === Pre-release for testing / feedback ===
+- [ ] Improve cli interface and server startup output (with glow?)
 - [ ] Unit Tests
-- [ ] Handle TODO comments in code
-- [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
-- [ ] Docs (reminder: use gren-doc-preview):
-  - [ ] API
-  - [ ] Adding handlers
-  - [ ] Using components
-  - [ ] Forms
-  - [ ] Deployment
-- [ ] Review README
+- [ ] Start migrating pencils.dev
+- [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] Decide on a license
-- [ ] === release 0.1 ===
-- [ ] doc site
-- [ ] blaix.com post
-- [ ] cli command to codegen new handlers
-- [ ] response types that depend on request types (e.g. 404 that returns html, string, or json)
-- [ ] Revisit runtime client/server communication. Thinking about HTMX, SSE, websockets, and ports.
-- [ ] === release 0.2? ===
-- [ ] After gren-in-gren: Improve component codegen
-- [ ] Improved form API?
-- [ ] SSR + hydration for components? Is there value?
-- [ ] Database interaction ideas:
-  - [ ] Use gren Process API:
-      ```
-      $ sqlite3 db.sqlite "select * from cats" # or psql?
-      1|scampers|100
-      2|gameboy|1
-      3|kylo|5
-      ```
-  - [ ] or use ports to map records and queries to prisma?
-    - This gives web view and migrations for "free"
-      (but maybe gren api for these would be better)
+- [ ] === release 1.0 ===
+- [ ] Doc site. (including deployment). Flesh out gren guide with application info?
+- [ ] Post:
+  - [ ] blog.blaix.com
+  - [ ] zulip
+  - [ ] mastodon
+  - [ ] discord
+- [ ] Experiment with HTMX integration:
+  - [ ] Server-side components?
+  - [ ] toBackend/toFrontend messages?
+- [ ] Support more FieldTypes in Prettynice.Props (Array, Maybe, Records)
+- [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
+- [ ] Responses that align with the request content-type (e.g. 404 that returns html, string, or json depending on the request)
 
 ## Open questions and future ideas
 
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
-- [ ] Package with bun? https://codeberg.org/blaix/public-wiki/wiki/Gren-snippets#compile-standalone-executable
-- [ ] Postmark for email? https://postmarkapp.com/ (Mario from Lamdera recommends)
-- [ ] Consider devbox: https://www.jetpack.io/devbox/:
-    - Running services: https://www.jetpack.io/devbox/docs/guides/services/
-    - Generating a dockerfile: https://www.jetpack.io/devbox/docs/cli_reference/devbox_generate_dockerfile/
-- [ ] Prometheus for server metrics with Caddy? https://caddyserver.com/docs/metrics
+- [ ] Persistence? Database interaction? (Ports/Prisma, Gren Process API, TCP protocol, actual adapter?)
+- [ ] SSE? Websockets?
+- [ ] SSR + hydration for components? Is there value?
+- [ ] Emails? (Mario from Lamdera recommends https://postmarkapp.com/)
+- [ ] Metrics? Prometheus (integrates with Caddy https://caddyserver.com/docs/metrics)?

@@ -363,3 +363,23 @@ Goals and anti-goals are driven by the DX and UX of this project.
 * [Fresh](https://fresh.deno.dev/): Static HTML with islands of interactivity.
 * [Rails](https://rubyonrails.org/): Developer happiness. Batteries included.
 * [Elm Land](https://elm.land/): The good parts of Rails (guides & conventions, beginner-friendliness, batteries included) applied to a type-safe, purely functional language.
+
+## Local dev
+
+If you're using nix, there's a [`shell.nix`](/shell.nix).
+
+If not, take a look at that file for things you'll need to install (you can ignore `bashInteractive`),
+and you'll need to manually [install gren](https://gren-lang.org/install).
+
+### Running examples
+
+See directories under [`examples/`](/examples).
+
+You can run a single example with `just example [EXAMPLE NAME]` (e.g. `just example hello-world`).
+
+You can run an example and reload the server on file changes with `just watch [EXAMPLE NAME]`.
+You'll still need to manually refresh the web page (this is a feature).
+
+You can iterate through all the examples with `just examples`.
+Ctrl-c to kill the current example and start the next one.
+Great for testing.

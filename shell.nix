@@ -2,6 +2,9 @@ with import <nixpkgs> {};
 mkShell {
   buildInputs = [
     bashInteractive
+    entr
+    fd
+    just
     nodejs_18
   ];
   shellHook = ''

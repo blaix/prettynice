@@ -16,7 +16,7 @@
 - [ ] Add a form POST example:
   - [ ] Should a Form API be part of the 1.0 release or come later?
   - [ ] Look at elm-pages and other elm Form APIs
-  - [ ] Look at https://kit.svelte.dev/docs/form-actions)
+  - [ ] Look at https://kit.svelte.dev/docs/form-actions
   - [ ] Think about HTMX
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)

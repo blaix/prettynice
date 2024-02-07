@@ -37,7 +37,6 @@ if [[ -d client/src/Components ]]; then
     mkdir -p client/.prettynice/Gen/Components
     cp "$PROJECT_ROOT/src/Prettynice/Component.gren" client/.prettynice/Prettynice/
     cd $PROJECT_ROOT/prettynice/cli
-    npm install
     npx gren make src/Main.gren
     mkdir -p build
     mv app build/

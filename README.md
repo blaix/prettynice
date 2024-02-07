@@ -366,10 +366,11 @@ Goals and anti-goals are driven by the DX and UX of this project.
 
 ## Local dev
 
-If you're using nix, there's a [`shell.nix`](/shell.nix).
+If you're using nix, there's a [`shell.nix`](/shell.nix) to start a nix shell with everything you need.
 
-If not, take a look at that file for things you'll need to install (you can ignore `bashInteractive`),
-and you'll need to manually [install gren](https://gren-lang.org/install).
+Otherwise, you'll need to manually [install gren](https://gren-lang.org/install),
+and then look at the `buildInputs` list in `shell.nix` for other things you'll need
+(you can ignore `bashInteractive`),
 
 ### Running examples
 

@@ -13,14 +13,12 @@
 - [X] Change examples to use local package path for prettynice instead of src in gren.json
 - [X] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [X] Justfile and entr for running/watching examples
-- [ ] Add a form POST example:
-  - [ ] Should a Form API be part of the 1.0 release or come later?
-  - [ ] Look at elm-pages and other elm Form APIs
-  - [ ] Look at https://kit.svelte.dev/docs/form-actions
-  - [ ] Think about HTMX
+- [X] Add a form POST example
+- [ ] Add a redirect example
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
+- [ ] Use HttpServer.requestInfo for request logging in the terminal.
 - [ ] New project generator (charm.sh/gum?) with variants for:
   - [ ] Single file - Router
   - [ ] Single File - Program
@@ -40,8 +38,10 @@
   - [ ] mastodon
   - [ ] discord
 - [ ] Experiment with HTMX integration:
+  - [ ] Form submissions?
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
+- [ ] Handle multipart/form-data and file uploads
 - [ ] Support more FieldTypes in Prettynice.Props (Array, Maybe, Records)
 - [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
 - [ ] Responses that align with the request content-type (e.g. 404 that returns html, string, or json depending on the request)

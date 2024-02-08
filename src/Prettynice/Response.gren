@@ -72,10 +72,13 @@ setBody bodyVariant response =
                 HtmlBody { title, body } ->
                     { contentType = "text/html"
                     , rawBody =
+                        ( H.toString H.doctype ) ++ 
                         ( H.toString
                             ( H.html [ A.lang "en" ]
                                 [ H.head []
-                                    [ H.node "script" [ A.src "/main.js" ] []
+                                    [ H.meta [ A.charset "utf-8" ]
+                                    , H.meta [ A.name "viewport", A.content "width=device-width, initial-scale=1.0" ]
+                                    , H.node "script" [ A.src "/main.js" ] []
                                     , H.title [ H.text title ]
                                     ]
                                 , H.body [] [ body ]

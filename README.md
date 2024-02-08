@@ -214,6 +214,62 @@ update msg model =
 
 See [examples/client-side-ports](examples/client-side-ports).
 
+## Forms
+
+Normal `<form>` elements with `action="post"` will have the data available at `request.formData`:
+
+It is a `FormData` value which is a mapping of field names to arrays of values.
+
+You can use `get` to get a `Maybe String` of the first value associated with a field name,
+or `getAll` to get an `Array String` of all values associated with the a field name.
+For example:
+
+```elm
+viewForm =
+    H.form 
+        [ A.method "post", A.action "/submission" ]
+        [ H.div []
+            [ H.label [] 
+                [ H.text "Name: " 
+                , H.input [ A.type_ "text", A.name "name" ] []
+                ]
+            ]
+        , H.div []
+            [ H.text "Hobbies: "
+            , H.label []
+                [ H.text "Clocks"
+                , checkbox "hobbies" "clocks"
+                ]
+            , H.label []
+                [ H.text "Empathy"
+                , checkbox "hobbies" "empathy"
+                ]
+            , H.label []
+                [ H.text "Bugs"
+                , checkbox "hobbies" "bugs"
+                ]
+            ]
+        , H.div []
+            [ H.input [ A.type_ "submit", A.value "Submit" ] []
+            ]
+        ]
+
+viewResult request =
+    let
+        name =
+            FormData.get "name" request.formData
+                |> Maybe.withDefault "Mr. E"
+
+        hobbies =
+            FormData.getAll "hobbies" request.formData
+                |> String.join ", "
+    in
+    H.text <|
+        name ++ " likes: " ++ hobbies
+``` 
+
+See [examples/form-data](/examples/form-data) for a full working example.
+
 ## More Control
 
 The examples above use `Prettynice.SimpleRouter` to define a router, and let the framework handle wiring it up to a full program.

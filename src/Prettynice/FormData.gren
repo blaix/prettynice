@@ -1,0 +1,53 @@
+module Prettynice.FormData exposing
+    ( FormData
+    , fromString
+    , get
+    , getAll
+    )
+
+import Dict exposing (Dict)
+
+
+type alias FormData =
+    Dict String (Array String)
+
+
+fromString : String -> FormData
+fromString body =
+    body
+        |> String.split "&"
+        |> Array.map (String.split "=")
+        |> Array.filterMap
+            (\field ->
+                case field of
+                    [ name, value ] ->
+                        Just { name = name, value = value }
+
+                    _ ->
+                        Nothing
+            )
+        |> Array.foldl
+            (\field formData ->
+                let
+                    values =
+                        Dict.get field.name formData
+                            |> Maybe.withDefault []
+                            |> Array.pushLast field.value
+                in
+                Dict.insert field.name values formData
+            )
+            Dict.empty
+
+
+get : String -> FormData -> Maybe String
+get key data =
+    data
+        |> getAll key
+        |> Array.first 
+
+
+getAll : String -> FormData -> Array String
+getAll key data =
+    data
+        |> Dict.get key
+        |> Maybe.withDefault []

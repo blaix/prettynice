@@ -30,6 +30,10 @@ if [[ "$(ls public/)" ]]; then
     cp -r public/* dist/client/
 fi
 
+# prevent a 404 error if there's no client-side js to build
+# (the server renders a script tag no matter what. maybe fix that?)
+touch dist/client/main.js
+
 # build components
 if [[ -d client/src/Components ]]; then
   if [[ "$(ls client/src/Components)" ]]; then

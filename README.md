@@ -268,7 +268,7 @@ viewResult request =
         name ++ " likes: " ++ hobbies
 ``` 
 
-See [examples/form-data](/examples/form-data) for a full working example.
+See [examples/forms](/examples/forms) for a full working example.
 
 ## More Control
 

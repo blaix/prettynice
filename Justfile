@@ -11,7 +11,7 @@ example NAME:
 
 watch NAME:
   echo -e "\n{{green}}==== WATCHING EXAMPLE: {{NAME}} ===={{nc}}\n"
-  cd examples/{{NAME}} && fd ".+\.(gren|js)$" | entr -r npm start
+  cd examples/{{NAME}} && fd ".+\.(gren|js|sh)$" ../.. | entr -r npm start
 
 examples:
   for example in `ls examples`; do just example $example; done

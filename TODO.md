@@ -41,6 +41,7 @@
   - [ ] Form submissions?
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
+- [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
 - [ ] Handle multipart/form-data and file uploads
 - [ ] Support more FieldTypes in Prettynice.Props (Array, Maybe, Records)
 - [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
@@ -50,6 +51,7 @@
 
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Persistence? Database interaction? (Ports/Prisma, Gren Process API, TCP protocol, actual adapter?)
+- [ ] ^ Keep an eye on the [elm->pgsql](https://discourse.elm-lang.org/t/elm-postgres-and-nothing-inbetween/9557/1) stuff by @damir (watch elm discourse and Incremental Elm discord).
 - [ ] SSE? Websockets?
 - [ ] SSR + hydration for components? Is there value?
 - [ ] Emails? (Mario from Lamdera recommends https://postmarkapp.com/)

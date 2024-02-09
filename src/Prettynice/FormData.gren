@@ -6,6 +6,7 @@ module Prettynice.FormData exposing
     )
 
 import Dict exposing (Dict)
+import Url
 
 
 type alias FormData =
@@ -21,7 +22,7 @@ fromString body =
             (\field ->
                 case field of
                     [ name, value ] ->
-                        Just { name = name, value = value }
+                        decode name value
 
                     _ ->
                         Nothing
@@ -51,3 +52,12 @@ getAll key data =
     data
         |> Dict.get key
         |> Maybe.withDefault []
+
+
+decode : String -> String -> Maybe { name : String, value : String }
+decode name value =
+    value
+        |> String.replace "+" " "
+        |> Url.percentDecode
+        |> Maybe.map 
+            (\v -> { name = name, value = v })

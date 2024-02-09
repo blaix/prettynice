@@ -14,10 +14,7 @@
 - [X] Clean up all the scattered gren.json, package.json, node_modules, etc.
 - [X] Justfile and entr for running/watching examples
 - [X] Add a form POST example
-- [ ] Special characters in form data (spaces are converted to "+", special characters are converted to ASCII HEX)
-- [ ] Add a redirect example
-- [ ] Public assets example
-- [ ] UI customization example (think about taking this further. e.g. integrating https://flowbite.com/)
+- [X] Special characters in form data
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
@@ -40,10 +37,14 @@
   - [ ] zulip
   - [ ] mastodon
   - [ ] discord
+- [ ] Think about CSS, post-processing, UI lib, maybe https://flowbite.com/
 - [ ] Experiment with HTMX integration:
   - [ ] Form submissions?
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
+- [ ] Sessions
+- [ ] Cookies
+- [ ] Redirects
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
 - [ ] Handle multipart/form-data and file uploads
 - [ ] Support more FieldTypes in Prettynice.Props (Array, Maybe, Records)

@@ -64,11 +64,11 @@ For example:
 ```elm
 Response.sendHtml
     { title = "Home"
+    , head = []
     , body =
-        div []
-            [ h1 [] [ text "Welcome!" ]
-            , p [] [ text "It's a website!" ]
-            ]
+        [ h1 [] [ text "Welcome!" ]
+        , p [] [ text "It's a website!" ]
+        ]
     }
 ```
 
@@ -155,19 +155,18 @@ import Gen.Components.Counter as Counter
 myResponse =
     Response.sendHtml
         { title = "Component Example"
+        , head = []
         , body =
-            div []
-                
-                -- Counter.init takes Props as defined in the Counter component,
-                -- and returns HTML/JS to render the component,
-                -- including automatic encoding of the props.
-                
-                [ p [] [ text "Counter starting at zero:" ]
-                , Counter.init { start = 0 }
-                
-                , p [] [ text "Counter starting at not zero:" ]
-                , Counter.init { start = 123 }
-                ]
+            -- Counter.init takes Props as defined in the Counter component,
+            -- and returns HTML/JS to render the component,
+            -- including automatic encoding of the props.
+            
+            [ p [] [ text "Counter starting at zero:" ]
+            , Counter.init { start = 0 }
+            
+            , p [] [ text "Counter starting at not zero:" ]
+            , Counter.init { start = 123 }
+            ]
     }
 ```
 
@@ -269,6 +268,16 @@ viewResult request =
 ``` 
 
 See [examples/forms](/examples/forms) for a full working example.
+
+## Customizing <head>
+
+If you want to add style sheets or other tags to head, `sendHtml` accepts an
+array of `Html` elements (same as `body`) that will be added to the <head> tag
+alongside the built-in Prettynice head tags:
+
+```elm
+-- TODO: example of adding style sheet
+```
 
 ## More Control
 

@@ -28,12 +28,11 @@ For example:
 ```elm
 Response.sendHtml
     { body =
-        Html.div [] 
-            [ MyComponent.init
-                { name = "Justin"
-                , age = 42
-                }
-            ...
+        [ MyComponent.init
+            { name = "Justin"
+            , age = 42
+            }
+        ...
 ```
 
 See [`server/src/Main.gren`](server/src/Main.gren) and [`client/src/Components`](client/src/Components) for working example.

@@ -29,15 +29,15 @@ router : Request -> Response -> Cmd msg
 router _ =
     Response.sendHtml
         { title = "Alert"
+        , head = []
         , body = 
-            H.div []
-                [ H.p []
-                    [ H.text "Message 1: "
-                    , Alert.init { message = "A message from the server." }
-                    ]
-                , H.p []
-                    [ H.text "Message 2: "
-                    , Alert.init { message = "A different message from the server." }
-                    ]
+            [ H.p []
+                [ H.text "Message 1: "
+                , Alert.init { message = "A message from the server." }
                 ]
+            , H.p []
+                [ H.text "Message 2: "
+                , Alert.init { message = "A different message from the server." }
+                ]
+            ]
         }

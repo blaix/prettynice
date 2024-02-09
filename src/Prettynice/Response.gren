@@ -26,7 +26,11 @@ type Response
 
 
 type Body msg
-    = HtmlBody { title : String, body : Html msg }
+    = HtmlBody 
+        { title : String
+        , head : Array (Html msg)
+        , body : Array (Html msg)
+        }
     | JsonBody Json.Encode.Value
     | TextBody String
 
@@ -57,10 +61,13 @@ sendJson json response =
         |> send
 
 
-sendHtml : { title : String, body : Html msg } -> Response -> Cmd msg
-sendHtml { title, body } response =
+sendHtml : 
+    { title : String, head : Array (Html msg), body : Array (Html msg) } 
+    -> Response 
+    -> Cmd msg
+sendHtml { title, head, body } response =
     response
-        |> setBody (HtmlBody { title = title, body = body })
+        |> setBody (HtmlBody { title = title, head = head, body = body })
         |> send
 
 
@@ -69,19 +76,20 @@ setBody bodyVariant response =
     let
         { contentType, rawBody } =
             case bodyVariant of
-                HtmlBody { title, body } ->
+                HtmlBody { title, head, body } ->
                     { contentType = "text/html"
                     , rawBody =
                         ( H.toString H.doctype ) ++ 
                         ( H.toString
                             ( H.html [ A.lang "en" ]
                                 [ H.head []
-                                    [ H.meta [ A.charset "utf-8" ]
-                                    , H.meta [ A.name "viewport", A.content "width=device-width, initial-scale=1.0" ]
-                                    , H.node "script" [ A.src "/main.js" ] []
-                                    , H.title [ H.text title ]
-                                    ]
-                                , H.body [] [ body ]
+                                    ( [ H.meta [ A.charset "utf-8" ]
+                                      , H.meta [ A.name "viewport", A.content "width=device-width, initial-scale=1.0" ]
+                                      , H.node "script" [ A.src "/main.js" ] []
+                                      , H.title [ H.text title ]
+                                      ] ++ head
+                                    )
+                                , H.body [] body
                                 , H.node "script" []
                                     [ H.text <|
                                         """

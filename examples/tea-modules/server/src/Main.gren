@@ -91,11 +91,11 @@ home : Response -> Cmd msg
 home =
     Response.sendHtml
         { title = "Welcome!"
+        , head = []
         , body =
-            H.main_ []
-                [ H.h1 [] [ H.text "Welcome!" ]
-                , H.p [] [ H.a [ A.href "/random" ] [ H.text "Get a random number from a standalone handler module." ] ]
-                ]
+            [ H.h1 [] [ H.text "Welcome!" ]
+            , H.p [] [ H.a [ A.href "/random" ] [ H.text "Get a random number from a standalone handler module." ] ]
+            ]
         }
 
 

@@ -31,3 +31,12 @@ router request response =
 
         _ ->
             Response.sendText "Hello!" response
+
+{- Or you could match on the whole request record and do things like:
+    
+    import HttpServer exposing (Method(..))
+
+    case request of
+        { method = POST, path = [ "login" ] } ->
+            ...
+-}

@@ -34,14 +34,16 @@ router request response =
             response
                 |> Response.sendHtml
                     { title = "Form Submitted"
-                    , body = viewResult request.formData
+                    , head = []
+                    , body = [ viewResult request.formData ]
                     }
         
         _ -> 
             response
                 |> Response.sendHtml
                     { title = "Form example"
-                    , body = viewForm
+                    , head = []
+                    , body = [ viewForm ]
                     }
 
 

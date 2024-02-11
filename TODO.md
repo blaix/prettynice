@@ -27,26 +27,25 @@
   - [ ] Single File - Program
   - [ ] Multi-file - Router
   - [ ] Multi-file - Program
-- [ ] Document how to use framework without an official package released
-- [ ] === Pre-release for testing / feedback ===
+- [ ] Document/Support (via generator?) trying the framework without an official package released
+- [ ] **=== Pre-release for testing / feedback ===**
 - [ ] Unit Tests
 - [ ] Start migrating pencils.dev
 - [ ] API Docs (reminder: use gren-doc-preview):
-- [ ] === release 1.0 ===
+- [ ] **=== release 1.0 ===**
 - [ ] Doc site. (including deployment). Flesh out gren guide with application info?
 - [ ] Post:
   - [ ] blog.blaix.com
   - [ ] zulip
   - [ ] mastodon
   - [ ] discord
-- [ ] Think about CSS post-processing (tailwind?), JS transpiling (swc?), UI lib
+- [ ] Think about CSS post-processing (tailwind?), JS transpiling (swc?), UI lib?
 - [ ] Experiment with HTMX integration / progressive enhancement:
   - [ ] Form submissions?
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
-- [ ] Sessions
-- [ ] Cookies
-- [ ] Redirects
+- [ ] Cookies & Sessions
+- [ ] Redirect helpers?
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
 - [ ] Handle multipart/form-data and file uploads
 - [ ] Support more FieldTypes in Prettynice.Props (Array, Maybe, Records)

@@ -15,8 +15,9 @@
 - [X] Justfile and entr for running/watching examples
 - [X] Add a form POST example
 - [X] Special characters in form data
-- [ ] Custom `<head>` elements
-- [ ] CSS
+- [X] Custom `<head>` elements
+- [ ] Fix static image handling in node `HttpServer`
+- [ ] CSS example
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)

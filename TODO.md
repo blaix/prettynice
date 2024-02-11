@@ -32,7 +32,6 @@
 - [ ] Unit Tests
 - [ ] Start migrating pencils.dev
 - [ ] API Docs (reminder: use gren-doc-preview):
-- [ ] Decide on a license
 - [ ] === release 1.0 ===
 - [ ] Doc site. (including deployment). Flesh out gren guide with application info?
 - [ ] Post:
@@ -40,8 +39,8 @@
   - [ ] zulip
   - [ ] mastodon
   - [ ] discord
-- [ ] Think about CSS, post-processing, UI lib, maybe https://flowbite.com/
-- [ ] Experiment with HTMX integration:
+- [ ] Think about CSS post-processing (tailwind?), JS transpiling (swc?), UI lib
+- [ ] Experiment with HTMX integration / progressive enhancement:
   - [ ] Form submissions?
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?

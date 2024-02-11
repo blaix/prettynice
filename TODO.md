@@ -15,7 +15,7 @@
 - [X] Justfile and entr for running/watching examples
 - [X] Add a form POST example
 - [X] Special characters in form data
-- [ ] Custom <head> elements
+- [ ] Custom `<head>` elements
 - [ ] CSS
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)

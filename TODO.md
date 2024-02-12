@@ -39,7 +39,10 @@
   - [ ] zulip
   - [ ] mastodon
   - [ ] discord
-- [ ] Think about CSS post-processing (tailwind?), JS transpiling (swc?), UI lib?
+- [ ] Think about CSS post-processing:
+  - [ ] tailwind?
+  - [ ] bulma.io looks nice (no js!), maybe worth a UI package
+- [ ] Think about JS transpiling (swc?)
 - [ ] Experiment with HTMX integration / progressive enhancement:
   - [ ] Form submissions?
   - [ ] Server-side components?

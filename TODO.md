@@ -35,7 +35,10 @@
 - [ ] Start migrating pencils.dev
 - [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] **=== release 1.0 ===**
-- [ ] Doc site. (including deployment). Flesh out gren guide with application info?
+- [ ] Doc site. (including deployment).
+- [ ] Flesh out gren guide with application info?:
+  - [ ] Add arrays to pattern matching section (I'm linking to this from my basic router example)
+  - [ ] Add section on creating full applications (in browser and in node?)
 - [ ] Post:
   - [ ] blog.blaix.com
   - [ ] zulip

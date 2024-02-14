@@ -24,6 +24,7 @@
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
 - [ ] Use HttpServer.requestInfo for request logging in the terminal.
+- [ ] production builds with --optimize
 - [ ] New project generator (charm.sh/gum?) with variants for:
   - [ ] Single file - Router
   - [ ] Single File - Program

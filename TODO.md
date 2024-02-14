@@ -16,8 +16,9 @@
 - [X] Add a form POST example
 - [X] Special characters in form data
 - [X] Custom `<head>` elements
-- [ ] Fix static image handling in node `HttpServer`
-- [ ] CSS example
+- [X] Fix static image handling in node `HttpServer`
+- [X] CSS example
+- [ ] Database example using ports?
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)

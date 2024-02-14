@@ -55,15 +55,22 @@ init env =
 
 router : Request -> Response -> Cmd msg
 router request response =
+
+    -- request.path is an array split on "/" for pattern matching.
+    -- See https://gren-lang.org/book/syntax/pattern_matching.html
     case request.path of
+    
+        -- Root url: /
         [] ->
             Response.sendText "Hello!" response
             -- You can also sendHtml and sendJson
             -- see examples/content-types
             
+        -- Url with dynamic section: /hello/Jessica
         [ "hello", name ] ->
             Response.sendText ("Hello, " ++ name) response
 
+        -- All other urls
         _ ->
             response
                 |> Response.setStatus 404

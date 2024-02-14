@@ -375,7 +375,8 @@ See:
 ## Javascript Interop in Node
 
 You can drop a `ports.js` file in `server/src` and export an `init` function to
-connect ports between node and your gren program.
+connect ports between node and your gren program,
+giving you a type-safe interface to the entire node ecosystem.
 
 If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
 
@@ -425,6 +426,8 @@ subscriptions model =
 ```
 
 See [examples/server-side-ports](examples/server-side-ports).
+
+TODO: db example.
 
 ## Goals
 

@@ -8,6 +8,23 @@ All the [examples](/examples) work in the conext of this repo, but still working
 
 Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zulip](https://gren.zulipchat.com/) for updates.
 
+<!-- vim-markdown-toc GFM -->
+
+* [Basic Example](#basic-example)
+* [Server-side HTML](#server-side-html)
+* [Client-side Components](#client-side-components)
+* [Client-side Ports](#client-side-ports)
+* [Forms](#forms)
+* [Static assets](#static-assets)
+* [Customizing `<head>`](#customizing-head)
+* [More Control](#more-control)
+* [Nodejs Interop](#nodejs-interop)
+* [Goals](#goals)
+* [Inspiration](#inspiration)
+* [Local dev](#local-dev)
+
+<!-- vim-markdown-toc -->
+
 ## Basic Example
 
 ```elm
@@ -401,7 +418,9 @@ subscriptions model =
 
 See [examples/server-side-ports](examples/server-side-ports).
 
-## Short term goals
+## Goals
+
+### Short term goals
 
 * All content and everything you need for interactivity should be included in the initial page load.
   No loading spinners, no littering your client-side model with Maybes and loading state variants.
@@ -418,7 +437,7 @@ See [examples/server-side-ports](examples/server-side-ports).
 * Progressive enhancement where it would benefit UX, without requiring escape hatches to js.
 * Boring code that's easy to change and maintain.
 
-## Long term goals
+### Long term goals
 
 * Batteries included:
   * Type-safe UI styling using web standards (HTML/CSS)
@@ -427,7 +446,7 @@ See [examples/server-side-ports](examples/server-side-ports).
   * Data persistence
 * Move slow and fix things.
 
-## Anti-goals / Avoiding
+### Anti-goals / Avoiding
 
 * SPA
 * Nested components
@@ -435,7 +454,7 @@ See [examples/server-side-ports](examples/server-side-ports).
 * The possibility of unhandled runtime errors
 * The need for runtime error handling
   
-## Personal goals
+### Personal goals
 
 I'm selfishly building this to power <https://pencils.dev/>.
 Goals and anti-goals are driven by the DX and UX of this project.

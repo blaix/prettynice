@@ -291,7 +291,7 @@ See [examples/static-assets](examples/static-assets) for a full working example.
 
 You can drop drop a js file with the same base name as a component
 in `client/src/Components` and it will be automatically imported.
-If you export an `init` function it will be called, allowing you to connect ports.
+If you export an `init` function it will be called with the initialized component, allowing you to connect ports.
 
 If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
 
@@ -376,6 +376,8 @@ See:
 
 You can drop a `ports.js` file in `server/src` and export an `init` function to
 connect ports between node and your gren program.
+
+If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
 
 ```js
 // server/src/ports.js

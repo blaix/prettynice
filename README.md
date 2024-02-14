@@ -13,12 +13,12 @@ Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zul
 * [Basic Example](#basic-example)
 * [Server-side HTML](#server-side-html)
 * [Client-side Components](#client-side-components)
-* [Client-side Ports](#client-side-ports)
 * [Forms](#forms)
 * [Static assets](#static-assets)
 * [Customizing `<head>`](#customizing-head)
+* [Javascript Interop in the Browser](#javascript-interop-in-the-browser)
 * [More Control](#more-control)
-* [Nodejs Interop](#nodejs-interop)
+* [Javascript Interop in Node](#javascript-interop-in-node)
 * [Goals](#goals)
 * [Inspiration](#inspiration)
 * [Local dev](#local-dev)
@@ -197,39 +197,6 @@ Note: This is still a work-in-progress, and only works with certain types. See
 [examples/client-side-components/README.md](examples/client-side-components/README.md)
 for details.
 
-## Client-side Ports
-
-You can drop also drop a js file with the same base name as your component
-in `client/src/Components` and it will be automatically imported.
-If you export an `init` function it will be called, allowing you to connect ports.
-
-If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
-
-```js
-// client/src/Components/Alert.js
-
-export function init(component) {
-    component.ports.sendAlert.subscribe(function(message) {
-        alert(message);
-    });
-}
-```
-
-```elm
--- client/src/Components/Alert.gren
-
-port sendAlert : String -> Cmd msg
-
-update msg model =
-    case msg of
-        ClickedAlert ->
-            { model = model
-            , command = sendAlert "Danger! High voltage!"
-            }
-```
-
-See [examples/client-side-ports](examples/client-side-ports).
-
 ## Forms
 
 Normal `<form>` elements with `action="post"` will have the data available at `request.formData`:
@@ -314,6 +281,39 @@ Response.sendHtml
 
 See [examples/static-assets](examples/static-assets) for a full working example.
 
+## Javascript Interop in the Browser
+
+You can drop drop a js file with the same base name as a component
+in `client/src/Components` and it will be automatically imported.
+If you export an `init` function it will be called, allowing you to connect ports.
+
+If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
+
+```js
+// client/src/Components/Alert.js
+
+export function init(component) {
+    component.ports.sendAlert.subscribe(function(message) {
+        alert(message);
+    });
+}
+```
+
+```elm
+-- client/src/Components/Alert.gren
+
+port sendAlert : String -> Cmd msg
+
+update msg model =
+    case msg of
+        ClickedAlert ->
+            { model = model
+            , command = sendAlert "Danger! High voltage!"
+            }
+```
+
+See [examples/client-side-ports](examples/client-side-ports) for a full working example.
+
 ## More Control
 
 The examples above use `Prettynice.SimpleRouter` to define a router, and let the framework handle wiring it up to a full program.
@@ -366,7 +366,7 @@ See:
 * [examples/running-commands](examples/running-commands)
 * [examples/server-side-state](examples/server-side-state)
 
-## Nodejs Interop
+## Javascript Interop in Node
 
 You can drop a `ports.js` file in `server/src` and export an `init` function to
 connect ports between node and your gren program.

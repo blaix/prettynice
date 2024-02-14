@@ -18,6 +18,7 @@
 - [X] Custom `<head>` elements
 - [X] Fix static image handling in node `HttpServer`
 - [X] CSS example
+- [ ] Response.sendBytes
 - [ ] Database example using ports?
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)

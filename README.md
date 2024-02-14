@@ -276,7 +276,7 @@ root url path.
 
 See [examples/static-assets](examples/static-assets) for a full working example.
 
-## Customizing <head>
+## Customizing `<head>`
 
 If you want to add style sheets or other tags to head, `sendHtml` accepts an
 array of `Html` elements that will be added to the `<head>` tag

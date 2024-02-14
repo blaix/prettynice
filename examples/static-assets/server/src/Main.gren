@@ -1,0 +1,57 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+
+main : Router.Program
+main =
+    Router.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Router.Init
+init env =
+    Router.startProgram
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        }
+
+
+router : Request -> Response -> Cmd msg
+router request response =
+    Response.sendHtml
+        { title = "Static asset example"
+        , head = head
+        , body = body
+        }
+        response
+
+head : Array (Html msg)
+head =
+    [ H.link 
+        [ A.rel "stylesheet", A.href "/css/pico.min.css" ]
+    ]
+
+body : Array (Html msg)
+body =
+    [ H.main_ [ A.class "container" ]
+        [ H.h1 [] [ H.text "Welcome to my styled website" ]
+        , H.article []
+            [ H.header [] [ H.text "My Essay on George Washington" ]
+            , H.figure []
+                [ H.img [ A.src "/img/george-in-tub.jpeg" ] []
+                , H.figcaption [] [ H.text "Photo taken in Berkeley Springs, WV" ]
+                ]
+            , H.footer [] [ H.text "In conclusion, the end." ]
+            ]
+        ]
+    ]

@@ -269,15 +269,33 @@ viewResult request =
 
 See [examples/forms](/examples/forms) for a full working example.
 
+## Static assets
+
+Any files in `public/` will be copied to `dist/client` and available at the
+root url path.
+
+See [examples/static-assets](examples/static-assets) for a full working example.
+
 ## Customizing <head>
 
 If you want to add style sheets or other tags to head, `sendHtml` accepts an
-array of `Html` elements (same as `body`) that will be added to the <head> tag
+array of `Html` elements that will be added to the `<head>` tag
 alongside the built-in Prettynice head tags:
 
 ```elm
--- TODO: example of adding style sheet
+Response.sendHtml
+    { title = title
+    , body = body
+    , head =
+        [ Html.link 
+            [ Attributes.rel "stylesheet"
+            , Attributes.href "/css/my-styles.css"
+            ]
+        ]
+    }
 ```
+
+See [examples/static-assets](examples/static-assets) for a full working example.
 
 ## More Control
 

@@ -46,8 +46,9 @@
   - [ ] mastodon
   - [ ] discord
 - [ ] Think about CSS post-processing:
-  - [ ] tailwind?
+  - [ ] tailwind? (meh)
   - [ ] bulma.io looks nice (no js!), maybe worth a UI package
+  - [ ] look at <https://www.npmjs.com/package/@ryannhg/css-in-elm>
 - [ ] Think about JS bundling/transpiling:
   - [ ] vite? support importing .gren files?
   - [ ] swc?

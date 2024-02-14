@@ -55,7 +55,6 @@ init env =
 
 router : Request -> Response -> Cmd msg
 router request response =
-
     -- request.path is an array split on "/" for pattern matching.
     -- See https://gren-lang.org/book/syntax/pattern_matching.html
     case request.path of

@@ -53,7 +53,7 @@
   - [ ] vite? support importing .gren files?
   - [ ] swc?
 - [ ] Experiment with HTMX integration / progressive enhancement:
-  - [ ] Form submissions?
+  - [ ] Form submissions? See https://remix.run/docs/en/main/components/form
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
 - [ ] Cookies & Sessions

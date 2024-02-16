@@ -19,7 +19,7 @@
 - [X] Fix static image handling in node `HttpServer`
 - [X] CSS example
 - [X] Response.sendBytes
-- [ ] Database example using ports?
+- [X] Database example using ports?
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
@@ -31,12 +31,13 @@
   - [ ] Multi-file - Router
   - [ ] Multi-file - Program
 - [ ] Document/Support (via generator?) trying the framework without an official package released
+- [ ] Deployment example + docs. Fly.io with sqlite+LiteFS probably the easiest example.
 - [ ] **=== Pre-release for testing / feedback ===**
 - [ ] Unit Tests
 - [ ] Start migrating pencils.dev
 - [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] **=== release 1.0 ===**
-- [ ] Doc site. (including deployment).
+- [ ] Doc site
 - [ ] Flesh out gren guide with application info?:
   - [ ] Add arrays to pattern matching section (I'm linking to this from my basic router example)
   - [ ] Add section on creating full applications (in browser and in node?)

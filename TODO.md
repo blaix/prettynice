@@ -31,7 +31,9 @@
   - [ ] Multi-file - Router
   - [ ] Multi-file - Program
 - [ ] Document/Support (via generator?) trying the framework without an official package released
-- [ ] Deployment example + docs. Fly.io with sqlite+LiteFS probably the easiest example.
+- [ ] Deployment example + docs.
+  - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
+  - [ ] Fly.io vs Render.com
 - [ ] **=== Pre-release for testing / feedback ===**
 - [ ] Unit Tests
 - [ ] Start migrating pencils.dev

@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import Bytes.Encode
 import Json.Encode as Json
 import Node exposing (Environment)
 import Prettynice.SimpleRouter as Router
@@ -30,14 +31,6 @@ router : Request -> Response -> Cmd msg
 router request response =
     case request.path of
 
-        -- 
-        -- Response.sendText, .sendHtml, etc. are helpers around .setBody and .send
-        -- For example:
-        --   response |> Response.sendText "text"
-        -- is equivalent to:
-        --   response |> Response.setBody (TextBody "text") |> Response.send    
-        --
-
         [ "text" ] ->
             response
                 |> Response.sendText
@@ -48,7 +41,15 @@ router request response =
                 |> Response.sendJson
                     (Json.array Json.int [1, 2, 3])
 
-        -- TODO: Bytes
+        [ "bytes" ] ->
+            response
+                |> Response.sendBytes 
+                    { contentType = "application/octet-stream"
+                    , body = 
+                        "Byte me"
+                            |> Bytes.Encode.string
+                            |> Bytes.Encode.encode
+                    }
 
         _ ->
             response
@@ -59,5 +60,6 @@ router request response =
                         [ H.h1 [] [ H.text "Welcome!" ]
                         , H.p [] [ H.a [ A.href "/json" ] [ H.text "json" ] ]
                         , H.p [] [ H.a [ A.href "/text" ] [ H.text "text" ] ]
+                        , H.p [] [ H.a [ A.href "/bytes" ] [ H.text "bytes" ] ]
                         ]
                     }

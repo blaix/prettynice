@@ -6,13 +6,14 @@ module Prettynice.Response exposing
     , sendText
     , sendHtml
     , sendJson
-    -- TODO: sendBytes
+    , sendBytes
     , setBody
     , setHeader
     , setStatus
     ) 
 
 
+import Bytes exposing (Bytes)
 import HttpServer.Response as Http
 import Prettynice.Request exposing (Request)
 import Json.Encode
@@ -44,6 +45,15 @@ send : Response -> Cmd a
 send response =
     response
         |> getHttpResponse
+        |> Http.send
+
+
+sendBytes : { contentType : String, body : Bytes } -> Response -> Cmd a
+sendBytes { contentType, body } response =
+    response
+        |> getHttpResponse
+        |> Http.setHeader "Content-type" contentType
+        |> Http.setBodyAsBytes body
         |> Http.send
 
 

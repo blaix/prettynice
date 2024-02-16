@@ -7,7 +7,7 @@ nc := '\033[0m' # No Color
 
 example NAME:
   echo -e "\n{{green}}==== RUNNING EXAMPLE: {{NAME}} ===={{nc}}\n"
-  cd examples/{{NAME}} && npm start
+  cd examples/{{NAME}} && npm install && npm start
 
 watch NAME:
   echo -e "\n{{green}}==== WATCHING EXAMPLE: {{NAME}} ===={{nc}}\n"

@@ -19,6 +19,7 @@ Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zul
 * [Javascript Interop in the Browser](#javascript-interop-in-the-browser)
 * [More Control](#more-control)
 * [Javascript Interop in Node](#javascript-interop-in-node)
+* [Databases](#databases)
 * [Goals](#goals)
 * [Inspiration](#inspiration)
 * [Local dev](#local-dev)
@@ -425,9 +426,17 @@ subscriptions model =
             Sub.none
 ```
 
-See [examples/server-side-ports](examples/server-side-ports).
+See:
 
-TODO: db example.
+* [examples/server-side-ports](examples/server-side-ports).
+* [examples/database-ports](examples/database-ports).
+
+## Databases
+
+Gren does not yet have a way to natively connect to a database,
+but you can do it through ports.
+
+See [examples/database-ports](examples/database-ports) for a working example of doing this with prisma.
 
 ## Goals
 

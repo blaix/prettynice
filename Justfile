@@ -6,11 +6,11 @@ white :=' \033[1;37m' # Or bold white depending on theme
 nc := '\033[0m' # No Color
 
 example NAME:
-  echo -e "\n{{green}}==== RUNNING EXAMPLE: {{NAME}} ===={{nc}}\n"
+  @echo -e "\n{{green}}==== RUNNING EXAMPLE: {{NAME}} ===={{nc}}\n"
   cd examples/{{NAME}} && npm install && npm start
 
 watch NAME:
-  echo -e "\n{{green}}==== WATCHING EXAMPLE: {{NAME}} ===={{nc}}\n"
+  @echo -e "\n{{green}}==== WATCHING EXAMPLE: {{NAME}} ===={{nc}}\n"
   cd examples/{{NAME}} && fd ".+\.(gren|js|sh)$" ../.. | entr -r npm start
 
 examples:

@@ -20,6 +20,7 @@
 - [X] CSS example
 - [X] Response.sendBytes
 - [X] Database example using ports?
+- [ ] Test out components nested under a parent module (e.g. client/Components/Foo/Bar.gren) and handle errors/messaging appropriately.
 - [ ] Support Array in Props
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)

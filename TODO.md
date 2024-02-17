@@ -20,8 +20,8 @@
 - [X] CSS example
 - [X] Response.sendBytes
 - [X] Database example using ports?
+- [X] Support Array and Maybe in Props
 - [ ] Test out components nested under a parent module (e.g. client/Components/Foo/Bar.gren) and handle errors/messaging appropriately.
-- [ ] Support Array in Props
 - [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
@@ -37,7 +37,7 @@
   - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
   - [ ] Fly.io vs Render.com
 - [ ] **=== Pre-release for testing / feedback ===**
-- [ ] Unit Tests
+- [ ] Unit Tests. Especially Prettynice.Props
 - [ ] Start migrating pencils.dev
 - [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] **=== release 1.0 ===**
@@ -65,7 +65,7 @@
 - [ ] Redirect helpers?
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
 - [ ] Handle multipart/form-data and file uploads
-- [ ] Support more FieldTypes in Prettynice.Props (Array, Maybe, Records)
+- [ ] Support nested records in component Props
 - [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
 - [ ] Responses that align with the request content-type (e.g. 404 that returns html, string, or json depending on the request)
 

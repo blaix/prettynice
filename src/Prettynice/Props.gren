@@ -15,6 +15,8 @@ type FieldType
     | FloatType
     | StringType
     | BoolType
+    | ArrayType FieldType
+    | MaybeType FieldType
 
 
 type alias Props =
@@ -56,6 +58,12 @@ fieldTypeToString fieldType =
         BoolType ->
             "Bool"
 
+        ArrayType t ->
+            "(Array " ++ (fieldTypeToString t) ++ ")"
+
+        MaybeType t ->
+            "(Maybe " ++ (fieldTypeToString t) ++ ")"
+
 
 encoder : Props -> String
 encoder props =
@@ -80,7 +88,7 @@ addFieldEncoder name fieldType encoders =
             -- Weird indentation is to look right in generated output
             """
             { key = "{{NAME}}"
-                      , value = Encode.{{ENCODER}} props.{{NAME}}
+                      , value = {{ENCODER}} props.{{NAME}}
                       }
             """
                 |> String.replace "{{NAME}}" name
@@ -93,16 +101,22 @@ fieldTypeToEncoder : FieldType -> String
 fieldTypeToEncoder fieldType =
     case fieldType of
         IntType ->
-            "int"
+            "Encode.int"
 
         FloatType ->
-            "float"
+            "Encode.float"
         
         StringType ->
-            "string"
+            "Encode.string"
 
         BoolType ->
-            "bool"
+            "Encode.bool"
+
+        ArrayType t ->
+            "(Encode.array " ++ (fieldTypeToEncoder t) ++ ")"
+
+        MaybeType t ->
+            "(Maybe.map (" ++ (fieldTypeToEncoder t) ++ ") >> Maybe.withDefault Encode.null)"
 
 
 parser : Parser (Dict String FieldType)
@@ -133,13 +147,30 @@ parser =
                     |. P.spaces
                     |. P.symbol ":"
                     |. P.spaces
-                    |= P.oneOf
-                        [ P.succeed IntType |. P.keyword "Int"
-                        , P.succeed FloatType |. P.keyword "Float"
-                        , P.succeed StringType |. P.keyword "String"
-                        , P.succeed BoolType |. P.keyword "Bool"
-                        ]
+                    |= fieldParser
             }
+
+
+fieldParser : Parser FieldType
+fieldParser =
+    P.succeed identity
+        |. P.spaces
+        -- Probably a safer way to do this ensuring balanced parens?
+        |. P.chompWhile (\c -> c == '(')
+        |. P.spaces
+        |= P.oneOf
+            [ P.succeed IntType |. P.keyword "Int"
+            , P.succeed FloatType |. P.keyword "Float"
+            , P.succeed StringType |. P.keyword "String"
+            , P.succeed BoolType |. P.keyword "Bool"
+            , P.succeed ArrayType |. P.keyword "Array"
+                |= P.lazy (\_ -> fieldParser)
+            , P.succeed MaybeType |. P.keyword "Maybe"
+                |= P.lazy (\_ -> fieldParser)
+            ]
+        |. P.spaces
+        |. P.chompWhile (\c -> c == ')')
+        |. P.spaces
 
 
 get: String -> Result (Array P.DeadEnd) (Dict String FieldType)

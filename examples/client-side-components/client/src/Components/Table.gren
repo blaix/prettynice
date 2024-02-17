@@ -1,0 +1,101 @@
+module Components.Table exposing (component, Model, Msg, Props)
+
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Events as E
+import Prettynice.Component exposing (Component)
+
+
+component : Component Props Model Msg
+component =
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+
+-- MODEL
+
+
+type alias Model =
+    { title : String
+    , rows : Array (Array Int)
+    }
+
+
+{-| A Props record is required.
+
+Prettynice will look for this so it knows how to encode data passed in
+server-side. Only certain types are supported. The build script will fail and
+tell you if you use one it doesn't recognize (yet).
+-}
+type alias Props =
+    { title : Maybe String
+    , rows : Array (Array Int)
+    }
+
+
+{-| A server-side init for this component will be generated so you can embed
+this in your server-side HTML and pass in the props.
+-}
+init : Props -> { model : Model, command : Cmd Msg }
+init props =
+    { model = 
+        { rows = props.rows
+        , title = props.title |> Maybe.withDefault "A table of numbers!"
+        }
+    , command = Cmd.none
+    }
+
+
+-- UPDATE
+
+
+type Msg
+    = Sort
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        Sort ->
+            let
+                newRows =
+                    model.rows
+                        |> Array.map (\r -> Array.sort r)
+                        |> Array.sort
+            in
+            { model = { model | rows = newRows }
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+-- VIEW
+
+
+view : Model -> Html Msg
+view model =
+    H.div []
+        [ H.text model.title
+        , H.table [] <|
+            Array.map viewRow model.rows
+        , H.button
+            [ E.onClick Sort ]
+            [ H.text "Sort" ]
+        ]
+
+
+viewRow : Array Int -> Html Msg
+viewRow row =
+    H.tr [] <|
+        Array.map viewCell row
+
+
+viewCell : Int -> Html Msg
+viewCell i =
+    H.td [] [ H.text <| String.fromInt i ]

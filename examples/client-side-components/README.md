@@ -53,8 +53,8 @@ npm start
 **Note:** Prettynice has a parser that looks for your Props to generate the corresponding server-side types and encoders,
 so it must be a [record](https://gren-lang.org/book/syntax/records.html) named `Props`,
 and only contain fields with types that match one of the corresponding variants of [Prettynice.Props.FieldType](https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren).
-There are plans to support more, but at the time of writing this README, only String, Int, Float, and Bool are supported.
+At the time of writing this README, String, Int, Float, Bool, Array, and Maybe fields are supported.
 
-But don't worry, if you color outside the lines (mess up the name, type signature, use an unsupported type, etc), you will get a compile error.
-If you don't, or if the error is confusing or unhelpful, please [file an issue](https://github.com/blaix/prettynice/issues), thanks!
+But don't worry, if you color outside the lines (mess up the name, type signature, use an unsupported type, etc), you will get an error in the build step - _not_ at runtime!
+If a Props mistake is not caught at build time, or if the error is confusing or unhelpful, please [file an issue](https://github.com/blaix/prettynice/issues), thanks!
 

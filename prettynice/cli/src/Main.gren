@@ -160,6 +160,7 @@ toClientComponent def contents =
     import Components.{{NAME}} as {{NAME}}
     import Browser
 
+    main : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg
     main =
         let
             e = {{NAME}}.component
@@ -218,7 +219,6 @@ genServerComponent bundle =
             Task.fail
                 ( ErrorMessage <|
                     String.replace "{{COMPONENT}}" def.baseName
-                        -- TODO: improve error message
                         """
                         Oops! I can't parse props for the {{COMPONENT}} component.
                            I'm looking for a type alias that looks like this:

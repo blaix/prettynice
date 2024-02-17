@@ -1,4 +1,4 @@
-port module Components.Alert exposing (component, Msg)
+port module Components.Alert exposing (component, Model, Msg, Props)
 
 import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Events as E

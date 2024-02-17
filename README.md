@@ -109,7 +109,11 @@ If you aren't familiar, you can read [this guide](https://elmprogramming.com/mod
 ```elm
 -- client/src/Components/Counter.gren
 
-component : Component Props Model Msg
+module Components.Counter exposing (component, Model, Msg, Props)
+
+import Prettynice
+
+component : Prettynice.Component Props Model Msg
 component =
         { init = init
         , update = update

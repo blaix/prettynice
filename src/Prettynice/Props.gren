@@ -153,8 +153,4 @@ get content =
                 |> String.words
                 |> String.join " "
     in
-    -- TODO: add a parser to verify that init takes Props.
-    --       Maybe via "component : Component Props " where Component
-    --       is parsed from the import Prerttynice.Component ... line.
-    -- TODO: Helpful errors if any of the parsing here fails.
     P.run parser normalized

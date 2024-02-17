@@ -153,7 +153,6 @@ get content =
                 |> String.words
                 |> String.join " "
     in
-    -- TODO: add a parser to verify module exposes component function.
     -- TODO: add a parser to verify that init takes Props.
     --       Maybe via "component : Component Props " where Component
     --       is parsed from the import Prerttynice.Component ... line.

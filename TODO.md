@@ -42,6 +42,9 @@
 - [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] **=== release 1.0 ===**
 - [ ] Doc site
+- [ ] Link to appropriate sections of the doc site from prettynice READMEs and API docs:
+    - [ ] Client-side component example README (prop field types)
+    - [ ] Main project README
 - [ ] Flesh out gren guide with application info?:
   - [ ] Add arrays to pattern matching section (I'm linking to this from my basic router example)
   - [ ] Add section on creating full applications (in browser and in node?)

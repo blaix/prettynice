@@ -60,15 +60,15 @@
 - [ ] Think about JS bundling/transpiling:
   - [ ] vite? support importing .gren files?
   - [ ] swc?
+- [ ] Cookies & Sessions
 - [ ] Experiment with HTMX integration / progressive enhancement:
   - [ ] Form submissions? See https://remix.run/docs/en/main/components/form
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
-- [ ] Cookies & Sessions
-- [ ] Redirect helpers?
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
+- [ ] Support records in component Props field types
+- [ ] Redirect helpers?
 - [ ] Handle multipart/form-data and file uploads
-- [ ] Support nested records in component Props
 - [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
 - [ ] Responses that align with the request content-type (e.g. 404 that returns html, string, or json depending on the request)
 

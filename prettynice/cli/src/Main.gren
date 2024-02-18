@@ -82,7 +82,7 @@ clientDestination =
 
 clientPortsDestination : Shikensu.Focus
 clientPortsDestination =
-    [ "dist/client"
+    [ "dist/client/Components"
     ]
         |> Path.directory
         |> Relative
@@ -154,10 +154,10 @@ toBytes string =
 toClientComponent : Shikensu.Definition -> String -> String
 toClientComponent def contents =
     """
-    module Gen.Components.{{NAME}} exposing (main)
+    module Gen.{{MODULE_NAME}} exposing (main)
 
     import Transmutable.Html.VirtualDom exposing (toVirtualDom)
-    import Components.{{NAME}} as {{NAME}}
+    import {{MODULE_NAME}} as {{NAME}}
     import Browser
 
     main : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg
@@ -173,6 +173,26 @@ toClientComponent def contents =
             }
     """
         |> String.replace "{{NAME}}" def.baseName
+        |> String.replace "{{MODULE_NAME}}" (moduleName def)
+
+
+moduleName : Shikensu.Definition -> String
+moduleName def =
+    let
+        path =
+            Path.unwrap def.directoryPath
+
+        modulePath =
+            case path of
+                [] ->
+                    "Components."
+
+                dirs ->
+                    "Components."
+                        ++ (String.join "." dirs)
+                        ++ "."
+    in
+    modulePath ++ def.baseName
 
 
 genServerComponent : Shikensu.Bundle -> Task Error Shikensu.Bundle
@@ -196,7 +216,7 @@ genServerComponent bundle =
                                 | content =
                                     case propsResult of
                                         Ok props ->
-                                            toServerComponent def.baseName props
+                                            toServerComponent def props
                                                 |> toBytes
                                                 |> Just
 
@@ -235,10 +255,10 @@ genServerComponent bundle =
                 )
 
 
-toServerComponent : String -> Props -> String
-toServerComponent name props =
+toServerComponent : Shikensu.Definition -> Props -> String
+toServerComponent def props =
     """
-    module Gen.Components.{{NAME}} exposing (init)
+    module Gen.{{MODULE_NAME}} exposing (init)
 
     import Json.Encode as Encode
     import Prettynice.Props as Props
@@ -258,15 +278,15 @@ toServerComponent name props =
             propJson = Encode.encode 0 (encoder props)
         in
         H.span []
-            [ H.span [ A.class "prettynice-component-{{NAME}}" ] []
+            [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []
             , H.node "script" []
                 [ H.text <|
                     \"""
                     var $__components = $__components || {};
-                    $__components["{{NAME}}"] = $__components["{{NAME}}"] || [];
-                    $__components["{{NAME}}"].push(
-                        Gren.Gen.Components.{{NAME}}.init({
-                            node: document.currentScript.parentNode.getElementsByClassName("prettynice-component-{{NAME}}")[0],
+                    $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];
+                    $__components["{{MODULE_NAME}}"].push(
+                        Gren.Gen.{{MODULE_NAME}}.init({
+                            node: document.currentScript.parentNode.getElementsByClassName("prettynice-component-{{MODULE_NAME}}")[0],
                             flags: \""" ++ propJson ++ \""",
                         })
                     );
@@ -274,6 +294,6 @@ toServerComponent name props =
                 ]
             ]
     """
-        |> String.replace "{{NAME}}" name
+        |> String.replace "{{MODULE_NAME}}" (moduleName def)
         |> String.replace "{{PROPS_TYPE}}" (Props.typeSig props)
         |> String.replace "{{PROPS_ENCODER}}" (Props.encoder props)

@@ -20,7 +20,7 @@ fi
 
 # expected directories
 mkdir -p public
-mkdir -p dist/client
+mkdir -p dist/client/Components
 mkdir -p dist/server
 mkdir -p server/.prettynice/Prettynice
 mkdir -p server/.prettynice/Gen/Components

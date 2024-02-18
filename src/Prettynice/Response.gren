@@ -105,7 +105,8 @@ setBody bodyVariant response =
                                         """
                                         if (typeof($__components) !== 'undefined') {
                                             Object.keys($__components).map((name) => {
-                                                import("/" + name + ".js").then((mod) => {
+                                                let path = name.replace(/\\./g, '/');
+                                                import("/" + path + ".js").then((mod) => {
                                                     if (mod.init) {
                                                         $__components[name].map((comp) => {
                                                             mod.init(comp);

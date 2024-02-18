@@ -10,7 +10,7 @@ import Transmutable.Html.Attributes as A
 
 --
 -- Right now this is just an example of how to do this manually.
--- TODO: Determine if or how Prettynice should simplify this.
+-- Eventually Prettynice may help with this.
 --
 
 

@@ -22,7 +22,7 @@
 - [X] Database example using ports?
 - [X] Support Array and Maybe in Props
 - [X] Fix components nested under a parent module (e.g. client/Components/Foo/Bar.gren)
-- [ ] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
+- [X] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
 - [ ] Use HttpServer.requestInfo for request logging in the terminal.
@@ -45,6 +45,7 @@
 - [ ] Link to appropriate sections of the doc site from prettynice READMEs and API docs:
     - [ ] Client-side component example README (prop field types)
     - [ ] Main project README
+    - [ ] Error message when props can't be parsed in cli.
 - [ ] Flesh out gren guide with application info?:
   - [ ] Add arrays to pattern matching section (I'm linking to this from my basic router example)
   - [ ] Add section on creating full applications (in browser and in node?)
@@ -66,6 +67,7 @@
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
+- [ ] Can/Should Prettynice help with breaking up routes into standoline TEA-style modules (see examples/tea-modules)
 - [ ] Support records in component Props field types
 - [ ] Redirect helpers?
 - [ ] Handle multipart/form-data and file uploads

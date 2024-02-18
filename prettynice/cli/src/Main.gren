@@ -250,7 +250,8 @@ genServerComponent bundle =
 
                            It either doesn't exist, is formatted in a way I
                            can't recognize, or it uses unsupported field types.
-                           TODO: link to documentation for this.\n
+                           See Prettynice.Props.Fieldtype for supported types:
+                           https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren
                         """
                 )
 

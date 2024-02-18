@@ -139,7 +139,7 @@ update appUpdate onRequest msg model =
                         , command = 
                             Cmd.batch
                                 [ Stream.sendLine model.stdout <|
-                                    "Letting app respond to " ++ req.url.path
+                                    Http.requestInfo req ++ ": routing to app"
                                 , Cmd.map MsgToApp appUpdateReturn.command
                                 ]
                         }
@@ -158,7 +158,7 @@ update appUpdate onRequest msg model =
                                 , command =
                                     Cmd.batch
                                         [ Stream.sendLine model.stdout <|
-                                            "Responding with static file for " ++ req.url.path
+                                            Http.requestInfo req ++ ": responding with static file"
                                         , HttpResponse.send staticResponse
                                         ]
                                 }

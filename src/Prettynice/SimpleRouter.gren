@@ -110,9 +110,6 @@ update router msg model =
         
         GotRequest req res ->
             let
-                _ =
-                    Debug.log "got request" req.url.path
-
                 request = 
                     Prettynice.Request.new req
 
@@ -123,7 +120,7 @@ update router msg model =
                     Task.succeed <|
                         Cmd.batch
                             [ Stream.sendLine model.stdout <|
-                                "Letting app respond to " ++ req.url.path
+                                Http.requestInfo req ++ ": routing to app"
                             , router request response
                             ]
 
@@ -139,7 +136,7 @@ update router msg model =
                             (\staticResponse ->
                                 Cmd.batch
                                     [ Stream.sendLine model.stdout <|
-                                        "Responding with static file for " ++ req.url.path
+                                        Http.requestInfo req ++ ": responding with static file"
                                     , HttpResponse.send staticResponse
                                     ]
                             )

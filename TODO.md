@@ -23,9 +23,9 @@
 - [X] Support Array and Maybe in Props
 - [X] Fix components nested under a parent module (e.g. client/Components/Foo/Bar.gren)
 - [X] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
+- [X] Use HttpServer.requestInfo for request logging in the terminal.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
-- [ ] Use HttpServer.requestInfo for request logging in the terminal.
 - [ ] production builds with --optimize
 - [ ] New project generator (charm.sh/gum?) with variants for:
   - [ ] Single file - Router

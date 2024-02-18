@@ -48,8 +48,7 @@ if [[ -d client/src/Components ]]; then
     node $PROJECT_ROOT/prettynice/cli/build/app
     cd $EXAMPLE_ROOT/client
     npx gren make $(find .prettynice/Gen/Components -name "*.gren") --output=../dist/client/main.js
-    # TODO: nested components+ports (e.g. Components/My/Component.gren/js)
-    if [[ "$(ls src/Components/*.js 2>/dev/null)" ]]; then
+    if [[ "$(ls src/Components/**/*.js 2>/dev/null)" ]]; then
         cp src/Components/*.js ../dist/client/
     fi
   fi

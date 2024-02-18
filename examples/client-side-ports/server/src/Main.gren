@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Gen.Components.Alert as Alert
+import Gen.Components.Nested.Counter as Counter
 import Node exposing (Environment)
 import Prettynice.SimpleRouter as Router
 import Prettynice.Request exposing (Request)
@@ -38,6 +39,10 @@ router _ =
             , H.p []
                 [ H.text "Message 2: "
                 , Alert.init { message = "A different message from the server." }
+                ]
+            , H.p []
+                [ H.text "Nested component that logs to the console: "
+                , Counter.init { start = 0 }
                 ]
             ]
         }

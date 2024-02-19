@@ -25,6 +25,7 @@
 - [X] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [X] Use HttpServer.requestInfo for request logging in the terminal.
 - [ ] Decouple build.sh from repo examples folder. Integrate into prettynice cli? (see joeybright/gren-args)
+- [ ] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
 - [ ] production builds with --optimize
 - [ ] New project generator (charm.sh/gum?) with variants for:

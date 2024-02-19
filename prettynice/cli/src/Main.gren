@@ -39,7 +39,7 @@ main =
     in
     Shikensu.perform
         { onSuccess = 
-            ( \env _ -> Stream.sendLine env.stdout "🧪 Sequence completed" )
+            ( \env _ -> Stream.sendLine env.stdout "✅ Done!" )
         , onError =
             ( \env err ->
                 Cmd.batch
@@ -83,48 +83,42 @@ emptyBundle permission =
 
 componentSource : Shikensu.Focus
 componentSource =
-    [ "client/src/Components"
-    ]
+    [ "client", "src", "Components" ]
         |> Path.directory
         |> Relative
 
 
 publicAssetsSource : Shikensu.Focus
 publicAssetsSource =
-    [ "public"
-    ]
+    [ "public" ]
         |> Path.directory
         |> Relative
 
 
 serverDestination : Shikensu.Focus
 serverDestination =
-    [ "server/.prettynice/Gen/Components"
-    ]
+    [ "server", ".prettynice", "Gen", "Components" ]
         |> Path.directory
         |> Relative
 
 
 clientDestination : Shikensu.Focus
 clientDestination =
-    [ "client/.prettynice/Gen/Components"
-    ]
+    [ "client", ".prettynice", "Gen", "Components" ]
         |> Path.directory
         |> Relative
 
 
 clientPortsDestination : Shikensu.Focus
 clientPortsDestination =
-    [ "dist/client/Components"
-    ]
+    [ "dist", "client", "Components" ]
         |> Path.directory
         |> Relative
 
 
 publicAssetsDestination : Shikensu.Focus
 publicAssetsDestination =
-    [ "dist/client"
-    ]
+    [ "dist", "client" ]
         |> Path.directory
         |> Relative
 

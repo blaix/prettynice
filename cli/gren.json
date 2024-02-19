@@ -11,7 +11,7 @@
             "gren-lang/node": "3.1.0",
             "gren-lang/parser": "3.0.1",
             "icidasset/shikensu-gren": "5.1.0",
-            "blaix/prettynice": "local:../.."
+            "blaix/prettynice": "local:.."
         },
         "indirect": {
             "gren-lang/url": "3.0.0",

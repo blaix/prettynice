@@ -31,12 +31,12 @@ touch dist/client/main.js
 
 # run the prettynice cli
 # (slowly migrating everything in this build.sh here)
-cd $PROJECT_ROOT/prettynice/cli
+cd $PROJECT_ROOT/cli
 npx gren make src/Main.gren
 mkdir -p build
 mv app build/
 cd $EXAMPLE_ROOT
-node $PROJECT_ROOT/prettynice/cli/build/app
+node $PROJECT_ROOT/cli/build/app
 
 if [[ -d client/src/Components ]]; then
   if [[ "$(ls client/src/Components)" ]]; then

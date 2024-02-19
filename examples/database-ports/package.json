@@ -4,7 +4,7 @@
     "postinstall": "npx prisma migrate dev",
     "start": "npm run build && npm run serve",
     "serve": "node dist/server/app",
-    "build": "../../prettynice/scripts/build.sh"
+    "build": "../../scripts/build.sh"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

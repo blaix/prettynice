@@ -32,6 +32,9 @@ main =
             , { focus = componentSource
               , sequence = serverComponentSequence
               }
+            , { focus = serverPortsSource
+              , sequence = serverPortsSequence
+              }
             , { focus = publicAssetsSource
               , sequence = publicAssetsSequence
               }
@@ -95,6 +98,13 @@ publicAssetsSource =
         |> Relative
 
 
+serverPortsSource : Shikensu.Focus
+serverPortsSource =
+    [ "server", "src" ]
+        |> Path.directory
+        |> Relative
+
+
 serverDestination : Shikensu.Focus
 serverDestination =
     [ "server", ".prettynice", "Gen", "Components" ]
@@ -112,6 +122,13 @@ clientDestination =
 clientPortsDestination : Shikensu.Focus
 clientPortsDestination =
     [ "dist", "client", "Components" ]
+        |> Path.directory
+        |> Relative
+
+
+serverPortsDestination : Shikensu.Focus
+serverPortsDestination =
+    [ "dist", "server" ]
         |> Path.directory
         |> Relative
 
@@ -161,6 +178,23 @@ clientPortsSequence task =
                     (Shikensu.read bundle)
             )
         |> Task.andThen (Shikensu.write clientPortsDestination)
+
+
+{-| Clone the server js ports file if it exists.
+    Otherwise create an empty one.
+-}
+serverPortsSequence : Shikensu.Task -> Shikensu.Task
+serverPortsSequence task =
+    task
+        |> Task.map (Shikensu.withExtension "js")
+        |> Task.map (Shikensu.withBaseName "ports")
+        |> Task.andThen
+            (\bundle ->
+                Task.onError
+                    (\_ -> Task.succeed bundle)
+                    (Shikensu.read bundle)
+            )
+        |> Task.andThen (Shikensu.write serverPortsDestination)
 
 
 {-| Copy public assets.

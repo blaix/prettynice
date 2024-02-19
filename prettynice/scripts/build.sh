@@ -53,8 +53,5 @@ fi
 
 # build server
 cd $EXAMPLE_ROOT/server
-if [[ -f src/ports.js ]]; then
-    cp src/ports.js ../dist/server/ports.js
-fi
 npx gren make src/Main.gren --output=../dist/server/main.js
 cp $PROJECT_ROOT/src/server.js ../dist/server/app

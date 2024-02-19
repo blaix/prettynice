@@ -32,7 +32,7 @@ main =
             , { focus = componentSource
               , sequence = serverComponentSequence
               }
-            , { focus = serverPortsSource
+            , { focus = serverSource
               , sequence = serverPortsSequence
               }
             , { focus = publicAssetsSource
@@ -98,8 +98,8 @@ publicAssetsSource =
         |> Relative
 
 
-serverPortsSource : Shikensu.Focus
-serverPortsSource =
+serverSource : Shikensu.Focus
+serverSource =
     [ "server", "src" ]
         |> Path.directory
         |> Relative

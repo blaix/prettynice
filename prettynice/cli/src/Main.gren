@@ -3,6 +3,7 @@ module Main exposing (main)
 import Bytes exposing ( Bytes )
 import Bytes.Decode
 import Bytes.Encode
+import FileSystem exposing (AccessError(..))
 import Node
 import Prettynice.Props as Props exposing (Props)
 import Set
@@ -22,14 +23,17 @@ main : Shikensu.Program
 main =
     let
         collection =
-            [ { focus = source
-              , sequence = clientSequence
+            [ { focus = componentSource
+              , sequence = clientComponentSequence
               }
-            , { focus = source
+            , { focus = componentSource
               , sequence = clientPortsSequence
               }
-            , { focus = source
-              , sequence = serverSequence
+            , { focus = componentSource
+              , sequence = serverComponentSequence
+              }
+            , { focus = publicAssetsSource
+              , sequence = publicAssetsSequence
               }
             ]
     in
@@ -50,15 +54,44 @@ main =
                         (\{ focus, sequence } ->
                             focus
                                 |> Shikensu.list fsPermission
+                                |> Task.onError
+                                    (\error -> 
+                                        case error of
+                                            PlatformAccessError _ AccessErrorNotFound ->
+                                                -- Nothing to process. Ignore.
+                                                -- (e.g. no components or nothing at public/)
+                                                Task.succeed 
+                                                    (emptyBundle fsPermission)
+
+                                            e ->
+                                                Task.fail e
+                                    )
                                 |> sequence
                         )
                 |> Task.sequence
         )
 
 
-source : Shikensu.Focus
-source =
+emptyBundle : FileSystem.Permission -> Shikensu.Bundle
+emptyBundle permission =
+    { compendium = []
+    , fsPermission = permission
+    , readingDirectory = Nothing
+    , workingDirectory = Path.directory ["."]
+    }
+
+
+componentSource : Shikensu.Focus
+componentSource =
     [ "client/src/Components"
+    ]
+        |> Path.directory
+        |> Relative
+
+
+publicAssetsSource : Shikensu.Focus
+publicAssetsSource =
+    [ "public"
     ]
         |> Path.directory
         |> Relative
@@ -88,25 +121,33 @@ clientPortsDestination =
         |> Relative
 
 
-readFiles : Shikensu.Task -> Shikensu.Task
-readFiles task =
+publicAssetsDestination : Shikensu.Focus
+publicAssetsDestination =
+    [ "dist/client"
+    ]
+        |> Path.directory
+        |> Relative
+
+
+readGrenFiles : Shikensu.Task -> Shikensu.Task
+readGrenFiles task =
      task
         |> Task.map (Shikensu.withExtension "gren")
         |> Task.andThen Shikensu.read
 
 
-serverSequence : Shikensu.Task -> Shikensu.Task
-serverSequence task =
+serverComponentSequence : Shikensu.Task -> Shikensu.Task
+serverComponentSequence task =
     task
-        |> readFiles
+        |> readGrenFiles
         |> Task.andThen genServerComponent
         |> Task.andThen (Shikensu.write serverDestination)
 
 
-clientSequence : Shikensu.Task -> Shikensu.Task
-clientSequence task =
+clientComponentSequence : Shikensu.Task -> Shikensu.Task
+clientComponentSequence task =
     task
-        |> readFiles
+        |> readGrenFiles
         |> Task.map (Shikensu.renderContent clientComponentFromDef)
         |> Task.andThen (Shikensu.write clientDestination)
 
@@ -126,6 +167,15 @@ clientPortsSequence task =
                     (Shikensu.read bundle)
             )
         |> Task.andThen (Shikensu.write clientPortsDestination)
+
+
+{-| Copy public assets.
+-}
+publicAssetsSequence : Shikensu.Task -> Shikensu.Task
+publicAssetsSequence task =
+    task
+        |> Task.andThen Shikensu.read
+        |> Task.andThen (Shikensu.write publicAssetsDestination)
 
 
 clientComponentFromDef : Shikensu.Definition -> Maybe Bytes

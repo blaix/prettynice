@@ -64,10 +64,11 @@
   - [ ] vite? support importing .gren files?
   - [ ] swc?
 - [ ] Cookies & Sessions
-- [ ] Experiment with HTMX integration / progressive enhancement:
+- [ ] Experiment with HTM[X|Z] integration / progressive enhancement:
   - [ ] Form submissions? See https://remix.run/docs/en/main/components/form
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
+  - [ ] If I just need to replace elements on the page: https://leanrada.com/htmz/
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
 - [ ] Can/Should Prettynice help with breaking up routes into standoline TEA-style modules (see examples/tea-modules)
 - [ ] Support records in component Props field types

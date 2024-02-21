@@ -29,6 +29,19 @@ mkdir -p server/.prettynice/Gen/Components
 # (the server renders a script tag no matter what. maybe fix that?)
 touch dist/client/main.js
 
+
+cd $EXAMPLE_ROOT
+if [[ -d client/src/Components ]]; then
+  if [[ "$(ls client/src/Components)" ]]; then
+    mkdir -p client/.prettynice/Prettynice
+    mkdir -p client/.prettynice/Gen/Components
+    cp "$PROJECT_ROOT/src/Prettynice/Component.gren" client/.prettynice/Prettynice/
+    if [[ "$(ls src/Components/**/*.js 2>/dev/null)" ]]; then
+        cp src/Components/*.js ../dist/client/
+    fi
+  fi
+fi
+
 # run the prettynice cli
 # (slowly migrating everything in this build.sh here)
 cd $PROJECT_ROOT/cli
@@ -37,19 +50,6 @@ mkdir -p build
 mv app build/
 cd $EXAMPLE_ROOT
 node $PROJECT_ROOT/cli/build/app
-
-if [[ -d client/src/Components ]]; then
-  if [[ "$(ls client/src/Components)" ]]; then
-    mkdir -p client/.prettynice/Prettynice
-    mkdir -p client/.prettynice/Gen/Components
-    cp "$PROJECT_ROOT/src/Prettynice/Component.gren" client/.prettynice/Prettynice/
-    cd $EXAMPLE_ROOT/client
-    npx gren make $(find .prettynice/Gen/Components -name "*.gren") --output=../dist/client/main.js
-    if [[ "$(ls src/Components/**/*.js 2>/dev/null)" ]]; then
-        cp src/Components/*.js ../dist/client/
-    fi
-  fi
-fi
 
 # build server
 cd $EXAMPLE_ROOT/server

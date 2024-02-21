@@ -3,8 +3,10 @@ module Main exposing (main)
 import Bytes exposing ( Bytes )
 import Bytes.Decode
 import Bytes.Encode
+import ChildProcess
 import FileSystem exposing (AccessError(..))
 import Node
+import Init
 import Prettynice.Props as Props exposing (Props)
 import Set
 import Shikensu
@@ -40,7 +42,8 @@ main =
               }
             ]
     in
-    Shikensu.perform
+    -- replace this with your own function that can init ChildProcess
+    perform
         { onSuccess = 
             ( \env _ -> Stream.sendLine env.stdout "✅ Done!" )
         , onError =
@@ -51,7 +54,7 @@ main =
                     ]
             )
         }
-        (\fsPermission ->
+        (\fsPermission procPermission ->
             collection
                 |> Array.map
                         (\{ focus, sequence } ->
@@ -69,10 +72,27 @@ main =
                                             e ->
                                                 Task.fail e
                                     )
-                                |> sequence
+                                |> sequence procPermission
                         )
                 |> Task.sequence
         )
+
+
+perform :
+    { onSuccess : Node.Environment -> a -> Cmd {}
+    , onError : Node.Environment -> Error -> Cmd {}
+    }
+    -> (FileSystem.Permission -> ChildProcess.Permission -> Task Error a)
+    -> Shikensu.Program
+perform errorHandling taskCreator =
+    Node.defineSimpleProgram <| \env ->
+        Init.await FileSystem.initialize <| \fsPermission ->
+            Init.await ChildProcess.initialize <| \procPermission ->
+                procPermission
+                    |> taskCreator fsPermission
+                    |> Task.andThen (errorHandling.onSuccess env >> Task.succeed)
+                    |> Task.onError (errorHandling.onError env >> Task.succeed)
+                    |> (\t -> Init.awaitTask t Node.endWithCmd)
 
 
 emptyBundle : FileSystem.Permission -> Shikensu.Bundle
@@ -147,27 +167,86 @@ readGrenFiles task =
         |> Task.andThen Shikensu.read
 
 
-serverComponentSequence : Shikensu.Task -> Shikensu.Task
-serverComponentSequence task =
+serverComponentSequence : ChildProcess.Permission -> Shikensu.Task -> Shikensu.Task
+serverComponentSequence _ task =
     task
         |> readGrenFiles
         |> Task.andThen genServerComponent
         |> Task.andThen (Shikensu.write serverDestination)
 
 
-clientComponentSequence : Shikensu.Task -> Shikensu.Task
-clientComponentSequence task =
+clientComponentSequence : ChildProcess.Permission -> Shikensu.Task -> Shikensu.Task
+clientComponentSequence procPermission task =
     task
         |> readGrenFiles
         |> Task.map (Shikensu.renderContent clientComponentFromDef)
         |> Task.andThen (Shikensu.write clientDestination)
+        |> Task.andThen (buildClientComponents procPermission)
+
+
+buildClientComponents : ChildProcess.Permission -> Shikensu.Bundle -> Shikensu.Task
+buildClientComponents procPermission bundle =
+    let
+        inputs =
+            bundle.compendium
+                -- TODO: test. then refactor and add comments!
+                |> Array.map
+                    (\def ->
+                        Path.combine
+                            (Path.combine
+                                bundle.workingDirectory
+                                (Path.combine
+                                    (Path.directory [ "client", ".prettynice", "Gen", "Components" ])
+                                    (def.directoryPath)
+                                )
+                            )
+                            (Path.file [ def.baseName ++ ".gren" ])
+                                |> Path.toPosix { absolute = True }
+                    )
+
+        outputPath =
+                Path.combine
+                    bundle.workingDirectory
+                    -- TODO: remove duplication
+                    (Path.file [ "dist", "client", "main.js" ])
+                        |> Path.toPosix { absolute = True }
+
+        workingDirectory =
+            Path.combine
+                bundle.workingDirectory
+                (Path.directory [ "client" ])
+                    |> Path.toPosix { absolute = True }
+        
+        runOptions =
+            { ChildProcess.defaultRunOptions
+                | workingDirectory =
+                    ChildProcess.SetWorkingDirectory
+                        workingDirectory
+            }
+    in
+    if inputs == [] then
+        Task.succeed bundle
+    else
+        ChildProcess.run
+            procPermission
+            "gren"
+            ([ "make" ] ++ inputs ++ [ "--output", outputPath ])
+            runOptions
+                |> Task.mapError 
+                    (\e -> 
+                        e.stderr
+                            |> toString
+                            |> Maybe.withDefault "Failed to compile components"
+                            |> ErrorMessage
+                    )
+                |> Task.andThen (\_ -> Task.succeed bundle)
 
 
 {-| For every component, clone the corresponding js ports file if it exists.
     Otherwise create an empty one.
 -}
-clientPortsSequence : Shikensu.Task -> Shikensu.Task
-clientPortsSequence task =
+clientPortsSequence : ChildProcess.Permission -> Shikensu.Task -> Shikensu.Task
+clientPortsSequence _ task =
     task
         |> Task.map (Shikensu.withExtension "gren")
         |> Task.map (Shikensu.renameExtension "gren" "js")
@@ -183,8 +262,8 @@ clientPortsSequence task =
 {-| Clone the server js ports file if it exists.
     Otherwise create an empty one.
 -}
-serverPortsSequence : Shikensu.Task -> Shikensu.Task
-serverPortsSequence task =
+serverPortsSequence : ChildProcess.Permission -> Shikensu.Task -> Shikensu.Task
+serverPortsSequence _ task =
     task
         |> Task.map (Shikensu.withExtension "js")
         |> Task.map (Shikensu.withBaseName "ports")
@@ -199,8 +278,8 @@ serverPortsSequence task =
 
 {-| Copy public assets.
 -}
-publicAssetsSequence : Shikensu.Task -> Shikensu.Task
-publicAssetsSequence task =
+publicAssetsSequence : ChildProcess.Permission -> Shikensu.Task -> Shikensu.Task
+publicAssetsSequence _ task =
     task
         |> Task.andThen Shikensu.read
         |> Task.andThen (Shikensu.write publicAssetsDestination)

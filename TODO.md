@@ -43,7 +43,7 @@
 - [ ] Start migrating pencils.dev
 - [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] **=== release 1.0 ===**
-- [ ] Doc site
+- [ ] Doc site. Link on github project.
 - [ ] Link to appropriate sections of the doc site from prettynice READMEs and API docs:
     - [ ] Client-side component example README (prop field types)
     - [ ] Main project README

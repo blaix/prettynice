@@ -60,7 +60,7 @@ router request response =
     
         [] ->
             Response.sendText "Hello!" response
-            -- You can also sendHtml and sendJson
+            -- You can also sendHtml, sendJson, and sendBytes
             -- see examples/content-types
             
         [ "hello", name ] ->

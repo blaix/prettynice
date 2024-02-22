@@ -133,6 +133,17 @@ readComponents fsPermission =
 -- CODE GEN
 
 
+{-| Return a task to write the given Shikensu Bundle to the given directory,
+where directory is given as an array like: [ "path", "to", "dir" ].
+-}
+write : Array String -> Bundle -> Shikensu.Task
+write destinationDir =
+    destinationDir
+        |> Path.directory
+        |> Relative
+        |> Shikensu.write
+
+
 {-| Generate server-side versions of all client component files.
 
 These are the ModuleName.init functions that you call to drop client-side
@@ -140,30 +151,18 @@ components in your server-side HTML.
 -}
 genComponentsForServer : FileSystem.Permission -> Shikensu.Task
 genComponentsForServer fsPermission =
-    let
-        destination =
-            [ "server", ".prettynice", "Gen", "Components" ]
-                |> Path.directory
-                |> Relative
-    in
     readComponents fsPermission
         |> Task.andThen serverComponentsFromBundle
-        |> Task.andThen (Shikensu.write destination)
+        |> Task.andThen (write [ "server", ".prettynice", "Gen", "Components" ])
 
 
 {-| Generate Browser.element versions of the the client component files, and build the js.
 -}
 genComponentsForClient : FileSystem.Permission -> ChildProcess.Permission -> Shikensu.Task
 genComponentsForClient fsPermission procPermission =
-    let
-        destination =
-            [ "client", ".prettynice", "Gen", "Components" ]
-                |> Path.directory
-                |> Relative
-    in
     readComponents fsPermission
         |> Task.map (Shikensu.renderContent clientComponentFromDef)
-        |> Task.andThen (Shikensu.write destination)
+        |> Task.andThen (write [ "client", ".prettynice", "Gen", "Components" ])
         |> Task.andThen (buildClientComponents procPermission)
 
 
@@ -172,16 +171,10 @@ genComponentsForClient fsPermission procPermission =
 -}
 copyClientPorts : FileSystem.Permission -> Shikensu.Task
 copyClientPorts fsPermission =
-    let
-        destination =
-            [ "dist", "client", "Components" ]
-                |> Path.directory
-                |> Relative
-    in
     listComponents fsPermission
         |> Task.map (Shikensu.renameExtension "gren" "js")
         |> tryRead -- if there's no js, just write empty file
-        |> Task.andThen (Shikensu.write destination)
+        |> Task.andThen (write [ "dist", "client", "Components" ])
 
 
 {-| Clone the server js ports file if it exists.
@@ -189,34 +182,22 @@ copyClientPorts fsPermission =
 -}
 copyServerPorts : FileSystem.Permission -> Shikensu.Task
 copyServerPorts fsPermission =
-    let
-        destination =
-            [ "dist", "server" ]
-                |> Path.directory
-                |> Relative
-    in
     serverSource
         |> tryList fsPermission
         |> Task.map (Shikensu.withExtension "js")
         |> Task.map (Shikensu.withBaseName "ports")
         |> tryRead -- if there's no js, just write empty file
-        |> Task.andThen (Shikensu.write destination)
+        |> Task.andThen (write [ "dist", "server" ])
 
 
 {-| Copy public assets to client dist directory.
 -}
 copyPublicAssets : FileSystem.Permission -> Shikensu.Task
 copyPublicAssets fsPermission =
-    let
-        destination =
-            [ "dist", "client" ]
-                |> Path.directory
-                |> Relative
-    in
     publicAssetsSource
         |> tryList fsPermission
         |> Task.andThen Shikensu.read
-        |> Task.andThen (Shikensu.write destination)
+        |> Task.andThen (write [ "dist", "client" ])
 
 
 {-| Turn a Shikensu.Definition for a client component into a Browser.element module.

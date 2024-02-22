@@ -56,6 +56,7 @@
   - [ ] zulip
   - [ ] mastodon
   - [ ] discord
+  - [ ] twitter?
 - [ ] Think about CSS post-processing:
   - [ ] tailwind? (meh)
   - [ ] bulma.io looks nice (no js!), maybe worth a UI package? look at https://package.elm-lang.org/packages/surprisetalk/elm-bulma/

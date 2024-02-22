@@ -36,9 +36,6 @@ if [[ -d client/src/Components ]]; then
     mkdir -p client/.prettynice/Prettynice
     mkdir -p client/.prettynice/Gen/Components
     cp "$PROJECT_ROOT/src/Prettynice/Component.gren" client/.prettynice/Prettynice/
-    if [[ "$(ls src/Components/**/*.js 2>/dev/null)" ]]; then
-        cp src/Components/*.js ../dist/client/
-    fi
   fi
 fi
 

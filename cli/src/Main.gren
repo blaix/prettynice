@@ -385,7 +385,6 @@ buildClientComponents procPermission bundle =
     let
         inputs =
             bundle.compendium
-                -- TODO: test. then refactor and add comments!
                 |> Array.map
                     (\def ->
                         Path.combine
@@ -403,7 +402,6 @@ buildClientComponents procPermission bundle =
         outputPath =
                 Path.combine
                     bundle.workingDirectory
-                    -- TODO: remove duplication
                     (Path.file [ "dist", "client", "main.js" ])
                         |> Path.toPosix { absolute = True }
 

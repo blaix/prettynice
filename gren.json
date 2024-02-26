@@ -7,7 +7,6 @@
     "version": "1.0.0",
     "exposed-modules": [
         "Prettynice",
-        "Prettynice.Component",
         "Prettynice.FormData",
         "Prettynice.Props",
         "Prettynice.Request",

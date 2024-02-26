@@ -2,463 +2,347 @@ module Main exposing (main)
 
 import Bytes exposing (Bytes)
 import Bytes.Decode
-import Bytes.Encode
 import ChildProcess
-import FileSystem exposing (AccessError(..))
+import CodeGen
+import FileSystem
 import Init
 import Node
-import Prettynice.Props as Props exposing (Props)
-import Shikensu
-import Shikensu.Contrib as Shikensu
-import Shikensu.Bundle as Bundle exposing (Bundle)
-import Shikensu.Definition as Definition exposing (Definition)
-import Shikensu.Error as Error exposing (Error(..))
-import Shikensu.Focus as Focus exposing (Focus(..))
-import Shikensu.Path as Path
-import Stream
+import Shikensu.Error
+import Shikensu.Path
+import Stream exposing (Stream)
 import Task exposing (Task)
 
 
-main : Shikensu.Program
+main : Node.Program Model Msg
 main =
-    Node.defineSimpleProgram <| \env ->
-        Init.await FileSystem.initialize <| \fsPermission ->
-            Init.await ChildProcess.initialize <| \procPermission ->
-                [ genComponentsForClient fsPermission procPermission
-                , genComponentsForServer fsPermission
-                , copyClientPorts fsPermission
-                , copyServerPorts fsPermission
-                , copyPublicAssets fsPermission
-                ]
-                    |> Task.sequence
-                    |> Task.andThen (onSuccess env >> Task.succeed)
-                    |> Task.onError (onError env >> Task.succeed)
-                    |> (\t -> Init.awaitTask t Node.endWithCmd)
+    Node.defineProgram 
+        { init = init
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        }
 
 
-onSuccess : Node.Environment -> a -> Cmd {}
-onSuccess env _ =
-    Stream.sendLine env.stdout "✅ Done!"
+-- MODEL
 
 
-onError : Node.Environment -> Error -> Cmd {}
-onError env error =
+type alias Model =
+    { fsPermission : FileSystem.Permission
+    , procPermission : ChildProcess.Permission
+    , stdout : Stream
+    , stderr : Stream
+    }
+
+
+init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Init.await FileSystem.initialize <| \fsPermission ->
+        Init.await ChildProcess.initialize <| \procPermission ->
+            Node.startProgram
+                { model =
+                    { fsPermission = fsPermission
+                    , procPermission = procPermission
+                    , stdout = env.stdout
+                    , stderr = env.stderr
+                    }
+                , command = 
+                    Cmd.batch
+                        [ progress env.stdout "Cleaning up previous builds"
+                        , clean fsPermission |> Task.attempt Cleaned
+                        ]
+                }
+
+
+-- UPDATE
+
+
+type Msg
+    = Cleaned (Result FileSystem.AccessError {})
+    | GeneratedDependencies (Result CodeGen.Error CodeGen.Result)
+    | GeneratedServerComponents (Result CodeGen.Error CodeGen.Result)
+    | GeneratedClientComponents (Result CodeGen.Error CodeGen.Result)
+    | GeneratedServerPorts (Result CodeGen.Error CodeGen.Result)
+    | GeneratedClientPorts (Result CodeGen.Error CodeGen.Result)
+    | CopiedPublicAssets (Result CodeGen.Error CodeGen.Result)
+    | BuiltClientComponents (Result ComponentBuildError ComponentBuildSuccess)
+    | BuiltServer (Result ChildProcess.FailedRun ChildProcess.SuccessfulRun)
+
+
+type ComponentBuildError
+    = ComponentBuildFailed ChildProcess.FailedRun
+    | ListComponentsFailed String
+
+
+type ComponentBuildSuccess
+    = ComponentBuildSucceeded ChildProcess.SuccessfulRun
+    | NoComponents
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        Cleaned result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Generating prettynice dependencies"
+                            , CodeGen.genDependencies model.fsPermission
+                                |> Task.attempt GeneratedDependencies
+                            ]
+
+                    Err e ->
+                        fileSystemError model.stderr e
+            }
+                        
+        GeneratedDependencies result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Generating server components"
+                            , CodeGen.genServerComponents model.fsPermission
+                                |> Task.attempt GeneratedServerComponents
+                            ]
+
+                    Err e ->
+                        codeGenError model.stderr e
+            }
+
+        GeneratedServerComponents result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Generating client components"
+                            , Task.attempt GeneratedClientComponents <|
+                                CodeGen.genClientComponents model.fsPermission
+                            ]
+
+                    Err e ->
+                        codeGenError model.stderr e
+            }
+
+        GeneratedClientComponents result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Generating server ports"
+                            , Task.attempt GeneratedServerPorts <|
+                                CodeGen.genServerPorts model.fsPermission
+                            ]
+
+                    Err e ->
+                        codeGenError model.stderr e
+            }
+
+        GeneratedServerPorts result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Generating client ports"
+                            , Task.attempt GeneratedClientPorts <|
+                                CodeGen.genClientPorts model.fsPermission
+                            ]
+
+                    Err e ->
+                        codeGenError model.stderr e
+            }
+
+        GeneratedClientPorts result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Copying public assets"
+                            , Task.attempt CopiedPublicAssets <|
+                                CodeGen.copyPublicAssets model.fsPermission
+                            ]
+
+                    Err e ->
+                        codeGenError model.stderr e
+            }
+
+        CopiedPublicAssets result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Building client components"
+                            , Task.attempt BuiltClientComponents <|
+                                buildClientComponents model.fsPermission model.procPermission
+                            ]
+
+                    Err e ->
+                        codeGenError model.stderr e
+            }
+
+        BuiltClientComponents result ->
+            { model = model
+            , command =
+                case result of
+                    Ok success ->
+                        Cmd.batch
+                            [ case success of
+                                NoComponents ->
+                                    Stream.sendLine model.stdout "No components to build"
+                                ComponentBuildSucceeded s ->
+                                    Stream.send model.stdout s.stdout
+                            , progress model.stdout "Building server"
+                            , Task.attempt BuiltServer <|
+                                buildServer model.procPermission
+                            ]
+
+                    Err (ComponentBuildFailed failure) ->
+                        failure.stderr
+                            |> bytesToString
+                            |> Maybe.withDefault "Unknown error building client components"
+                            |> endWithErrorMessage model.stderr
+
+                    Err (ListComponentsFailed message) ->
+                        endWithErrorMessage model.stderr message
+            }
+
+        BuiltServer result ->
+            { model = model
+            , command =
+                case result of
+                    Ok success ->
+                        Cmd.batch
+                            [ Stream.send model.stdout success.stdout
+                            , Stream.sendLine model.stdout "✅ Done"
+                            ]
+
+                    Err error ->
+                        error.stderr
+                            |> bytesToString
+                            |> Maybe.withDefault "Unknown error building server"
+                            |> endWithErrorMessage model.stderr
+            }
+
+
+clean : FileSystem.Permission -> Task FileSystem.AccessError {}
+clean fsPermission =
+    let
+        remove path =
+            FileSystem.remove
+                fsPermission
+                (FileSystem.buildPath path)
+                { recursive = True, ignoreErrors = True }
+
+        create path =
+            FileSystem.makeDirectory
+                fsPermission
+                (FileSystem.buildPath path)
+                { recursive = True }
+
+        recreate path =
+            remove path
+                |> Task.andThen (\_ -> create path)
+    in
+    [ [ "dist" ]
+    , [ "client", ".prettynice" ]
+    , [ "server", ".prettynice" ]
+    ]
+        |> Array.map recreate
+        |> Task.sequence
+        |> Task.map (\_ -> {})
+
+
+buildClientComponents : FileSystem.Permission -> ChildProcess.Permission -> Task ComponentBuildError ComponentBuildSuccess
+buildClientComponents fsPermission procPermission =
+    let
+        workingDirectory =
+            FileSystem.buildPath [ "client" ]
+
+        outputPath =
+            FileSystem.buildPath [ "..", "dist", "client", "main.js" ]
+
+        buildComponents components =
+            if components == "" then
+                Task.succeed NoComponents
+            else
+                ChildProcess.run procPermission "gren" 
+                    [ "make", components, "--output=" ++ outputPath ]
+                    { ChildProcess.defaultRunOptions 
+                        | workingDirectory = 
+                            ChildProcess.SetWorkingDirectory workingDirectory
+                    }
+                    |> Task.map ComponentBuildSucceeded
+                    |> Task.mapError ComponentBuildFailed
+    in
+    CodeGen.generatedComponentPaths fsPermission
+        |> Task.mapError (CodeGen.errorString >> ListComponentsFailed)
+        |> Task.map (String.join " ")
+        |> Task.andThen buildComponents
+
+
+buildServer : ChildProcess.Permission -> Task ChildProcess.FailedRun ChildProcess.SuccessfulRun
+buildServer procPermission =
+    let
+        workingDirectory =
+            FileSystem.buildPath [ "server" ]
+
+        inputPath =
+            FileSystem.buildPath [ "src", "Main.gren" ]
+
+        outputPath =
+            FileSystem.buildPath [ "..", "dist", "server", "main.js" ]
+    in
+    ChildProcess.run procPermission "gren" 
+        [ "make", inputPath, "--output=" ++ outputPath ]
+        { ChildProcess.defaultRunOptions 
+            | workingDirectory = 
+                ChildProcess.SetWorkingDirectory workingDirectory
+        }
+
+
+codeGenError : Stream -> CodeGen.Error -> Cmd Msg
+codeGenError stream error =
+    endWithErrorMessage stream (CodeGen.errorString error)
+
+
+fileSystemError : Stream -> FileSystem.AccessError -> Cmd Msg
+fileSystemError stream error =
+    endWithErrorMessage stream <|
+        case error of
+            FileSystem.AccessErrorNotFound ->
+                "File not found"
+
+            FileSystem.AccessErrorNoAccess ->
+                "Cannot access file"
+
+            FileSystem.AccessErrorNotADirectory ->
+                "Path is not a directory"
+
+            FileSystem.AccessErrorUnknown str ->
+                "File system error: " ++ str
+
+
+endWithErrorMessage : Stream -> String -> Cmd Msg
+endWithErrorMessage stream message =
     Cmd.batch
-        [ Stream.sendLine env.stderr ("🚨 " ++ Error.toString error)
+        [ Stream.sendLine stream ("🚨 " ++ message ++ "\n")
         , Node.setExitCode 1
         ]
 
 
--- READING FILES
+progress : Stream -> String -> Cmd Msg
+progress stream message =
+    Stream.sendLine stream ("🌸 " ++ message ++ "...")
 
 
-componentSource : Focus
-componentSource =
-    [ "client", "src", "Components" ]
-        |> Path.directory
-        |> Relative
-
-
-publicAssetsSource : Focus
-publicAssetsSource =
-    [ "public" ]
-        |> Path.directory
-        |> Relative
-
-
-serverSource : Focus
-serverSource =
-    [ "server", "src" ]
-        |> Path.directory
-        |> Relative
-
-
-{-| Try to get a list of files for the given focus path, recursively.
-
-Returns a Task containing a Shikensu Bundle with all the files,
-or an empty Bundle if the path is empty (e.g. no files in public/)
-or doesn't exist (e.g. site is 100% server-side so no client/ dir).
--}
-tryList : FileSystem.Permission -> Focus -> Shikensu.Task
-tryList fsPermission focus =
-    focus
-        |> Shikensu.list fsPermission
-        |> Task.onError
-            (\error -> 
-                case error of
-                    PlatformAccessError _ AccessErrorNotFound ->
-                        -- Nothing to process. Ignore.
-                        -- (e.g. no components or nothing at public/)
-                        Task.succeed 
-                            (emptyBundle fsPermission)
-
-                    e ->
-                        Task.fail e
-            )
-
-
-{-| Attempt a Shikensu.read, ignoring errors.
-
-This is handy when reading optional files
-like server/ports.js
--}
-tryRead : Shikensu.Task -> Shikensu.Task
-tryRead =
-    Task.andThen
-        (\bundle ->
-            Task.onError
-                (\_ -> Task.succeed bundle)
-                (Shikensu.read bundle)
-        )
-
-
-
-{-| Return a Task containing a Shikensu Bundle holding all client components.
--}
-listComponents : FileSystem.Permission -> Shikensu.Task
-listComponents fsPermission =
-    componentSource
-        |> tryList fsPermission
-        |> Task.map (Shikensu.withExtension "gren")
-
-
-{-| Return a Task containing a Shikensu Bundle holding the contents of all client component files.
--}
-readComponents : FileSystem.Permission -> Shikensu.Task
-readComponents fsPermission =
-    listComponents fsPermission
-        |> Task.andThen Shikensu.read
-
-
--- CODE GEN
-
-
-{-| Return a task to write the given Shikensu Bundle to the given directory,
-where directory is given as an array like: [ "path", "to", "dir" ].
--}
-write : Array String -> Bundle -> Shikensu.Task
-write destinationDir =
-    destinationDir
-        |> Path.directory
-        |> Relative
-        |> Shikensu.write
-
-
-{-| Generate server-side versions of all client component files.
-
-These are the ModuleName.init functions that you call to drop client-side
-components in your server-side HTML.
--}
-genComponentsForServer : FileSystem.Permission -> Shikensu.Task
-genComponentsForServer fsPermission =
-    readComponents fsPermission
-        |> Task.andThen serverComponentsFromBundle
-        |> Task.andThen (write [ "server", ".prettynice", "Gen", "Components" ])
-
-
-{-| Generate Browser.element versions of the the client component files, and build the js.
--}
-genComponentsForClient : FileSystem.Permission -> ChildProcess.Permission -> Shikensu.Task
-genComponentsForClient fsPermission procPermission =
-    readComponents fsPermission
-        |> Task.map (Shikensu.renderContent clientComponentFromDef)
-        |> Task.andThen (write [ "client", ".prettynice", "Gen", "Components" ])
-        |> Task.andThen (buildClientComponents procPermission)
-
-
-{-| For every component, clone the corresponding js ports file if it exists.
-    Otherwise create an empty one.
--}
-copyClientPorts : FileSystem.Permission -> Shikensu.Task
-copyClientPorts fsPermission =
-    listComponents fsPermission
-        |> Task.map (Shikensu.renameExtension "gren" "js")
-        |> tryRead -- if there's no js, just write empty file
-        |> Task.andThen (write [ "dist", "client", "Components" ])
-
-
-{-| Clone the server js ports file if it exists.
-    Otherwise create an empty one.
--}
-copyServerPorts : FileSystem.Permission -> Shikensu.Task
-copyServerPorts fsPermission =
-    serverSource
-        |> tryList fsPermission
-        |> Task.map (Shikensu.withExtension "js")
-        |> Task.map (Shikensu.withBaseName "ports")
-        |> tryRead -- if there's no js, just write empty file
-        |> Task.andThen (write [ "dist", "server" ])
-
-
-{-| Copy public assets to client dist directory.
--}
-copyPublicAssets : FileSystem.Permission -> Shikensu.Task
-copyPublicAssets fsPermission =
-    publicAssetsSource
-        |> tryList fsPermission
-        |> Task.andThen Shikensu.read
-        |> Task.andThen (write [ "dist", "client" ])
-
-
-{-| Turn a Shikensu.Definition for a client component into a Browser.element module.
--}
-clientComponentFromDef : Definition -> Maybe Bytes
-clientComponentFromDef def =
-    def.content
-        |> Maybe.andThen toString
-        |> Maybe.map (toClientComponent def)
-        |> Maybe.map toBytes
-
-
-{-| Turn the content of a Shikensu.Definition for a client component into a Browser.element module.
--}
-toClientComponent : Definition -> String -> String
-toClientComponent def contents =
-    """
-    module Gen.{{MODULE_NAME}} exposing (main)
-
-    import Transmutable.Html.VirtualDom exposing (toVirtualDom)
-    import {{MODULE_NAME}} as {{NAME}}
-    import Browser
-
-    main : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg
-    main =
-        let
-            e = {{NAME}}.component
-        in
-        Browser.element
-            { init = e.init
-            , update = e.update
-            , subscriptions = e.subscriptions
-            , view = e.view >> toVirtualDom
-            }
-    """
-        |> String.replace "{{NAME}}" def.baseName
-        |> String.replace "{{MODULE_NAME}}" (moduleName def)
-
-
-{-| Given the Shikensu Definition for a component file,
-return the name that should be used in the resulting module signature.
--}
-moduleName : Definition -> String
-moduleName def =
-    let
-        path =
-            Path.unwrap def.directoryPath
-
-        modulePath =
-            case path of
-                [] ->
-                    "Components."
-
-                dirs ->
-                    "Components."
-                        ++ (String.join "." dirs)
-                        ++ "."
-    in
-    modulePath ++ def.baseName
-
-
-{-| Given a Shikensu Bundle holding client components,
-return a task holding a new bundle with the server-side version of those components,
-with a helpful error message if the parsing or code gen fails.
--}
-serverComponentsFromBundle : Bundle -> Task Error Bundle
-serverComponentsFromBundle bundle =
-    let
-        newBundle =
-            bundle
-                |> Bundle.mapCompendium
-                    ( Array.map
-                        ( \def ->
-                            let
-                                content =
-                                    def.content
-                                        |> Maybe.andThen toString
-                                        |> Maybe.withDefault ""
-
-                                propsResult =
-                                    Props.get content
-                            in
-                            { def
-                                | content =
-                                    case propsResult of
-                                        Ok props ->
-                                            toServerComponent def props
-                                                |> toBytes
-                                                |> Just
-
-                                        e ->
-                                            Nothing
-                            }
-                        )
-                    )
-        
-        badDef =
-            newBundle.compendium
-                |> Array.findFirst
-                    (\def -> def.content == Nothing)
-    in
-    case badDef of
-        Nothing ->
-            Task.succeed newBundle
-        
-        Just def ->
-            Task.fail
-                ( ErrorMessage <|
-                    String.replace "{{COMPONENT}}" def.baseName
-                        """
-                        Oops! I can't parse props for the {{COMPONENT}} component.
-                           I'm looking for a type alias that looks like this:
-
-                                type alias Props =
-                                    { myField : String
-                                    , myOtherField : Int
-                                    }
-
-                           It either doesn't exist, is formatted in a way I
-                           can't recognize, or it uses unsupported field types.
-                           See Prettynice.Props.Fieldtype for supported types:
-                           https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren
-                        """
-                )
-
-
-{-| Given a Shikensu Definition for a client component,
-return a string holding the server-side version of that component.
-
-The server version is just an init version that takes the client component props
-and returns HTML with a script tag to init the component.
--}
-toServerComponent : Definition -> Props -> String
-toServerComponent def props =
-    """
-    module Gen.{{MODULE_NAME}} exposing (init)
-
-    import Json.Encode as Encode
-    import Prettynice.Props as Props
-    import Transmutable.Html as H exposing (Html)
-    import Transmutable.Html.Attributes as A
-
-    type alias Props =
-        {{PROPS_TYPE}}
-
-    encoder : Props -> Encode.Value
-    encoder props =
-        {{PROPS_ENCODER}}
-
-    init : Props -> Html msg
-    init props =
-        let
-            propJson = Encode.encode 0 (encoder props)
-        in
-        H.span []
-            [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []
-            , H.node "script" []
-                [ H.text <|
-                    \"""
-                    var $__components = $__components || {};
-                    $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];
-                    $__components["{{MODULE_NAME}}"].push(
-                        Gren.Gen.{{MODULE_NAME}}.init({
-                            node: document.currentScript.parentNode.getElementsByClassName("prettynice-component-{{MODULE_NAME}}")[0],
-                            flags: \""" ++ propJson ++ \""",
-                        })
-                    );
-                    \"""
-                ]
-            ]
-    """
-        |> String.replace "{{MODULE_NAME}}" (moduleName def)
-        |> String.replace "{{PROPS_TYPE}}" (Props.typeSig props)
-        |> String.replace "{{PROPS_ENCODER}}" (Props.encoder props)
-
-
--- BUILD
-
-
-{-| Given a Shikensu Bundle holding codegen'd Browser.element versions of the client components,
-return a task that builds the js for those components.
--}
-buildClientComponents : ChildProcess.Permission -> Bundle -> Shikensu.Task
-buildClientComponents procPermission bundle =
-    let
-        inputs =
-            bundle.compendium
-                |> Array.map
-                    (\def ->
-                        Path.combine
-                            (Path.combine
-                                bundle.workingDirectory
-                                (Path.combine
-                                    (Path.directory [ "client", ".prettynice", "Gen", "Components" ])
-                                    (def.directoryPath)
-                                )
-                            )
-                            (Path.file [ def.baseName ++ ".gren" ])
-                                |> Path.toPosix { absolute = True }
-                    )
-
-        outputPath =
-                Path.combine
-                    bundle.workingDirectory
-                    (Path.file [ "dist", "client", "main.js" ])
-                        |> Path.toPosix { absolute = True }
-
-        workingDirectory =
-            Path.combine
-                bundle.workingDirectory
-                (Path.directory [ "client" ])
-                    |> Path.toPosix { absolute = True }
-        
-        runOptions =
-            { ChildProcess.defaultRunOptions
-                | workingDirectory =
-                    ChildProcess.SetWorkingDirectory
-                        workingDirectory
-            }
-    in
-    if inputs == [] then
-        Task.succeed bundle
-    else
-        ChildProcess.run
-            procPermission
-            "gren"
-            ([ "make" ] ++ inputs ++ [ "--output", outputPath ])
-            runOptions
-                |> Task.mapError 
-                    (\e -> 
-                        e.stderr
-                            |> toString
-                            |> Maybe.withDefault "Failed to compile components"
-                            |> ErrorMessage
-                    )
-                |> Task.andThen (\_ -> Task.succeed bundle)
-
-
--- UTIL
-
-
-toString : Bytes -> Maybe String
-toString bytes =
+bytesToString : Bytes -> Maybe String
+bytesToString bytes =
     bytes
         |> Bytes.width
         |> Bytes.Decode.string
         |> (\decoder -> Bytes.Decode.decode decoder bytes)
-
-
-toBytes : String -> Bytes
-toBytes string =
-    string
-        |> Bytes.Encode.string
-        |> Bytes.Encode.encode
-
-
-emptyBundle : FileSystem.Permission -> Bundle
-emptyBundle permission =
-    { compendium = []
-    , fsPermission = permission
-    , readingDirectory = Nothing
-    , workingDirectory = Path.directory ["."]
-    }
-

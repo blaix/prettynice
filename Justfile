@@ -6,12 +6,27 @@ white :=' \033[1;37m' # Or bold white depending on theme
 nc := '\033[0m' # No Color
 
 example NAME:
-  @echo -e "\n{{green}}==== RUNNING EXAMPLE: {{NAME}} ===={{nc}}\n"
-  cd examples/{{NAME}} && npm install && npm start
+  @just header "RUNNING EXAMPLE: {{NAME}}"
+  just prep-example {{NAME}}
+  cd examples/{{NAME}} && npm start
 
-watch NAME:
-  @echo -e "\n{{green}}==== WATCHING EXAMPLE: {{NAME}} ===={{nc}}\n"
-  cd examples/{{NAME}} && fd ".+\.(gren|js|sh)$" ../.. | entr -r npm start
+watch-example NAME:
+  @just header "WATCHING EXAMPLE: {{NAME}}"
+  just prep-example {{NAME}}
+  cd examples/{{NAME}} && fd ".+\.(gren|js)$" ../.. | entr -r npm start
+
+prep-example NAME:
+  just build-cli
+  cd examples/{{NAME}} && npm install
+
+build-cli:
+  cd cli && npx gren make src/Main.gren && mv app bin/index.js 
 
 examples:
   for example in `ls examples`; do just example $example; done
+
+header MSG:
+  @echo -e "\n{{green}}{{MSG}}{{nc}}"
+    
+progress MSG:
+  @echo -e "🌸 {{MSG}}..."

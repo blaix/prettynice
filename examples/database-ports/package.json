@@ -1,17 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "postinstall": "npx prisma migrate dev",
     "start": "npm run build && npm run serve",
-    "serve": "node dist/server/app",
-    "build": "../../scripts/build.sh"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
+    "serve": "node dist/server/index.js",
+    "build": "node ../../cli/bin/index.js"
   },
   "dependencies": {
-    "@prisma/client": "^5.9.1",
-    "gren-lang": "^0.3.0",
-    "prisma": "^5.9.1"
+    "gren-lang": "^0.3.0"
   }
 }

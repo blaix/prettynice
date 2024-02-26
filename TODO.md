@@ -24,13 +24,15 @@
 - [X] Fix components nested under a parent module (e.g. client/Components/Foo/Bar.gren)
 - [X] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [X] Use HttpServer.requestInfo for request logging in the terminal.
-- [ ] Move build logic into cli:
-  - [ ] Refactor cli to full MVU node program
-  - [ ] Everything in build.sh [IN PROGRESS]
-  - [ ] Only generate client/ files if client/ already exists
-  - [ ] Separate build/run commands (see joeybright/gren-args)
-  - [ ] How/when to run with --optimize?
-  - [ ] Blog about writing and releasing a gren node program as an NPM (for my own crystalization and reference)?
+- [.] Move build logic into cli:
+  - [X] Refactor cli to full MVU node program [IN PROGRESS]
+  - [X] Remove build.sh
+  - [ ] Test `cd example/[example] && npm install && npm serve`
+  - [ ] Fix static-assets example (static assets not loading)
+  - [ ] Fix database-ports example (blank page)
+  - [ ] Prod builds with --optimize
+  - [ ] Blog about writing a command line app in gren
+  - [ ] Blog about _releasing_ a command line app in gren on npm?
 - [ ] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
 - [ ] production builds with --optimize

@@ -1,0 +1,25 @@
+{
+  "name": "prettynice-cli",
+  "version": "0.0.1",
+  "description": "CLI for the Prettynice Gren framework.",
+  "bin": {
+    "prettynice": "bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blaix/prettynice.git"
+  },
+  "keywords": [
+    "gren",
+    "prettynice"
+  ],
+  "author": "Justin Blake",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/blaix/prettynice/issues"
+  },
+  "homepage": "https://github.com/blaix/prettynice/tree/main/cli"
+}

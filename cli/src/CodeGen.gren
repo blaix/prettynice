@@ -1,0 +1,504 @@
+module CodeGen exposing
+    ( Result
+    , Error
+    , errorString
+
+    -- Code gen
+    , genDependencies
+    , genServerComponents
+    , genClientComponents
+    , genServerPorts
+    , genClientPorts
+    , generatedComponentPaths
+    , copyPublicAssets
+    )
+
+import Bytes exposing (Bytes)
+import Bytes.Encode
+import Bytes.Decode
+import FileSystem
+import Prettynice.Props as Props exposing (Props)
+import Shikensu
+import Shikensu.Bundle exposing (Bundle)
+import Shikensu.Contrib as Shikensu
+import Shikensu.Definition exposing (Definition)
+import Shikensu.Error
+import Shikensu.Focus exposing (Focus)
+import Shikensu.Path
+import Task exposing (Task)
+
+
+type Error
+    = PipelineError String
+    | FileSystemError String
+
+
+type Result
+    = Result Bundle
+
+
+-- CODE GEN INTERFACE
+
+
+{-| Generate modules with server-side init functions for all client components.
+-}
+genServerComponents : FileSystem.Permission -> Task Error Result
+genServerComponents fsPermission =
+    readComponents fsPermission
+        |> Task.andThen serverComponentsFromBundle
+        |> Task.andThen (write [ "server", ".prettynice", "Gen", "Components" ])
+        |> Task.mapError mapError
+        |> Task.map Result
+
+
+{-| Generate modules with Browser.element mains for all client-side components.
+-}
+genClientComponents : FileSystem.Permission -> Task Error Result
+genClientComponents fsPermission =
+    readComponents fsPermission
+        |> Task.map (Shikensu.renderContent clientComponentFromDef)
+        |> Task.andThen (write [ "client", ".prettynice", "Gen", "Components" ])
+        |> Task.mapError mapError
+        |> Task.map Result
+
+
+{-| Copy server ports file if exists, create an empty one otherwise.
+-}
+genServerPorts : FileSystem.Permission -> Task Error Result
+genServerPorts fsPermission =
+    [ "server", "src" ]
+        |> Shikensu.Path.directory
+        |> Shikensu.Focus.Relative
+        |> tryList fsPermission
+        |> Task.map (Shikensu.withExtension "js")
+        |> Task.map (Shikensu.withBaseName "ports")
+        |> tryRead -- if there's no js, just write empty file
+        |> Task.andThen (write [ "dist", "server" ])
+        |> Task.mapError mapError
+        |> Task.map Result
+
+
+{-| Copy client ports files if they exist, create empty ones otherwise.
+-}
+genClientPorts : FileSystem.Permission -> Task Error Result
+genClientPorts fsPermission =
+    listComponents fsPermission
+        |> Task.map (Shikensu.renameExtension "gren" "js")
+        |> tryRead -- if there's no js, just write empty file
+        |> Task.andThen (write [ "dist", "client", "Components" ])
+        |> Task.mapError mapError
+        |> Task.map Result
+
+
+{-| Generate scaffolding files needed for the client build step.
+-}
+genDependencies : FileSystem.Permission -> Task Error Result
+genDependencies fsPermission =
+    -- HTML responses assume a main.js exists.
+    -- Stub one out in case there is not client build for this app.
+    [ createDef "" [ "dist", "client", "main.js" ]
+
+    -- The Component type for client-side components.
+    -- Generating this instead of having a separate browser package.
+    , createDef 
+        prettyniceComponentModule 
+        [ "client", ".prettynice", "Prettynice", "Component.gren" ]
+
+    -- Wrapper for the app's compiled server.
+    -- Need this for things like connecting ports.
+    , createDef 
+        serverWrapper
+        -- TODO: update scripts to call app.js instead of app
+        [ "dist", "server", "index.js" ]
+    ]
+        |> Shikensu.bundle fsPermission
+        |> Task.andThen (write [])
+        |> Task.mapError mapError
+        |> Task.map Result
+
+
+{-| Copy public/ files to dist/client/
+-}
+copyPublicAssets : FileSystem.Permission -> Task Error Result
+copyPublicAssets fsPermission =
+    [ "public" ]
+        |> Shikensu.Path.directory
+        |> Shikensu.Focus.Relative
+        |> tryList fsPermission
+        |> Task.andThen (write [ "dist", "client" ])
+        |> Task.mapError mapError
+        |> Task.map Result
+
+
+generatedComponentPaths : FileSystem.Permission -> Task Error (Array String)
+generatedComponentPaths fsPermission =
+    listComponents fsPermission
+        |> Task.andThen 
+            (\bundle -> 
+                bundle.compendium
+                    |> Array.map
+                        (\d ->
+                            let
+                                dir =
+                                    Shikensu.Path.unwrap d.directoryPath
+
+                                parent =
+                                    [ ".prettynice"
+                                    , "Gen"
+                                    , "Components"
+                                    ] ++ dir
+
+                                filename =
+                                    d.baseName ++ ".gren"
+                            in
+                            FileSystem.buildPath (parent ++ [ filename ])
+                        )
+                    |> Task.succeed
+            )
+        |> Task.mapError mapError
+
+
+-- CODE GEN INTERNALS: SERVER
+
+
+{-| Convert bundle of components to server-side modules.
+-}
+serverComponentsFromBundle : Bundle -> Shikensu.Task
+serverComponentsFromBundle bundle =
+    let
+        newBundle =
+            bundle
+                |> Shikensu.Bundle.mapCompendium
+                    ( Array.map
+                        ( \def ->
+                            let
+                                content =
+                                    def.content
+                                        |> Maybe.andThen toString
+                                        |> Maybe.withDefault ""
+
+                                propsResult =
+                                    Props.get content
+                            in
+                            { def
+                                | content =
+                                    case propsResult of
+                                        Ok props ->
+                                            toServerComponent def props
+                                                |> toBytes
+                                                |> Just
+
+                                        e ->
+                                            Nothing
+                            }
+                        )
+                    )
+        
+        badDef =
+            newBundle.compendium
+                |> Array.findFirst
+                    (\def -> def.content == Nothing)
+    in
+    case badDef of
+        Nothing ->
+            Task.succeed newBundle
+        
+        Just def ->
+            Task.fail
+                ( Shikensu.Error.ErrorMessage <|
+                    String.replace "{{COMPONENT}}" def.baseName
+                        """
+                        Oops! I can't parse props for the {{COMPONENT}} component.
+                           I'm looking for a type alias that looks like this:
+
+                                type alias Props =
+                                    { myField : String
+                                    , myOtherField : Int
+                                    }
+
+                           It either doesn't exist, is formatted in a way I
+                           can't recognize, or it uses unsupported field types.
+                           See Prettynice.Props.Fieldtype for supported types:
+                           https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren
+                        """
+                )
+
+
+{-| Convert a single component definition to server-side component init function.
+-}
+toServerComponent : Definition -> Props -> String
+toServerComponent def props =
+    """
+    module Gen.{{MODULE_NAME}} exposing (init)
+
+    import Json.Encode as Encode
+    import Prettynice.Props as Props
+    import Transmutable.Html as H exposing (Html)
+    import Transmutable.Html.Attributes as A
+
+    type alias Props =
+        {{PROPS_TYPE}}
+
+    encoder : Props -> Encode.Value
+    encoder props =
+        {{PROPS_ENCODER}}
+
+    init : Props -> Html msg
+    init props =
+        let
+            propJson = Encode.encode 0 (encoder props)
+        in
+        H.span []
+            [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []
+            , H.node "script" []
+                [ H.text <|
+                    \"""
+                    var $__components = $__components || {};
+                    $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];
+                    $__components["{{MODULE_NAME}}"].push(
+                        Gren.Gen.{{MODULE_NAME}}.init({
+                            node: document.currentScript.parentNode.getElementsByClassName("prettynice-component-{{MODULE_NAME}}")[0],
+                            flags: \""" ++ propJson ++ \""",
+                        })
+                    );
+                    \"""
+                ]
+            ]
+    """
+        |> String.replace "{{MODULE_NAME}}" (moduleName def)
+        |> String.replace "{{PROPS_TYPE}}" (Props.typeSig props)
+        |> String.replace "{{PROPS_ENCODER}}" (Props.encoder props)
+
+
+-- CODE GEN INTERNALS: CLIENT
+
+
+{-| Convert a single component definition to a module with a Browser.element main.
+-}
+clientComponentFromDef : Definition -> Maybe Bytes
+clientComponentFromDef def =
+    def.content
+        |> Maybe.andThen toString
+        |> Maybe.map (toClientComponent def)
+        |> Maybe.map toBytes
+
+
+{-| Convert string contents of component to a module with a Browser.element main.
+-}
+toClientComponent : Definition -> String -> String
+toClientComponent def contents =
+    """
+    module Gen.{{MODULE_NAME}} exposing (main)
+
+    import Transmutable.Html.VirtualDom exposing (toVirtualDom)
+    import {{MODULE_NAME}} as {{NAME}}
+    import Browser
+
+    main : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg
+    main =
+        let
+            e = {{NAME}}.component
+        in
+        Browser.element
+            { init = e.init
+            , update = e.update
+            , subscriptions = e.subscriptions
+            , view = e.view >> toVirtualDom
+            }
+    """
+        |> String.replace "{{NAME}}" def.baseName
+        |> String.replace "{{MODULE_NAME}}" (moduleName def)
+
+
+prettyniceComponentModule : String
+prettyniceComponentModule =
+    """
+    module Prettynice.Component exposing (Component)
+
+    import Transmutable.Html exposing (Html)
+
+    type alias Component props model msg =
+        { init : props -> { model : model, command : Cmd msg }
+        , view : model -> Html msg
+        , update : msg -> model -> { model : model, command : Cmd msg }
+        , subscriptions : model -> Sub msg
+        }
+    """
+
+
+serverWrapper : String
+serverWrapper =
+    """
+    const main = require("./main.js");
+    const app = main.Gren.Main.init({});
+
+    try {
+        const ports = require("./ports.js");
+        if (ports.init) {
+          ports.init(app);
+        }
+    } catch (e) {
+        if (e.code !== 'MODULE_NOT_FOUND') {
+            throw e;
+        }
+    }
+    """
+
+
+-- UTIL
+
+{-| Create a Shikensu Definition for the given content at the given path.
+-}
+createDef : String -> Array String -> Definition
+createDef content path =
+    let
+        def =
+            Shikensu.Definition.create <|
+                Shikensu.Path.file path
+    in
+    { def | content = Just (toBytes content) }
+
+
+{-| Get a Task that reads the contents of all client component source files.
+-}
+readComponents : FileSystem.Permission -> Shikensu.Task
+readComponents fsPermission =
+    listComponents fsPermission
+        |> Task.andThen Shikensu.read
+
+
+{-| Get a Task containing a Shikensu Bundle holding all client components.
+-}
+listComponents : FileSystem.Permission -> Shikensu.Task
+listComponents fsPermission =
+    [ "client", "src", "Components" ]
+        |> Shikensu.Path.directory
+        |> Shikensu.Focus.Relative
+        |> tryList fsPermission
+        |> Task.map (Shikensu.withExtension "gren")
+
+
+
+toString : Bytes -> Maybe String
+toString bytes =
+    bytes
+        |> Bytes.width
+        |> Bytes.Decode.string
+        |> (\decoder -> Bytes.Decode.decode decoder bytes)
+
+
+toBytes : String -> Bytes
+toBytes string =
+    string
+        |> Bytes.Encode.string
+        |> Bytes.Encode.encode
+
+
+emptyBundle : FileSystem.Permission -> Bundle
+emptyBundle permission =
+    { compendium = []
+    , fsPermission = permission
+    , readingDirectory = Nothing
+    , workingDirectory = Shikensu.Path.directory ["."]
+    }
+
+
+{-| Try to get a list of files for the given focus path, recursively.
+
+Returns a Task containing a Shikensu Bundle with all the files,
+or an empty Bundle if the path is empty (e.g. no files in public/)
+or doesn't exist (e.g. site is 100% server-side so no client/ dir).
+-}
+tryList : FileSystem.Permission -> Focus -> Shikensu.Task
+tryList fsPermission focus =
+    focus
+        |> Shikensu.list fsPermission
+        |> Task.onError
+            (\error -> 
+                case error of
+                    Shikensu.Error.PlatformAccessError _ FileSystem.AccessErrorNotFound ->
+                        -- Nothing to process. Ignore.
+                        -- (e.g. no components or nothing at public/)
+                        Task.succeed 
+                            (emptyBundle fsPermission)
+
+                    e ->
+                        Task.fail e
+            )
+
+
+{-| Attempt a Shikensu.read, ignoring errors.
+
+This is handy when reading optional files like server/ports.js
+-}
+tryRead : Shikensu.Task -> Shikensu.Task
+tryRead =
+    Task.andThen
+        (\bundle ->
+            Task.onError
+                (\_ -> Task.succeed bundle)
+                (Shikensu.read bundle)
+        )
+
+
+
+mapError : Shikensu.Error.Error -> Error
+mapError error =
+    case error of
+        Shikensu.Error.ErrorMessage str ->
+            PipelineError str
+
+        -- Need more detail in these error messages
+
+        Shikensu.Error.PlatformAccessError path _ ->
+            path
+                |> Shikensu.Path.toPosix { absolute = False }
+                |> String.append "Error accessing "
+                |> FileSystemError
+
+        Shikensu.Error.PlatformUnknownError _ ->
+            FileSystemError "Unknown FileSystem error"
+
+
+errorString : Error -> String
+errorString error =
+    case error of
+        PipelineError str ->
+            str
+
+        FileSystemError str ->
+            str
+
+
+{-| Write the Shikensu Bundle to a directory.
+
+Where directory is a relative path as an array like: [ "path", "to", "dir" ].
+-}
+write : Array String -> Bundle -> Shikensu.Task
+write destinationDir =
+    destinationDir
+        |> Shikensu.Path.directory
+        |> Shikensu.Focus.Relative
+        |> Shikensu.write
+
+
+{-| Given the Shikensu Definition for a component file,
+return the name that should be used in the resulting module signature.
+-}
+moduleName : Definition -> String
+moduleName def =
+    let
+        path =
+            Shikensu.Path.unwrap def.directoryPath
+
+        modulePath =
+            case path of
+                [] ->
+                    "Components."
+
+                dirs ->
+                    "Components."
+                        ++ (String.join "." dirs)
+                        ++ "."
+    in
+    modulePath ++ def.baseName

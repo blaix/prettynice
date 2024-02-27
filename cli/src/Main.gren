@@ -7,8 +7,6 @@ import CodeGen
 import FileSystem
 import Init
 import Node
-import Shikensu.Error
-import Shikensu.Path
 import Stream exposing (Stream)
 import Task exposing (Task)
 

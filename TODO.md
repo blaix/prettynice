@@ -27,6 +27,7 @@
 - [.] Move build logic into cli:
   - [X] Refactor cli to full MVU node program [IN PROGRESS]
   - [X] Remove build.sh
+  - [ ] Move Props.gren to cli
   - [ ] Test `cd example/[example] && npm install && npm serve`
   - [ ] Fix static-assets example (static assets not loading)
   - [ ] Fix database-ports example (blank page)

@@ -81,9 +81,9 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
 }
 
 var $gren_lang$node$Node$InitDone = function (a) {
-	return { $: 'InitDone', a: a };
+	return { $: 0, a: a };
 };
-var $gren_lang$node$Node$Uninitialized = { $: 'Uninitialized' };
+var $gren_lang$node$Node$Uninitialized = { $: 0 };
 
 
 // TASKS
@@ -263,12 +263,12 @@ var _Node_log = F2(function (text, args) {
 var _Node_init = _Scheduler_binding(function (callback) {
   callback(
     _Scheduler_succeed({
-      platform: process.platform,
-      arch: process.arch,
-      args: process.argv,
-      stdout: process.stdout,
-      stderr: process.stderr,
-      stdin: process.stdin,
+      bu: process.platform,
+      aR: process.arch,
+      aS: process.argv,
+      e: process.stdout,
+      h: process.stderr,
+      bI: process.stdin,
     })
   );
 });
@@ -312,9 +312,9 @@ var _Platform_worker = F4(function (impl, flagDecoder, debugMetadata, args) {
   return _Platform_initialize(
     flagDecoder,
     args,
-    impl.init,
-    impl.update,
-    impl.subscriptions,
+    impl.be,
+    impl.bP,
+    impl.bK,
     function () {
       return function () {};
     }
@@ -337,20 +337,20 @@ function _Platform_initialize(
     _Json_wrap(args ? args["flags"] : undefined)
   );
   $gren_lang$core$Result$isOk(result) ||
-    _Debug_crash(2 /**/, _Json_errorToString(result.a) /**/);
+    _Debug_crash(2 /**_UNUSED/, _Json_errorToString(result.a) /**/);
   var managers = {};
   var initPair = init(result.a);
-  var model = initPair.model;
+  var model = initPair.j;
   var stepper = stepperBuilder(sendToApp, model);
   var ports = _Platform_setupEffects(managers, sendToApp);
 
   function sendToApp(msg, viewMetadata) {
     var pair = A2(update, msg, model);
-    stepper((model = pair.model), viewMetadata);
-    _Platform_enqueueEffects(managers, pair.command, subscriptions(model));
+    stepper((model = pair.j), viewMetadata);
+    _Platform_enqueueEffects(managers, pair.i, subscriptions(model));
   }
 
-  _Platform_enqueueEffects(managers, initPair.command, subscriptions(model));
+  _Platform_enqueueEffects(managers, initPair.i, subscriptions(model));
 
   return ports ? { ports: ports } : {};
 }
@@ -714,7 +714,7 @@ function _Platform_setupIncomingPort(name, sendToApp) {
 // debug mode and (2) not pay for the bits needed for that in prod mode.
 //
 
-function _Platform_export_UNUSED(exports) {
+function _Platform_export(exports) {
   scope["Gren"]
     ? _Platform_mergeExportsProd(scope["Gren"], exports)
     : (scope["Gren"] = exports);
@@ -730,7 +730,7 @@ function _Platform_mergeExportsProd(obj, exports) {
   }
 }
 
-function _Platform_export(exports) {
+function _Platform_export_UNUSED(exports) {
   scope["Gren"]
     ? _Platform_mergeExportsDebug("Gren", scope["Gren"], exports)
     : (scope["Gren"] = exports);
@@ -753,11 +753,11 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports) {
 
 // LOG
 
-var _Debug_log_UNUSED = F2(function (tag, value) {
+var _Debug_log = F2(function (tag, value) {
   return value;
 });
 
-var _Debug_log = F2(function (tag, value) {
+var _Debug_log_UNUSED = F2(function (tag, value) {
   console.log(tag + ": " + _Debug_toString(value));
   return value;
 });
@@ -778,11 +778,11 @@ function _Debug_todoCase(moduleName, region, value) {
 
 // TO STRING
 
-function _Debug_toString_UNUSED(value) {
+function _Debug_toString(value) {
   return "<internals>";
 }
 
-function _Debug_toString(value) {
+function _Debug_toString_UNUSED(value) {
   return _Debug_toAnsiString(false, value);
 }
 
@@ -941,13 +941,13 @@ function _Debug_toHexDigit(n) {
 
 // CRASH
 
-function _Debug_crash_UNUSED(identifier) {
+function _Debug_crash(identifier) {
   throw new Error(
     "https://github.com/gren-lang/core/blob/1.0.0/hints/" + identifier + ".md"
   );
 }
 
-function _Debug_crash(identifier, fact1, fact2, fact3, fact4) {
+function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4) {
   switch (identifier) {
     case 0:
       throw new Error(
@@ -1037,11 +1037,11 @@ function _Debug_crash(identifier, fact1, fact2, fact3, fact4) {
 }
 
 function _Debug_regionToString(region) {
-  if (region.start.line === region.end.line) {
-    return "on line " + region.start.line;
+  if (region.aK.v === region.a1.v) {
+    return "on line " + region.aK.v;
   }
   return (
-    "on lines " + region.start.line + " through " + region.end.line
+    "on lines " + region.aK.v + " through " + region.a1.v
   );
 }
 
@@ -1214,7 +1214,7 @@ function _Utils_eqHelp(x, y, depth, stack) {
     return true;
   }
 
-  /**/
+  /**_UNUSED/
 	if (x.$ === 'Set_gren_builtin')
 	{
 		x = $gren_lang$core$Set$toArray(x);
@@ -1227,7 +1227,7 @@ function _Utils_eqHelp(x, y, depth, stack) {
 	}
 	//*/
 
-  /**_UNUSED/
+  /**/
 	if (x.$ < 0)
 	{
 		x = $gren_lang$core$Dict$toArray(x);
@@ -1265,7 +1265,7 @@ function _Utils_cmp(x, y) {
     return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
   }
 
-  /**/
+  /**_UNUSED/
 	if (x instanceof String)
 	{
 		var a = x.valueOf();
@@ -1303,10 +1303,10 @@ var _Utils_compare = F2(function (x, y) {
 
 // COMMON VALUES
 
-function _Utils_chr_UNUSED(c) {
+function _Utils_chr(c) {
   return c;
 }
-function _Utils_chr(c) {
+function _Utils_chr_UNUSED(c) {
   return new String(c);
 }
 
@@ -1338,13 +1338,13 @@ function _Utils_ap(xs, ys) {
 
   return xs.concat(ys);
 }
-var $gren_lang$core$Basics$EQ = { $: 'EQ' };
-var $gren_lang$core$Basics$GT = { $: 'GT' };
-var $gren_lang$core$Basics$LT = { $: 'LT' };
+var $gren_lang$core$Basics$EQ = 1;
+var $gren_lang$core$Basics$GT = 2;
+var $gren_lang$core$Basics$LT = 0;
 var $gren_lang$core$Dict$foldl = F3(function(func, acc, dict) {
 		foldl:
 		while (true) {
-			if (dict.$ === 'RBEmpty_gren_builtin') {
+			if (dict.$ === -2) {
 				return acc;
 			} else {
 				var key = dict.b;
@@ -1368,21 +1368,21 @@ var $gren_lang$core$Dict$keys = function(dict) {
 			}), [  ], dict);
 };
 var $gren_lang$core$Set$toArray = function(_v0) {
-	var dict = _v0.a;
+	var dict = _v0;
 	return $gren_lang$core$Dict$keys(dict);
 };
 var $gren_lang$core$Maybe$Just = function (a) {
-	return { $: 'Just', a: a };
+	return { $: 0, a: a };
 };
-var $gren_lang$core$Maybe$Nothing = { $: 'Nothing' };
+var $gren_lang$core$Maybe$Nothing = { $: 1 };
 var $gren_lang$core$Dict$toArray = function(dict) {
 	return A3($gren_lang$core$Dict$foldl, F3(function(key, value, array) {
-				return A2($gren_lang$core$Array$pushLast, { key: key, value: value }, array);
+				return A2($gren_lang$core$Array$pushLast, { bl: key, aO: value }, array);
 			}), [  ], dict);
 };
 
 
-/**/
+/**_UNUSED/
 function _Json_errorToString(error)
 {
 	return $gren_lang$core$Json$Decode$errorToString(error);
@@ -1613,7 +1613,7 @@ function _Json_runHelp(decoder, value) {
           if (!$gren_lang$core$Result$isOk(result)) {
             return $gren_lang$core$Result$Err(A2($gren_lang$core$Json$Decode$Field, key, result.a));
           }
-          keyValuePairs.push({ key: key, value: result.a });
+          keyValuePairs.push({ bl: key, aO: result.a });
         }
       }
       return $gren_lang$core$Result$Ok(keyValuePairs);
@@ -1755,17 +1755,17 @@ var _Json_encode = F2(function (indentLevel, value) {
   return JSON.stringify(_Json_unwrap(value), null, indentLevel) + "";
 });
 
-function _Json_wrap(value) {
+function _Json_wrap_UNUSED(value) {
   return { $: 0, a: value };
 }
-function _Json_unwrap(value) {
+function _Json_unwrap_UNUSED(value) {
   return value.a;
 }
 
-function _Json_wrap_UNUSED(value) {
+function _Json_wrap(value) {
   return value;
 }
-function _Json_unwrap_UNUSED(value) {
+function _Json_unwrap(value) {
   return value;
 }
 
@@ -1790,24 +1790,24 @@ function _Json_addEntry(func) {
 
 var _Json_encodeNull = _Json_wrap(null);
 var $gren_lang$core$Result$Err = function (a) {
-	return { $: 'Err', a: a };
+	return { $: 1, a: a };
 };
 var $gren_lang$core$Json$Decode$Failure = F2(function (a, b) {
-		return { $: 'Failure', a: a, b: b };
+		return { $: 3, a: a, b: b };
 	});
 var $gren_lang$core$Json$Decode$Field = F2(function (a, b) {
-		return { $: 'Field', a: a, b: b };
+		return { $: 0, a: a, b: b };
 	});
 var $gren_lang$core$Json$Decode$Index = F2(function (a, b) {
-		return { $: 'Index', a: a, b: b };
+		return { $: 1, a: a, b: b };
 	});
 var $gren_lang$core$Result$Ok = function (a) {
-	return { $: 'Ok', a: a };
+	return { $: 0, a: a };
 };
 var $gren_lang$core$Json$Decode$OneOf = function (a) {
-	return { $: 'OneOf', a: a };
+	return { $: 2, a: a };
 };
-var $gren_lang$core$Basics$False = { $: 'False' };
+var $gren_lang$core$Basics$False = 1;
 
 
 // MATH
@@ -2194,17 +2194,17 @@ var $gren_lang$core$Json$Decode$errorToStringHelp = F2(function(error, context) 
 		errorToStringHelp:
 		while (true) {
 			switch (error.$) {
-				case 'Field':
+				case 0:
 					var f = error.a;
 					var err = error.b;
 					var isSimple = function () {
 						var _v1 = $gren_lang$core$String$uncons(f);
-						if (_v1.$ === 'Nothing') {
+						if (_v1.$ === 1) {
 							return false;
 						} else {
 							var _v2 = _v1.a;
-							var _char = _v2.first;
-							var rest = _v2.rest;
+							var _char = _v2.a5;
+							var rest = _v2.bC;
 							return $gren_lang$core$Char$isAlpha(_char) && A2($gren_lang$core$String$all, $gren_lang$core$Char$isAlphaNum, rest);
 						}
 					}();
@@ -2214,7 +2214,7 @@ var $gren_lang$core$Json$Decode$errorToStringHelp = F2(function(error, context) 
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'Index':
+				case 1:
 					var i = error.a;
 					var err = error.b;
 					var indexName = _Utils_ap('[', _Utils_ap($gren_lang$core$String$fromInt(i), ']'));
@@ -2223,7 +2223,7 @@ var $gren_lang$core$Json$Decode$errorToStringHelp = F2(function(error, context) 
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'OneOf':
+				case 2:
 					var errors = error.a;
 					switch (errors.length) {
 						case 0:
@@ -2266,9 +2266,9 @@ var $gren_lang$core$Json$Decode$errorToStringHelp = F2(function(error, context) 
 			}
 		}
 	});
-var $gren_lang$core$Basics$True = { $: 'True' };
+var $gren_lang$core$Basics$True = 0;
 var $gren_lang$core$Result$isOk = function(result) {
-	if (result.$ === 'Ok') {
+	if (!result.$) {
 		return true;
 	} else {
 		return false;
@@ -2287,32 +2287,32 @@ function _Process_sleep(time) {
     };
   });
 }
-var $gren_lang$core$Dict$RBEmpty_gren_builtin = { $: 'RBEmpty_gren_builtin' };
+var $gren_lang$core$Dict$RBEmpty_gren_builtin = { $: -2 };
 var $gren_lang$core$Dict$empty = $gren_lang$core$Dict$RBEmpty_gren_builtin;
-var $gren_lang$core$Dict$Black = { $: 'Black' };
+var $gren_lang$core$Dict$Black = 1;
 var $gren_lang$core$Dict$RBNode_gren_builtin = F5(function (a, b, c, d, e) {
-		return { $: 'RBNode_gren_builtin', a: a, b: b, c: c, d: d, e: e };
+		return { $: -1, a: a, b: b, c: c, d: d, e: e };
 	});
-var $gren_lang$core$Dict$Red = { $: 'Red' };
+var $gren_lang$core$Dict$Red = 0;
 var $gren_lang$core$Dict$balance = F5(function(color, key, value, left, right) {
-		if ((right.$ === 'RBNode_gren_builtin') && (right.a.$ === 'Red')) {
+		if ((right.$ === -1) && (!right.a)) {
 			var _v1 = right.a;
 			var rK = right.b;
 			var rV = right.c;
 			var rLeft = right.d;
 			var rRight = right.e;
-			if ((left.$ === 'RBNode_gren_builtin') && (left.a.$ === 'Red')) {
+			if ((left.$ === -1) && (!left.a)) {
 				var _v3 = left.a;
 				var lK = left.b;
 				var lV = left.c;
 				var lLeft = left.d;
 				var lRight = left.e;
-				return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, key, value, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, rK, rV, rLeft, rRight));
+				return A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, key, value, A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, rK, rV, rLeft, rRight));
 			} else {
-				return A5($gren_lang$core$Dict$RBNode_gren_builtin, color, rK, rV, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, key, value, left, rLeft), rRight);
+				return A5($gren_lang$core$Dict$RBNode_gren_builtin, color, rK, rV, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, key, value, left, rLeft), rRight);
 			}
 		} else {
-			if ((((left.$ === 'RBNode_gren_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_gren_builtin')) && (left.d.a.$ === 'Red')) {
+			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
 				var _v5 = left.a;
 				var lK = left.b;
 				var lV = left.c;
@@ -2323,7 +2323,7 @@ var $gren_lang$core$Dict$balance = F5(function(color, key, value, left, right) {
 				var llLeft = _v6.d;
 				var llRight = _v6.e;
 				var lRight = left.e;
-				return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, lK, lV, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, llK, llV, llLeft, llRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, key, value, lRight, right));
+				return A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, lK, lV, A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, llK, llV, llLeft, llRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, key, value, lRight, right));
 			} else {
 				return A5($gren_lang$core$Dict$RBNode_gren_builtin, color, key, value, left, right);
 			}
@@ -2331,8 +2331,8 @@ var $gren_lang$core$Dict$balance = F5(function(color, key, value, left, right) {
 	});
 var $gren_lang$core$Basics$compare = _Utils_compare;
 var $gren_lang$core$Dict$insertHelp = F3(function(key, value, dict) {
-		if (dict.$ === 'RBEmpty_gren_builtin') {
-			return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, key, value, $gren_lang$core$Dict$RBEmpty_gren_builtin, $gren_lang$core$Dict$RBEmpty_gren_builtin);
+		if (dict.$ === -2) {
+			return A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, key, value, $gren_lang$core$Dict$RBEmpty_gren_builtin, $gren_lang$core$Dict$RBEmpty_gren_builtin);
 		} else {
 			var nColor = dict.a;
 			var nKey = dict.b;
@@ -2340,10 +2340,10 @@ var $gren_lang$core$Dict$insertHelp = F3(function(key, value, dict) {
 			var nLeft = dict.d;
 			var nRight = dict.e;
 			var _v1 = A2($gren_lang$core$Basics$compare, key, nKey);
-			switch (_v1.$) {
-				case 'LT':
+			switch (_v1) {
+				case 0:
 					return A5($gren_lang$core$Dict$balance, nColor, nKey, nValue, A3($gren_lang$core$Dict$insertHelp, key, value, nLeft), nRight);
-				case 'EQ':
+				case 1:
 					return A5($gren_lang$core$Dict$RBNode_gren_builtin, nColor, nKey, value, nLeft, nRight);
 				default:
 					return A5($gren_lang$core$Dict$balance, nColor, nKey, nValue, nLeft, A3($gren_lang$core$Dict$insertHelp, key, value, nRight));
@@ -2352,58 +2352,58 @@ var $gren_lang$core$Dict$insertHelp = F3(function(key, value, dict) {
 	});
 var $gren_lang$core$Dict$insert = F3(function(key, value, dict) {
 		var _v0 = A3($gren_lang$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === 'RBNode_gren_builtin') && (_v0.a.$ === 'Red')) {
+		if ((_v0.$ === -1) && (!_v0.a)) {
 			var _v1 = _v0.a;
 			var k = _v0.b;
 			var v = _v0.c;
 			var l = _v0.d;
 			var r = _v0.e;
-			return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, l, r);
+			return A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
 		}
 	});
 var $gren_lang$node$Internal$Stream$Stream = F2(function (a, b) {
-		return { $: 'Stream', a: a, b: b };
+		return { $: 0, a: a, b: b };
 	});
-var $gren_lang$node$Node$Arm = { $: 'Arm' };
-var $gren_lang$node$Node$Arm64 = { $: 'Arm64' };
-var $gren_lang$node$Node$IA32 = { $: 'IA32' };
-var $gren_lang$node$Node$Mips = { $: 'Mips' };
-var $gren_lang$node$Node$Mipsel = { $: 'Mipsel' };
-var $gren_lang$node$Node$PPC = { $: 'PPC' };
-var $gren_lang$node$Node$PPC64 = { $: 'PPC64' };
-var $gren_lang$node$Node$S390 = { $: 'S390' };
-var $gren_lang$node$Node$S390x = { $: 'S390x' };
-var $gren_lang$node$Node$UnknownArchitecture = { $: 'UnknownArchitecture' };
-var $gren_lang$node$Node$X64 = { $: 'X64' };
+var $gren_lang$node$Node$Arm = 0;
+var $gren_lang$node$Node$Arm64 = 1;
+var $gren_lang$node$Node$IA32 = 2;
+var $gren_lang$node$Node$Mips = 3;
+var $gren_lang$node$Node$Mipsel = 4;
+var $gren_lang$node$Node$PPC = 5;
+var $gren_lang$node$Node$PPC64 = 6;
+var $gren_lang$node$Node$S390 = 7;
+var $gren_lang$node$Node$S390x = 8;
+var $gren_lang$node$Node$UnknownArchitecture = 10;
+var $gren_lang$node$Node$X64 = 9;
 var $gren_lang$core$String$toLower = _String_toLower;
 var $gren_lang$node$Node$archFromString = function(arch) {
 	var _v0 = $gren_lang$core$String$toLower(arch);
 	switch (_v0) {
 		case 'arm':
-			return $gren_lang$node$Node$Arm;
+			return 0;
 		case 'arm64':
-			return $gren_lang$node$Node$Arm64;
+			return 1;
 		case 'ia32':
-			return $gren_lang$node$Node$IA32;
+			return 2;
 		case 'mips':
-			return $gren_lang$node$Node$Mips;
+			return 3;
 		case 'mipsel':
-			return $gren_lang$node$Node$Mipsel;
+			return 4;
 		case 'ppc':
-			return $gren_lang$node$Node$PPC;
+			return 5;
 		case 'ppc64':
-			return $gren_lang$node$Node$PPC64;
+			return 6;
 		case 's390':
-			return $gren_lang$node$Node$S390;
+			return 7;
 		case 's390x':
-			return $gren_lang$node$Node$S390x;
+			return 8;
 		case 'x64':
-			return $gren_lang$node$Node$X64;
+			return 9;
 		default:
-			return $gren_lang$node$Node$UnknownArchitecture;
+			return 10;
 	}
 };
 var $gren_lang$core$Task$succeed = _Scheduler_succeed;
@@ -2412,44 +2412,42 @@ var $gren_lang$core$Task$map = F2(function(func, taskA) {
 				return $gren_lang$core$Task$succeed(func(a));
 			}, taskA);
 	});
-var $gren_lang$node$Node$Aix = { $: 'Aix' };
-var $gren_lang$node$Node$Darwin = { $: 'Darwin' };
-var $gren_lang$node$Node$FreeBSD = { $: 'FreeBSD' };
-var $gren_lang$node$Node$Linux = { $: 'Linux' };
-var $gren_lang$node$Node$OpenBSD = { $: 'OpenBSD' };
-var $gren_lang$node$Node$SunOS = { $: 'SunOS' };
-var $gren_lang$node$Node$UnknownPlatform = { $: 'UnknownPlatform' };
-var $gren_lang$node$Node$Win32 = { $: 'Win32' };
+var $gren_lang$node$Node$Aix = 6;
+var $gren_lang$node$Node$Darwin = 1;
+var $gren_lang$node$Node$FreeBSD = 3;
+var $gren_lang$node$Node$Linux = 2;
+var $gren_lang$node$Node$OpenBSD = 4;
+var $gren_lang$node$Node$SunOS = 5;
+var $gren_lang$node$Node$UnknownPlatform = 7;
+var $gren_lang$node$Node$Win32 = 0;
 var $gren_lang$node$Node$platformFromString = function(platform) {
 	var _v0 = $gren_lang$core$String$toLower(platform);
 	switch (_v0) {
 		case 'win32':
-			return $gren_lang$node$Node$Win32;
+			return 0;
 		case 'darwin':
-			return $gren_lang$node$Node$Darwin;
+			return 1;
 		case 'linux':
-			return $gren_lang$node$Node$Linux;
+			return 2;
 		case 'freebsd':
-			return $gren_lang$node$Node$FreeBSD;
+			return 3;
 		case 'openbsd':
-			return $gren_lang$node$Node$OpenBSD;
+			return 4;
 		case 'sunos':
-			return $gren_lang$node$Node$SunOS;
+			return 5;
 		case 'aix':
-			return $gren_lang$node$Node$Aix;
+			return 6;
 		default:
-			return $gren_lang$node$Node$UnknownPlatform;
+			return 7;
 	}
 };
 var $gren_lang$node$Node$initializeEnvironment = A2($gren_lang$core$Task$map, function(raw) {
-		return { args: raw.args, cpuArchitecture: $gren_lang$node$Node$archFromString(raw.arch), platform: $gren_lang$node$Node$platformFromString(raw.platform), stderr: A2($gren_lang$node$Internal$Stream$Stream, 1, raw.stderr), stdin: A2($gren_lang$node$Internal$Stream$Stream, 2, raw.stdin), stdout: A2($gren_lang$node$Internal$Stream$Stream, 0, raw.stdout) };
+		return { aS: raw.aS, aZ: $gren_lang$node$Node$archFromString(raw.aR), bu: $gren_lang$node$Node$platformFromString(raw.bu), h: A2($gren_lang$node$Internal$Stream$Stream, 1, raw.h), bI: A2($gren_lang$node$Internal$Stream$Stream, 2, raw.bI), e: A2($gren_lang$node$Internal$Stream$Stream, 0, raw.e) };
 	}, _Node_init);
 var $gren_lang$core$Basics$identity = function(x) {
 	return x;
 };
-var $gren_lang$core$Task$Perform = function (a) {
-	return { $: 'Perform', a: a };
-};
+var $gren_lang$core$Task$Perform = $gren_lang$core$Basics$identity;
 var $gren_lang$core$Task$init = $gren_lang$core$Task$succeed({  });
 var $gren_lang$core$Array$map = _Array_map;
 var $gren_lang$core$Array$foldl = _Array_foldl;
@@ -2465,7 +2463,7 @@ var $gren_lang$core$Task$sequence = function(tasks) {
 };
 var $gren_lang$core$Platform$sendToApp = _Platform_sendToApp;
 var $gren_lang$core$Task$spawnCmd = F2(function(router, _v0) {
-		var task = _v0.a;
+		var task = _v0;
 		return _Scheduler_spawn(A2($gren_lang$core$Task$andThen, $gren_lang$core$Platform$sendToApp(router), task));
 	});
 var $gren_lang$core$Task$onEffects = F3(function(router, commands, state) {
@@ -2477,31 +2475,31 @@ var $gren_lang$core$Task$onSelfMsg = F3(function(_v0, _v1, _v2) {
 		return $gren_lang$core$Task$succeed({  });
 	});
 var $gren_lang$core$Task$cmdMap = F2(function(tagger, _v0) {
-		var task = _v0.a;
-		return $gren_lang$core$Task$Perform(A2($gren_lang$core$Task$map, tagger, task));
+		var task = _v0;
+		return A2($gren_lang$core$Task$map, tagger, task);
 	});
 _Platform_effectManagers['Task'] = _Platform_createManager($gren_lang$core$Task$init, $gren_lang$core$Task$onEffects, $gren_lang$core$Task$onSelfMsg, $gren_lang$core$Task$cmdMap);
 var $gren_lang$core$Task$command = _Platform_leaf('Task');
 var $gren_lang$core$Task$perform = F2(function(toMessage, task) {
-		return $gren_lang$core$Task$command($gren_lang$core$Task$Perform(A2($gren_lang$core$Task$map, toMessage, task)));
+		return $gren_lang$core$Task$command(A2($gren_lang$core$Task$map, toMessage, task));
 	});
 var $gren_lang$node$Node$unwrap = function(_v0) {
-	var task = _v0.a;
+	var task = _v0;
 	return task;
 };
 var $gren_lang$node$Node$init = F2(function(initTask, _v0) {
-		return { command: A2($gren_lang$core$Task$perform, $gren_lang$node$Node$InitDone, A2($gren_lang$core$Task$andThen, function(env) {
+		return { i: A2($gren_lang$core$Task$perform, $gren_lang$node$Node$InitDone, A2($gren_lang$core$Task$andThen, function(env) {
 					return $gren_lang$node$Node$unwrap(initTask(env));
-				}, $gren_lang$node$Node$initializeEnvironment)), model: $gren_lang$node$Node$Uninitialized };
+				}, $gren_lang$node$Node$initializeEnvironment)), j: $gren_lang$node$Node$Uninitialized };
 	});
 var $gren_lang$node$Node$MsgReceived = function (a) {
-	return { $: 'MsgReceived', a: a };
+	return { $: 1, a: a };
 };
 var $gren_lang$core$Platform$Sub$map = _Platform_map;
 var $gren_lang$core$Platform$Sub$batch = _Platform_batch;
 var $gren_lang$core$Platform$Sub$none = $gren_lang$core$Platform$Sub$batch([  ]);
 var $gren_lang$node$Node$subscriptions = F2(function(appSubs, model) {
-		if (model.$ === 'Uninitialized') {
+		if (!model.$) {
 			return $gren_lang$core$Platform$Sub$none;
 		} else {
 			var appModel = model.a;
@@ -2509,54 +2507,52 @@ var $gren_lang$node$Node$subscriptions = F2(function(appSubs, model) {
 		}
 	});
 var $gren_lang$node$Node$Initialized = function (a) {
-	return { $: 'Initialized', a: a };
+	return { $: 1, a: a };
 };
 var $gren_lang$core$Platform$Cmd$map = _Platform_map;
 var $gren_lang$core$Platform$Cmd$batch = _Platform_batch;
 var $gren_lang$core$Platform$Cmd$none = $gren_lang$core$Platform$Cmd$batch([  ]);
 var $gren_lang$node$Node$update = F3(function(appUpdate, msg, model) {
-		if (model.$ === 'Uninitialized') {
-			if (msg.$ === 'InitDone') {
+		if (!model.$) {
+			if (!msg.$) {
 				var initResult = msg.a;
-				return { command: A2($gren_lang$core$Platform$Cmd$map, $gren_lang$node$Node$MsgReceived, initResult.command), model: $gren_lang$node$Node$Initialized(initResult.model) };
+				return { i: A2($gren_lang$core$Platform$Cmd$map, $gren_lang$node$Node$MsgReceived, initResult.i), j: $gren_lang$node$Node$Initialized(initResult.j) };
 			} else {
-				return { command: $gren_lang$core$Platform$Cmd$none, model: model };
+				return { i: $gren_lang$core$Platform$Cmd$none, j: model };
 			}
 		} else {
 			var appModel = model.a;
-			if (msg.$ === 'InitDone') {
-				return { command: $gren_lang$core$Platform$Cmd$none, model: model };
+			if (!msg.$) {
+				return { i: $gren_lang$core$Platform$Cmd$none, j: model };
 			} else {
 				var appMsg = msg.a;
 				var updateResult = A2(appUpdate, appMsg, appModel);
-				return { command: A2($gren_lang$core$Platform$Cmd$map, $gren_lang$node$Node$MsgReceived, updateResult.command), model: $gren_lang$node$Node$Initialized(updateResult.model) };
+				return { i: A2($gren_lang$core$Platform$Cmd$map, $gren_lang$node$Node$MsgReceived, updateResult.i), j: $gren_lang$node$Node$Initialized(updateResult.j) };
 			}
 		}
 	});
 var $gren_lang$core$Platform$worker = _Platform_worker;
 var $gren_lang$node$Node$defineProgram = function(config) {
-	return $gren_lang$core$Platform$worker({ init: $gren_lang$node$Node$init(config.init), subscriptions: $gren_lang$node$Node$subscriptions(config.subscriptions), update: $gren_lang$node$Node$update(config.update) });
+	return $gren_lang$core$Platform$worker({ be: $gren_lang$node$Node$init(config.be), bK: $gren_lang$node$Node$subscriptions(config.bK), bP: $gren_lang$node$Node$update(config.bP) });
 };
 var $author$project$Main$Cleaned = function (a) {
-	return { $: 'Cleaned', a: a };
+	return { $: 0, a: a };
 };
 var $gren_lang$core$Basics$composeL = F3(function(g, f, x) {
 		return g(f(x));
 	});
 var $gren_lang$core$Task$onError = _Scheduler_onError;
 var $gren_lang$core$Task$attempt = F2(function(resultToMessage, task) {
-		return $gren_lang$core$Task$command($gren_lang$core$Task$Perform(A2($gren_lang$core$Task$onError, A2($gren_lang$core$Basics$composeL, A2($gren_lang$core$Basics$composeL, $gren_lang$core$Task$succeed, resultToMessage), $gren_lang$core$Result$Err), A2($gren_lang$core$Task$andThen, A2($gren_lang$core$Basics$composeL, A2($gren_lang$core$Basics$composeL, $gren_lang$core$Task$succeed, resultToMessage), $gren_lang$core$Result$Ok), task))));
+		return $gren_lang$core$Task$command(A2($gren_lang$core$Task$onError, A2($gren_lang$core$Basics$composeL, A2($gren_lang$core$Basics$composeL, $gren_lang$core$Task$succeed, resultToMessage), $gren_lang$core$Result$Err), A2($gren_lang$core$Task$andThen, A2($gren_lang$core$Basics$composeL, A2($gren_lang$core$Basics$composeL, $gren_lang$core$Task$succeed, resultToMessage), $gren_lang$core$Result$Ok), task)));
 	});
-var $gren_lang$node$Internal$Init$Task = function (a) {
-	return { $: 'Task', a: a };
-};
+var $gren_lang$node$Internal$Init$Task = $gren_lang$core$Basics$identity;
 var $gren_lang$node$Init$unwrap = function(_v0) {
-	var task = _v0.a;
+	var task = _v0;
 	return task;
 };
 var $gren_lang$node$Init$await = F2(function(_v0, fn) {
-		var task = _v0.a;
-		return $gren_lang$node$Internal$Init$Task(A2($gren_lang$core$Task$andThen, A2($gren_lang$core$Basics$composeL, $gren_lang$node$Init$unwrap, fn), task));
+		var task = _v0;
+		return A2($gren_lang$core$Task$andThen, A2($gren_lang$core$Basics$composeL, $gren_lang$node$Init$unwrap, fn), task);
 	});
 
 
@@ -2608,11 +2604,11 @@ var _FileSystem_close = function (fh) {
 
 var _FileSystem_readFromOffset = F2(function (fh, options) {
   var requestedLength =
-    options.length < 0 || options.length > bufferNs.constants.MAX_LENGTH
+    options.bn < 0 || options.bn > bufferNs.constants.MAX_LENGTH
       ? bufferNs.constants.MAX_LENGTH
-      : options.length;
+      : options.bn;
 
-  var fileOffset = options.offset < 0 ? 0 : options.offset;
+  var fileOffset = options.d < 0 ? 0 : options.d;
 
   return _Scheduler_binding(function (callback) {
     var initialBufferSize =
@@ -2694,7 +2690,7 @@ var _FileSystem_writeFromOffset = F3(function (fh, options, bytes) {
       bytes,
       0,
       bytes.byteLength,
-      options.offset,
+      options.d,
       callback
     );
   });
@@ -2742,8 +2738,8 @@ var _FileSystem_writeHelper = function (
 
 var _FileSystem_remove = F2(function (options, path) {
   var rmOpts = {
-    force: options.ignoreErrors,
-    recursive: options.recursive,
+    force: options.bd,
+    recursive: options.aI,
   };
 
   return _Scheduler_binding(function (callback) {
@@ -2759,7 +2755,7 @@ var _FileSystem_remove = F2(function (options, path) {
 
 var _FileSystem_makeDirectory = F2(function (options, path) {
   return _Scheduler_binding(function (callback) {
-    fs.mkdir(path, { recursive: options.recursive }, function (err) {
+    fs.mkdir(path, { recursive: options.aI }, function (err) {
       if (err != null) {
         callback(_Scheduler_fail(_FileSystem_constructAccessError(err)));
       } else {
@@ -2811,33 +2807,31 @@ var _FileSystem_normalizePath = function (input) {
 var _FileSystem_buildPath = function (paths) {
   return path.join.apply(null, paths);
 };
-var $gren_lang$node$FileSystem$AccessErrorNoAccess = { $: 'AccessErrorNoAccess' };
-var $gren_lang$node$FileSystem$AccessErrorNotADirectory = { $: 'AccessErrorNotADirectory' };
-var $gren_lang$node$FileSystem$AccessErrorNotFound = { $: 'AccessErrorNotFound' };
+var $gren_lang$node$FileSystem$AccessErrorNoAccess = { $: 1 };
+var $gren_lang$node$FileSystem$AccessErrorNotADirectory = { $: 2 };
+var $gren_lang$node$FileSystem$AccessErrorNotFound = { $: 0 };
 var $gren_lang$node$FileSystem$AccessErrorUnknown = function (a) {
-	return { $: 'AccessErrorUnknown', a: a };
+	return { $: 3, a: a };
 };
 var $gren_lang$node$FileSystem$Device = function (a) {
-	return { $: 'Device', a: a };
+	return { $: 4, a: a };
 };
 var $gren_lang$node$FileSystem$Directory = function (a) {
-	return { $: 'Directory', a: a };
+	return { $: 1, a: a };
 };
 var $gren_lang$node$FileSystem$File = function (a) {
-	return { $: 'File', a: a };
+	return { $: 0, a: a };
 };
 var $gren_lang$node$FileSystem$Pipe = function (a) {
-	return { $: 'Pipe', a: a };
+	return { $: 5, a: a };
 };
 var $gren_lang$node$FileSystem$Socket = function (a) {
-	return { $: 'Socket', a: a };
+	return { $: 2, a: a };
 };
 var $gren_lang$node$FileSystem$Symlink = function (a) {
-	return { $: 'Symlink', a: a };
+	return { $: 3, a: a };
 };
-var $gren_lang$node$FileSystem$UnknownFileSystemError = function (a) {
-	return { $: 'UnknownFileSystemError', a: a };
-};
+var $gren_lang$node$FileSystem$UnknownFileSystemError = $gren_lang$core$Basics$identity;
 var $gren_lang$node$FileSystem$buildPath = _FileSystem_buildPath;
 var $gren_lang$node$FileSystem$makeDirectory = F3(function(_v0, path, options) {
 		return A2(_FileSystem_makeDirectory, options, path);
@@ -2847,10 +2841,10 @@ var $gren_lang$node$FileSystem$remove = F3(function(_v0, path, options) {
 	});
 var $author$project$Main$clean = function(fsPermission) {
 	var remove = function(path) {
-		return A3($gren_lang$node$FileSystem$remove, fsPermission, $gren_lang$node$FileSystem$buildPath(path), { ignoreErrors: true, recursive: true });
+		return A3($gren_lang$node$FileSystem$remove, fsPermission, $gren_lang$node$FileSystem$buildPath(path), { bd: true, aI: true });
 	};
 	var create = function(path) {
-		return A3($gren_lang$node$FileSystem$makeDirectory, fsPermission, $gren_lang$node$FileSystem$buildPath(path), { recursive: true });
+		return A3($gren_lang$node$FileSystem$makeDirectory, fsPermission, $gren_lang$node$FileSystem$buildPath(path), { aI: true });
 	};
 	var recreate = function(path) {
 		return A2($gren_lang$core$Task$andThen, function(_v1) {
@@ -2861,10 +2855,10 @@ var $author$project$Main$clean = function(fsPermission) {
 			return {  };
 		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, recreate, [ [ 'dist' ], [ 'client', '.prettynice' ], [ 'server', '.prettynice' ] ])));
 };
-var $gren_lang$node$ChildProcess$Permission = { $: 'Permission' };
-var $gren_lang$node$ChildProcess$initialize = $gren_lang$node$Internal$Init$Task($gren_lang$core$Task$succeed($gren_lang$node$ChildProcess$Permission));
-var $gren_lang$node$FileSystem$Permission = { $: 'Permission' };
-var $gren_lang$node$FileSystem$initialize = $gren_lang$node$Internal$Init$Task($gren_lang$core$Task$succeed($gren_lang$node$FileSystem$Permission));
+var $gren_lang$node$ChildProcess$Permission = 0;
+var $gren_lang$node$ChildProcess$initialize = $gren_lang$core$Task$succeed(0);
+var $gren_lang$node$FileSystem$Permission = 0;
+var $gren_lang$node$FileSystem$initialize = $gren_lang$core$Task$succeed(0);
 
 
 // BYTES
@@ -3009,41 +3003,41 @@ var _Bytes_write_string = F3(function (mb, offset, string) {
 
 var _Bytes_decode = F2(function (decoder, bytes) {
   try {
-    return $gren_lang$core$Maybe$Just(A2(decoder, bytes, 0).value);
+    return $gren_lang$core$Maybe$Just(A2(decoder, bytes, 0).aO);
   } catch (e) {
     return $gren_lang$core$Maybe$Nothing;
   }
 });
 
 var _Bytes_read_i8 = F2(function (bytes, offset) {
-  return { offset: offset + 1, value: bytes.getInt8(offset) };
+  return { d: offset + 1, aO: bytes.getInt8(offset) };
 });
 var _Bytes_read_i16 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 2, value: bytes.getInt16(offset, isLE) };
+  return { d: offset + 2, aO: bytes.getInt16(offset, isLE) };
 });
 var _Bytes_read_i32 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 4, value: bytes.getInt32(offset, isLE) };
+  return { d: offset + 4, aO: bytes.getInt32(offset, isLE) };
 });
 var _Bytes_read_u8 = F2(function (bytes, offset) {
-  return { offset: offset + 1, value: bytes.getUint8(offset) };
+  return { d: offset + 1, aO: bytes.getUint8(offset) };
 });
 var _Bytes_read_u16 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 2, value: bytes.getUint16(offset, isLE) };
+  return { d: offset + 2, aO: bytes.getUint16(offset, isLE) };
 });
 var _Bytes_read_u32 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 4, value: bytes.getUint32(offset, isLE) };
+  return { d: offset + 4, aO: bytes.getUint32(offset, isLE) };
 });
 var _Bytes_read_f32 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 4, value: bytes.getFloat32(offset, isLE) };
+  return { d: offset + 4, aO: bytes.getFloat32(offset, isLE) };
 });
 var _Bytes_read_f64 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 8, value: bytes.getFloat64(offset, isLE) };
+  return { d: offset + 8, aO: bytes.getFloat64(offset, isLE) };
 });
 
 var _Bytes_read_bytes = F3(function (len, bytes, offset) {
   return {
-    offset: offset + len,
-    value: new DataView(bytes.buffer, bytes.byteOffset + offset, len),
+    d: offset + len,
+    aO: new DataView(bytes.buffer, bytes.byteOffset + offset, len),
   };
 });
 
@@ -3077,7 +3071,7 @@ var _Bytes_read_string = F3(function (len, bytes, offset) {
             (byte % 0x400) + 0xdc00
           ));
   }
-  return { offset: offset, value: string };
+  return { d: offset, aO: string };
 });
 
 var _Bytes_decodeFailure = F2(function () {
@@ -3085,26 +3079,26 @@ var _Bytes_decodeFailure = F2(function () {
 });
 var $gren_lang$core$Bytes$Encode$getWidth = function(builder) {
 	switch (builder.$) {
-		case 'I8':
+		case 0:
 			return 1;
-		case 'I16':
+		case 1:
 			return 2;
-		case 'I32':
+		case 2:
 			return 4;
-		case 'U8':
+		case 3:
 			return 1;
-		case 'U16':
+		case 4:
 			return 2;
-		case 'U32':
+		case 5:
 			return 4;
-		case 'F32':
+		case 6:
 			return 4;
-		case 'F64':
+		case 7:
 			return 8;
-		case 'Seq':
+		case 8:
 			var w = builder.a;
 			return w;
-		case 'Utf8':
+		case 9:
 			var w = builder.a;
 			return w;
 		default:
@@ -3112,7 +3106,7 @@ var $gren_lang$core$Bytes$Encode$getWidth = function(builder) {
 			return _Bytes_width(bs);
 	}
 };
-var $gren_lang$core$Bytes$LE = { $: 'LE' };
+var $gren_lang$core$Bytes$LE = 0;
 var $gren_lang$core$Array$slice = _Array_slice;
 var $gren_lang$core$Array$dropFirst = F2(function(n, array) {
 		return A3($gren_lang$core$Array$slice, n, $gren_lang$core$Array$length(array), array);
@@ -3124,40 +3118,40 @@ var $gren_lang$core$Array$first = function(array) {
 };
 var $gren_lang$core$Bytes$Encode$write = F3(function(builder, mb, offset) {
 		switch (builder.$) {
-			case 'I8':
+			case 0:
 				var n = builder.a;
 				return A3(_Bytes_write_i8, mb, offset, n);
-			case 'I16':
+			case 1:
 				var e = builder.a;
 				var n = builder.b;
-				return A4(_Bytes_write_i16, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-			case 'I32':
+				return A4(_Bytes_write_i16, mb, offset, n, !e);
+			case 2:
 				var e = builder.a;
 				var n = builder.b;
-				return A4(_Bytes_write_i32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-			case 'U8':
+				return A4(_Bytes_write_i32, mb, offset, n, !e);
+			case 3:
 				var n = builder.a;
 				return A3(_Bytes_write_u8, mb, offset, n);
-			case 'U16':
+			case 4:
 				var e = builder.a;
 				var n = builder.b;
-				return A4(_Bytes_write_u16, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-			case 'U32':
+				return A4(_Bytes_write_u16, mb, offset, n, !e);
+			case 5:
 				var e = builder.a;
 				var n = builder.b;
-				return A4(_Bytes_write_u32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-			case 'F32':
+				return A4(_Bytes_write_u32, mb, offset, n, !e);
+			case 6:
 				var e = builder.a;
 				var n = builder.b;
-				return A4(_Bytes_write_f32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-			case 'F64':
+				return A4(_Bytes_write_f32, mb, offset, n, !e);
+			case 7:
 				var e = builder.a;
 				var n = builder.b;
-				return A4(_Bytes_write_f64, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-			case 'Seq':
+				return A4(_Bytes_write_f64, mb, offset, n, !e);
+			case 8:
 				var bs = builder.b;
 				return A3($gren_lang$core$Bytes$Encode$writeSequence, bs, mb, offset);
-			case 'Utf8':
+			case 9:
 				var s = builder.b;
 				return A3(_Bytes_write_string, mb, offset, s);
 			default:
@@ -3169,7 +3163,7 @@ var $gren_lang$core$Bytes$Encode$writeSequence = F3(function(builders, mb, offse
 		writeSequence:
 		while (true) {
 			var _v0 = $gren_lang$core$Array$first(builders);
-			if (_v0.$ === 'Nothing') {
+			if (_v0.$ === 1) {
 				return offset;
 			} else {
 				var b = _v0.a;
@@ -3185,16 +3179,16 @@ var $gren_lang$core$Bytes$Encode$writeSequence = F3(function(builders, mb, offse
 	});
 var $gren_lang$core$Bytes$Encode$encode = _Bytes_encode;
 var $gren_lang$node$Stream$SendToStream = F2(function (a, b) {
-		return { $: 'SendToStream', a: a, b: b };
+		return { $: 0, a: a, b: b };
 	});
-var $gren_lang$node$Stream$init = $gren_lang$core$Task$succeed({ processes: $gren_lang$core$Dict$empty, taggers: $gren_lang$core$Dict$empty });
+var $gren_lang$node$Stream$init = $gren_lang$core$Task$succeed({ aH: $gren_lang$core$Dict$empty, X: $gren_lang$core$Dict$empty });
 var $gren_lang$node$Stream$ToStream = F2(function (a, b) {
-		return { $: 'ToStream', a: a, b: b };
+		return { $: 1, a: a, b: b };
 	});
 var $gren_lang$core$Dict$getMin = function(dict) {
 	getMin:
 	while (true) {
-		if ((dict.$ === 'RBNode_gren_builtin') && (dict.d.$ === 'RBNode_gren_builtin')) {
+		if ((dict.$ === -1) && (dict.d.$ === -1)) {
 			var left = dict.d;
 			var $temp$dict = left;
 			dict = $temp$dict;
@@ -3206,8 +3200,8 @@ var $gren_lang$core$Dict$getMin = function(dict) {
 };
 var $gren_lang$core$Basics$lt = _Utils_lt;
 var $gren_lang$core$Dict$moveRedLeft = function(dict) {
-	if (((dict.$ === 'RBNode_gren_builtin') && (dict.d.$ === 'RBNode_gren_builtin')) && (dict.e.$ === 'RBNode_gren_builtin')) {
-		if ((dict.e.d.$ === 'RBNode_gren_builtin') && (dict.e.d.a.$ === 'Red')) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.e.d.$ === -1) && (!dict.e.d.a)) {
 			var clr = dict.a;
 			var k = dict.b;
 			var v = dict.c;
@@ -3228,7 +3222,7 @@ var $gren_lang$core$Dict$moveRedLeft = function(dict) {
 			var rlL = rLeft.d;
 			var rlR = rLeft.e;
 			var rRight = _v2.e;
-			return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, rlK, rlV, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, lK, lV, lLeft, lRight), rlL), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, rK, rV, rlR, rRight));
+			return A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, rlK, rlV, A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, lK, lV, lLeft, lRight), rlL), A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, rK, rV, rlR, rRight));
 		} else {
 			var clr = dict.a;
 			var k = dict.b;
@@ -3245,10 +3239,10 @@ var $gren_lang$core$Dict$moveRedLeft = function(dict) {
 			var rV = _v5.c;
 			var rLeft = _v5.d;
 			var rRight = _v5.e;
-			if (clr.$ === 'Black') {
-				return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, rK, rV, rLeft, rRight));
+			if (clr === 1) {
+				return A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, rK, rV, rLeft, rRight));
 			} else {
-				return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, rK, rV, rLeft, rRight));
+				return A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -3256,8 +3250,8 @@ var $gren_lang$core$Dict$moveRedLeft = function(dict) {
 	}
 };
 var $gren_lang$core$Dict$moveRedRight = function(dict) {
-	if (((dict.$ === 'RBNode_gren_builtin') && (dict.d.$ === 'RBNode_gren_builtin')) && (dict.e.$ === 'RBNode_gren_builtin')) {
-		if ((dict.d.d.$ === 'RBNode_gren_builtin') && (dict.d.d.a.$ === 'Red')) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.d.d.$ === -1) && (!dict.d.d.a)) {
 			var clr = dict.a;
 			var k = dict.b;
 			var v = dict.c;
@@ -3278,7 +3272,7 @@ var $gren_lang$core$Dict$moveRedRight = function(dict) {
 			var rV = _v4.c;
 			var rLeft = _v4.d;
 			var rRight = _v4.e;
-			return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, lK, lV, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, llK, llV, llLeft, llRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, lRight, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, rK, rV, rLeft, rRight)));
+			return A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, lK, lV, A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, llK, llV, llLeft, llRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, lRight, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, rK, rV, rLeft, rRight)));
 		} else {
 			var clr = dict.a;
 			var k = dict.b;
@@ -3295,10 +3289,10 @@ var $gren_lang$core$Dict$moveRedRight = function(dict) {
 			var rV = _v6.c;
 			var rLeft = _v6.d;
 			var rRight = _v6.e;
-			if (clr.$ === 'Black') {
-				return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, rK, rV, rLeft, rRight));
+			if (clr === 1) {
+				return A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, rK, rV, rLeft, rRight));
 			} else {
-				return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, rK, rV, rLeft, rRight));
+				return A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, lK, lV, lLeft, lRight), A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -3306,19 +3300,19 @@ var $gren_lang$core$Dict$moveRedRight = function(dict) {
 	}
 };
 var $gren_lang$core$Dict$removeHelpPrepEQGT = F7(function(targetKey, dict, color, key, value, left, right) {
-		if ((left.$ === 'RBNode_gren_builtin') && (left.a.$ === 'Red')) {
+		if ((left.$ === -1) && (!left.a)) {
 			var _v1 = left.a;
 			var lK = left.b;
 			var lV = left.c;
 			var lLeft = left.d;
 			var lRight = left.e;
-			return A5($gren_lang$core$Dict$RBNode_gren_builtin, color, lK, lV, lLeft, A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Red, key, value, lRight, right));
+			return A5($gren_lang$core$Dict$RBNode_gren_builtin, color, lK, lV, lLeft, A5($gren_lang$core$Dict$RBNode_gren_builtin, 0, key, value, lRight, right));
 		} else {
 			_v2$2:
 			while (true) {
-				if ((right.$ === 'RBNode_gren_builtin') && (right.a.$ === 'Black')) {
-					if (right.d.$ === 'RBNode_gren_builtin') {
-						if (right.d.a.$ === 'Black') {
+				if ((right.$ === -1) && (right.a === 1)) {
+					if (right.d.$ === -1) {
+						if (right.d.a === 1) {
 							var _v3 = right.a;
 							var _v4 = right.d;
 							var _v5 = _v4.a;
@@ -3339,7 +3333,7 @@ var $gren_lang$core$Dict$removeHelpPrepEQGT = F7(function(targetKey, dict, color
 		}
 	});
 var $gren_lang$core$Dict$removeMin = function(dict) {
-	if ((dict.$ === 'RBNode_gren_builtin') && (dict.d.$ === 'RBNode_gren_builtin')) {
+	if ((dict.$ === -1) && (dict.d.$ === -1)) {
 		var color = dict.a;
 		var key = dict.b;
 		var value = dict.c;
@@ -3347,13 +3341,13 @@ var $gren_lang$core$Dict$removeMin = function(dict) {
 		var lColor = left.a;
 		var lLeft = left.d;
 		var right = dict.e;
-		if (lColor.$ === 'Black') {
-			if ((lLeft.$ === 'RBNode_gren_builtin') && (lLeft.a.$ === 'Red')) {
+		if (lColor === 1) {
+			if ((lLeft.$ === -1) && (!lLeft.a)) {
 				var _v3 = lLeft.a;
 				return A5($gren_lang$core$Dict$RBNode_gren_builtin, color, key, value, $gren_lang$core$Dict$removeMin(left), right);
 			} else {
 				var _v4 = $gren_lang$core$Dict$moveRedLeft(dict);
-				if (_v4.$ === 'RBNode_gren_builtin') {
+				if (_v4.$ === -1) {
 					var nColor = _v4.a;
 					var nKey = _v4.b;
 					var nValue = _v4.c;
@@ -3372,7 +3366,7 @@ var $gren_lang$core$Dict$removeMin = function(dict) {
 	}
 };
 var $gren_lang$core$Dict$removeHelp = F2(function(targetKey, dict) {
-		if (dict.$ === 'RBEmpty_gren_builtin') {
+		if (dict.$ === -2) {
 			return $gren_lang$core$Dict$RBEmpty_gren_builtin;
 		} else {
 			var color = dict.a;
@@ -3381,15 +3375,15 @@ var $gren_lang$core$Dict$removeHelp = F2(function(targetKey, dict) {
 			var left = dict.d;
 			var right = dict.e;
 			if (_Utils_cmp(targetKey, key) < 0) {
-				if ((left.$ === 'RBNode_gren_builtin') && (left.a.$ === 'Black')) {
+				if ((left.$ === -1) && (left.a === 1)) {
 					var _v4 = left.a;
 					var lLeft = left.d;
-					if ((lLeft.$ === 'RBNode_gren_builtin') && (lLeft.a.$ === 'Red')) {
+					if ((lLeft.$ === -1) && (!lLeft.a)) {
 						var _v6 = lLeft.a;
 						return A5($gren_lang$core$Dict$RBNode_gren_builtin, color, key, value, A2($gren_lang$core$Dict$removeHelp, targetKey, left), right);
 					} else {
 						var _v7 = $gren_lang$core$Dict$moveRedLeft(dict);
-						if (_v7.$ === 'RBNode_gren_builtin') {
+						if (_v7.$ === -1) {
 							var nColor = _v7.a;
 							var nKey = _v7.b;
 							var nValue = _v7.c;
@@ -3409,7 +3403,7 @@ var $gren_lang$core$Dict$removeHelp = F2(function(targetKey, dict) {
 		}
 	});
 var $gren_lang$core$Dict$removeHelpEQGT = F2(function(targetKey, dict) {
-		if (dict.$ === 'RBNode_gren_builtin') {
+		if (dict.$ === -1) {
 			var color = dict.a;
 			var key = dict.b;
 			var value = dict.c;
@@ -3417,7 +3411,7 @@ var $gren_lang$core$Dict$removeHelpEQGT = F2(function(targetKey, dict) {
 			var right = dict.e;
 			if (_Utils_eq(targetKey, key)) {
 				var _v1 = $gren_lang$core$Dict$getMin(right);
-				if (_v1.$ === 'RBNode_gren_builtin') {
+				if (_v1.$ === -1) {
 					var minKey = _v1.b;
 					var minValue = _v1.c;
 					return A5($gren_lang$core$Dict$balance, color, minKey, minValue, left, $gren_lang$core$Dict$removeMin(right));
@@ -3433,13 +3427,13 @@ var $gren_lang$core$Dict$removeHelpEQGT = F2(function(targetKey, dict) {
 	});
 var $gren_lang$core$Dict$remove = F2(function(key, dict) {
 		var _v0 = A2($gren_lang$core$Dict$removeHelp, key, dict);
-		if ((_v0.$ === 'RBNode_gren_builtin') && (_v0.a.$ === 'Red')) {
+		if ((_v0.$ === -1) && (!_v0.a)) {
 			var _v1 = _v0.a;
 			var k = _v0.b;
 			var v = _v0.c;
 			var l = _v0.d;
 			var r = _v0.e;
-			return A5($gren_lang$core$Dict$RBNode_gren_builtin, $gren_lang$core$Dict$Black, k, v, l, r);
+			return A5($gren_lang$core$Dict$RBNode_gren_builtin, 1, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -3459,7 +3453,7 @@ var $gren_lang$core$Process$kill = _Scheduler_kill;
 var $gren_lang$core$Dict$get = F2(function(targetKey, dict) {
 		get:
 		while (true) {
-			if (dict.$ === 'RBEmpty_gren_builtin') {
+			if (dict.$ === -2) {
 				return $gren_lang$core$Maybe$Nothing;
 			} else {
 				var key = dict.b;
@@ -3467,14 +3461,14 @@ var $gren_lang$core$Dict$get = F2(function(targetKey, dict) {
 				var left = dict.d;
 				var right = dict.e;
 				var _v1 = A2($gren_lang$core$Basics$compare, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
+				switch (_v1) {
+					case 0:
 						var $temp$targetKey = targetKey,
 						$temp$dict = left;
 						targetKey = $temp$targetKey;
 						dict = $temp$dict;
 						continue get;
-					case 'EQ':
+					case 1:
 						return $gren_lang$core$Maybe$Just(value);
 					default:
 						var $temp$targetKey = targetKey,
@@ -3488,7 +3482,7 @@ var $gren_lang$core$Dict$get = F2(function(targetKey, dict) {
 	});
 var $gren_lang$core$Dict$member = F2(function(key, dict) {
 		var _v0 = A2($gren_lang$core$Dict$get, key, dict);
-		if (_v0.$ === 'Just') {
+		if (!_v0.$) {
 			return true;
 		} else {
 			return false;
@@ -3496,7 +3490,7 @@ var $gren_lang$core$Dict$member = F2(function(key, dict) {
 	});
 var $gren_lang$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $gren_lang$node$Stream$FromStream = F2(function (a, b) {
-		return { $: 'FromStream', a: a, b: b };
+		return { $: 0, a: a, b: b };
 	});
 
 
@@ -3523,7 +3517,7 @@ var $gren_lang$node$Stream$attachListener = _Stream_attachListener;
 var $gren_lang$core$Process$spawn = _Scheduler_spawn;
 var $gren_lang$node$Stream$spawnHelp = F3(function(router, toSpawn, processes) {
 		var _v0 = $gren_lang$core$Array$first(toSpawn);
-		if (_v0.$ === 'Nothing') {
+		if (_v0.$ === 1) {
 			return $gren_lang$core$Task$succeed(processes);
 		} else {
 			var nextStream = _v0.a;
@@ -3544,11 +3538,11 @@ var $gren_lang$node$Stream$subToListener = F2(function(sub, taggers) {
 		var sid = stream.a;
 		var tagger = sub.b;
 		var _v1 = A2($gren_lang$core$Dict$get, sid, taggers);
-		if (_v1.$ === 'Just') {
+		if (!_v1.$) {
 			var data = _v1.a;
-			return A3($gren_lang$core$Dict$insert, sid, _Utils_update(data, { taggers: A2($gren_lang$core$Array$pushLast, tagger, data.taggers) }), taggers);
+			return A3($gren_lang$core$Dict$insert, sid, _Utils_update(data, { X: A2($gren_lang$core$Array$pushLast, tagger, data.X) }), taggers);
 		} else {
-			return A3($gren_lang$core$Dict$insert, sid, { stream: stream, taggers: [ tagger ] }, taggers);
+			return A3($gren_lang$core$Dict$insert, sid, { aL: stream, X: [ tagger ] }, taggers);
 		}
 	});
 var $gren_lang$core$Dict$values = function(dict) {
@@ -3559,16 +3553,16 @@ var $gren_lang$core$Dict$values = function(dict) {
 var $gren_lang$node$Stream$onEffects = F4(function(router, commands, subs, state) {
 		var newTaggers = A3($gren_lang$core$Array$foldl, $gren_lang$node$Stream$subToListener, $gren_lang$core$Dict$empty, subs);
 		var toSpawn = A2($gren_lang$core$Array$map, function ($) {
-				return $.stream;
-			}, $gren_lang$core$Dict$values(A2($gren_lang$core$Dict$diff, newTaggers, state.taggers)));
+				return $.aL;
+			}, $gren_lang$core$Dict$values(A2($gren_lang$core$Dict$diff, newTaggers, state.X)));
 		var killTasks = A3($gren_lang$core$Array$foldl, F2(function(id, tasks) {
 					return A2($gren_lang$core$Task$andThen, function(_v5) {
 							return $gren_lang$core$Process$kill(id);
 						}, tasks);
-				}), $gren_lang$core$Task$succeed({  }), $gren_lang$core$Dict$values(A2($gren_lang$core$Dict$diff, state.processes, newTaggers)));
+				}), $gren_lang$core$Task$succeed({  }), $gren_lang$core$Dict$values(A2($gren_lang$core$Dict$diff, state.aH, newTaggers)));
 		var existingProcesses = A2($gren_lang$core$Dict$filter, F2(function(sid, _v4) {
 					return A2($gren_lang$core$Dict$member, sid, newTaggers);
-				}), state.processes);
+				}), state.aH);
 		var commandTasks = A3($gren_lang$core$Array$foldl, F2(function(_v2, tasks) {
 					var stream = _v2.a;
 					var bytes = _v2.b;
@@ -3577,7 +3571,7 @@ var $gren_lang$node$Stream$onEffects = F4(function(router, commands, subs, state
 						}, tasks);
 				}), $gren_lang$core$Task$succeed({  }), commands);
 		return A2($gren_lang$core$Task$andThen, function(newProcesses) {
-				return $gren_lang$core$Task$succeed({ processes: newProcesses, taggers: newTaggers });
+				return $gren_lang$core$Task$succeed({ aH: newProcesses, X: newTaggers });
 			}, A2($gren_lang$core$Task$andThen, function(_v1) {
 					return A3($gren_lang$node$Stream$spawnHelp, router, toSpawn, existingProcesses);
 				}, A2($gren_lang$core$Task$andThen, function(_v0) {
@@ -3585,7 +3579,7 @@ var $gren_lang$node$Stream$onEffects = F4(function(router, commands, subs, state
 					}, commandTasks)));
 	});
 var $gren_lang$core$Maybe$map = F2(function(f, maybe) {
-		if (maybe.$ === 'Just') {
+		if (!maybe.$) {
 			var value = maybe.a;
 			return $gren_lang$core$Maybe$Just(f(value));
 		} else {
@@ -3593,7 +3587,7 @@ var $gren_lang$core$Maybe$map = F2(function(f, maybe) {
 		}
 	});
 var $gren_lang$core$Maybe$withDefault = F2(function(_default, maybe) {
-		if (maybe.$ === 'Just') {
+		if (!maybe.$) {
 			var value = maybe.a;
 			return value;
 		} else {
@@ -3601,7 +3595,7 @@ var $gren_lang$core$Maybe$withDefault = F2(function(_default, maybe) {
 		}
 	});
 var $gren_lang$node$Stream$onSelfMsg = F3(function(router, event, state) {
-		if (event.$ === 'FromStream') {
+		if (!event.$) {
 			var _v1 = event.a;
 			var sid = _v1.a;
 			var data = event.b;
@@ -3614,8 +3608,8 @@ var $gren_lang$node$Stream$onSelfMsg = F3(function(router, event, state) {
 						}), $gren_lang$core$Task$succeed({  }), A2($gren_lang$core$Array$map, function(tagger) {
 							return tagger(data);
 						}, A2($gren_lang$core$Maybe$withDefault, [  ], A2($gren_lang$core$Maybe$map, function ($) {
-									return $.taggers;
-								}, A2($gren_lang$core$Dict$get, sid, state.taggers))))));
+									return $.X;
+								}, A2($gren_lang$core$Dict$get, sid, state.X))))));
 		} else {
 			var _v4 = event.a;
 			var rawStream = _v4.b;
@@ -3630,7 +3624,7 @@ var $gren_lang$node$Stream$cmdMap = F2(function(_v0, cmd) {
 		return A2($gren_lang$node$Stream$SendToStream, stream, payload);
 	});
 var $gren_lang$node$Stream$Listen = F2(function (a, b) {
-		return { $: 'Listen', a: a, b: b };
+		return { $: 0, a: a, b: b };
 	});
 var $gren_lang$node$Stream$subMap = F2(function(mapFn, sub) {
 		var stream = sub.a;
@@ -3644,7 +3638,7 @@ var $gren_lang$node$Stream$send = F2(function(stream, bytes) {
 		return $gren_lang$node$Stream$command(A2($gren_lang$node$Stream$SendToStream, stream, bytes));
 	});
 var $gren_lang$core$Bytes$Encode$Utf8 = F2(function (a, b) {
-		return { $: 'Utf8', a: a, b: b };
+		return { $: 9, a: a, b: b };
 	});
 var $gren_lang$core$Bytes$Encode$string = function(str) {
 	return A2($gren_lang$core$Bytes$Encode$Utf8, _Bytes_getStringWidth(str), str);
@@ -3659,64 +3653,64 @@ var $author$project$Main$progress = F2(function(stream, message) {
 		return A2($gren_lang$node$Stream$sendLine, stream, _Utils_ap('🌸 ', _Utils_ap(message, '...')));
 	});
 var $gren_lang$node$Node$startProgram = function(initResult) {
-	return $gren_lang$node$Internal$Init$Task($gren_lang$core$Task$succeed(initResult));
+	return $gren_lang$core$Task$succeed(initResult);
 };
 var $author$project$Main$init = function(env) {
 	return A2($gren_lang$node$Init$await, $gren_lang$node$FileSystem$initialize, function(fsPermission) {
 			return A2($gren_lang$node$Init$await, $gren_lang$node$ChildProcess$initialize, function(procPermission) {
-					return $gren_lang$node$Node$startProgram({ command: $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, env.stdout, 'Cleaning up previous builds'), A2($gren_lang$core$Task$attempt, $author$project$Main$Cleaned, $author$project$Main$clean(fsPermission)) ]), model: { fsPermission: fsPermission, procPermission: procPermission, stderr: env.stderr, stdout: env.stdout } });
+					return $gren_lang$node$Node$startProgram({ i: $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, env.e, 'Cleaning up previous builds'), A2($gren_lang$core$Task$attempt, $author$project$Main$Cleaned, $author$project$Main$clean(fsPermission)) ]), j: { a9: fsPermission, P: procPermission, h: env.h, e: env.e } });
 				});
 		});
 };
 var $gren_lang$core$Json$Decode$succeed = _Json_succeed;
 var $author$project$Main$BuiltClientComponents = function (a) {
-	return { $: 'BuiltClientComponents', a: a };
+	return { $: 7, a: a };
 };
 var $author$project$Main$BuiltServer = function (a) {
-	return { $: 'BuiltServer', a: a };
+	return { $: 8, a: a };
 };
 var $author$project$Main$CopiedPublicAssets = function (a) {
-	return { $: 'CopiedPublicAssets', a: a };
+	return { $: 6, a: a };
 };
 var $author$project$Main$GeneratedClientComponents = function (a) {
-	return { $: 'GeneratedClientComponents', a: a };
+	return { $: 3, a: a };
 };
 var $author$project$Main$GeneratedClientPorts = function (a) {
-	return { $: 'GeneratedClientPorts', a: a };
+	return { $: 5, a: a };
 };
 var $author$project$Main$GeneratedDependencies = function (a) {
-	return { $: 'GeneratedDependencies', a: a };
+	return { $: 1, a: a };
 };
 var $author$project$Main$GeneratedServerComponents = function (a) {
-	return { $: 'GeneratedServerComponents', a: a };
+	return { $: 2, a: a };
 };
 var $author$project$Main$GeneratedServerPorts = function (a) {
-	return { $: 'GeneratedServerPorts', a: a };
+	return { $: 4, a: a };
 };
 var $author$project$Main$ComponentBuildFailed = function (a) {
-	return { $: 'ComponentBuildFailed', a: a };
+	return { $: 0, a: a };
 };
 var $author$project$Main$ComponentBuildSucceeded = function (a) {
-	return { $: 'ComponentBuildSucceeded', a: a };
+	return { $: 0, a: a };
 };
 var $author$project$Main$ListComponentsFailed = function (a) {
-	return { $: 'ListComponentsFailed', a: a };
+	return { $: 1, a: a };
 };
-var $author$project$Main$NoComponents = { $: 'NoComponents' };
+var $author$project$Main$NoComponents = { $: 1 };
 var $gren_lang$node$ChildProcess$SetWorkingDirectory = function (a) {
-	return { $: 'SetWorkingDirectory', a: a };
+	return { $: 1, a: a };
 };
 var $gren_lang$core$Basics$composeR = F3(function(f, g, x) {
 		return g(f(x));
 	});
-var $gren_lang$node$ChildProcess$DefaultShell = { $: 'DefaultShell' };
-var $gren_lang$node$ChildProcess$InheritEnvironmentVariables = { $: 'InheritEnvironmentVariables' };
-var $gren_lang$node$ChildProcess$InheritWorkingDirectory = { $: 'InheritWorkingDirectory' };
-var $gren_lang$node$ChildProcess$NoLimit = { $: 'NoLimit' };
+var $gren_lang$node$ChildProcess$DefaultShell = { $: 1 };
+var $gren_lang$node$ChildProcess$InheritEnvironmentVariables = { $: 0 };
+var $gren_lang$node$ChildProcess$InheritWorkingDirectory = { $: 0 };
+var $gren_lang$node$ChildProcess$NoLimit = { $: 0 };
 var $gren_lang$core$Basics$mul = _Basics_mul;
-var $gren_lang$node$ChildProcess$defaultRunOptions = { environmentVariables: $gren_lang$node$ChildProcess$InheritEnvironmentVariables, maximumBytesWrittenToStreams: 1024 * 1024, runDuration: $gren_lang$node$ChildProcess$NoLimit, shell: $gren_lang$node$ChildProcess$DefaultShell, workingDirectory: $gren_lang$node$ChildProcess$InheritWorkingDirectory };
+var $gren_lang$node$ChildProcess$defaultRunOptions = { H: $gren_lang$node$ChildProcess$InheritEnvironmentVariables, K: 1024 * 1024, S: $gren_lang$node$ChildProcess$NoLimit, U: $gren_lang$node$ChildProcess$DefaultShell, bY: $gren_lang$node$ChildProcess$InheritWorkingDirectory };
 var $author$project$CodeGen$errorString = function(error) {
-	if (error.$ === 'PipelineError') {
+	if (!error.$) {
 		var str = error.a;
 		return str;
 	} else {
@@ -3725,25 +3719,25 @@ var $author$project$CodeGen$errorString = function(error) {
 	}
 };
 var $icidasset$shikensu_gren$Shikensu$Focus$Relative = function (a) {
-	return { $: 'Relative', a: a };
+	return { $: 1, a: a };
 };
-var $icidasset$shikensu_gren$Shikensu$Path$Directory = { $: 'Directory' };
+var $icidasset$shikensu_gren$Shikensu$Path$Directory = 0;
 var $icidasset$shikensu_gren$Shikensu$Path$Path = F2(function (a, b) {
-		return { $: 'Path', a: a, b: b };
+		return { $: 0, a: a, b: b };
 	});
-var $icidasset$shikensu_gren$Shikensu$Path$directory = $icidasset$shikensu_gren$Shikensu$Path$Path($icidasset$shikensu_gren$Shikensu$Path$Directory);
+var $icidasset$shikensu_gren$Shikensu$Path$directory = $icidasset$shikensu_gren$Shikensu$Path$Path(0);
 var $author$project$CodeGen$emptyBundle = function(permission) {
-	return { compendium: [  ], fsPermission: permission, readingDirectory: $gren_lang$core$Maybe$Nothing, workingDirectory: $icidasset$shikensu_gren$Shikensu$Path$directory([ '.' ]) };
+	return { F: [  ], a9: permission, bA: $gren_lang$core$Maybe$Nothing, bY: $icidasset$shikensu_gren$Shikensu$Path$directory([ '.' ]) };
 };
 var $gren_lang$core$Task$fail = _Scheduler_fail;
 var $icidasset$shikensu_gren$Shikensu$Error$ErrorMessage = function (a) {
-	return { $: 'ErrorMessage', a: a };
+	return { $: 0, a: a };
 };
 var $gren_lang$node$FileSystem$currentWorkingDirectory = function(_v0) {
 	return _FileSystem_currentWorkingDirectory;
 };
 var $gren_lang$core$String$endsWith = _String_endsWith;
-var $icidasset$shikensu_gren$Shikensu$Path$File = { $: 'File' };
+var $icidasset$shikensu_gren$Shikensu$Path$File = 1;
 var $gren_lang$core$String$length = _String_length;
 var $gren_lang$core$String$slice = _String_slice;
 var $gren_lang$core$String$dropLeft = F2(function(n, string) {
@@ -3758,7 +3752,7 @@ var $gren_lang$core$String$dropRight = F2(function(n, string) {
 var $gren_lang$core$String$startsWith = _String_startsWith;
 var $icidasset$shikensu_gren$Shikensu$Path$fromPosix = function(string) {
 	return function(s) {
-		return A2($gren_lang$core$String$endsWith, '/', s) ? A2($icidasset$shikensu_gren$Shikensu$Path$Path, $icidasset$shikensu_gren$Shikensu$Path$Directory, A2($gren_lang$core$String$split, '/', A2($gren_lang$core$String$dropRight, 1, s))) : A2($icidasset$shikensu_gren$Shikensu$Path$Path, $icidasset$shikensu_gren$Shikensu$Path$File, A2($gren_lang$core$String$split, '/', s));
+		return A2($gren_lang$core$String$endsWith, '/', s) ? A2($icidasset$shikensu_gren$Shikensu$Path$Path, 0, A2($gren_lang$core$String$split, '/', A2($gren_lang$core$String$dropRight, 1, s))) : A2($icidasset$shikensu_gren$Shikensu$Path$Path, 1, A2($gren_lang$core$String$split, '/', s));
 	}(function(s) {
 			return A2($gren_lang$core$String$startsWith, '/', s) ? A2($gren_lang$core$String$dropLeft, 1, s) : (A2($gren_lang$core$String$startsWith, './', s) ? A2($gren_lang$core$String$dropLeft, 2, s) : s);
 		}(string));
@@ -3778,7 +3772,7 @@ var $icidasset$shikensu_gren$Shikensu$currentWorkingDirectory = function(permiss
 				}, $gren_lang$node$FileSystem$currentWorkingDirectory(permission))));
 };
 var $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError = F2(function (a, b) {
-		return { $: 'PlatformAccessError', a: a, b: b };
+		return { $: 1, a: a, b: b };
 	});
 var $icidasset$shikensu_gren$Shikensu$Path$combine = F2(function(_v0, _v1) {
 		var a = _v0.b;
@@ -3805,18 +3799,18 @@ var $icidasset$shikensu_gren$Shikensu$Definition$extensionName = function(name) 
 };
 var $icidasset$shikensu_gren$Shikensu$Definition$create = function(relPath) {
 	var name = A2($gren_lang$core$Maybe$withDefault, '', $gren_lang$core$Array$last($icidasset$shikensu_gren$Shikensu$Path$unwrap(relPath)));
-	return { baseName: $icidasset$shikensu_gren$Shikensu$Definition$baseName(name), content: $gren_lang$core$Maybe$Nothing, directoryPath: $icidasset$shikensu_gren$Shikensu$Definition$directoryPath(relPath), extensionName: $icidasset$shikensu_gren$Shikensu$Definition$extensionName(name), metadata: $gren_lang$core$Dict$empty };
+	return { z: $icidasset$shikensu_gren$Shikensu$Definition$baseName(name), t: $gren_lang$core$Maybe$Nothing, ag: $icidasset$shikensu_gren$Shikensu$Definition$directoryPath(relPath), a3: $icidasset$shikensu_gren$Shikensu$Definition$extensionName(name), at: $gren_lang$core$Dict$empty };
 };
 var $icidasset$shikensu_gren$Shikensu$Path$encapsulate = function(_v0) {
 	var k = _v0.a;
 	var p = _v0.b;
 	return A2($icidasset$shikensu_gren$Shikensu$Path$Path, k, p);
 };
-var $icidasset$shikensu_gren$Shikensu$Path$file = $icidasset$shikensu_gren$Shikensu$Path$Path($icidasset$shikensu_gren$Shikensu$Path$File);
+var $icidasset$shikensu_gren$Shikensu$Path$file = $icidasset$shikensu_gren$Shikensu$Path$Path(1);
 var $gren_lang$core$Array$filterMap = F2(function(mapper, array) {
 		return A3($gren_lang$core$Array$foldl, F2(function(v, acc) {
 					var _v0 = mapper(v);
-					if (_v0.$ === 'Just') {
+					if (!_v0.$) {
 						var newValue = _v0.a;
 						return A2($gren_lang$core$Array$pushLast, newValue, acc);
 					} else {
@@ -3841,12 +3835,12 @@ var $gren_lang$core$Array$isEmpty = function(array) {
 	return _Utils_eq($gren_lang$core$Array$length(array), 0);
 };
 var $icidasset$shikensu_gren$Shikensu$Path$toPosix = F2(function(_v0, _v1) {
-		var absolute = _v0.absolute;
+		var absolute = _v0.aQ;
 		var k = _v1.a;
 		var parts = _v1.b;
 		var prefix = absolute ? '/' : '';
 		var joined = A2($gren_lang$core$String$join, '/', parts);
-		if (k.$ === 'Directory') {
+		if (!k) {
 			return $gren_lang$core$Array$isEmpty(parts) ? (absolute ? '/' : './') : _Utils_ap(prefix, _Utils_ap(joined, '/'));
 		} else {
 			return _Utils_ap(prefix, joined);
@@ -3856,10 +3850,10 @@ var $icidasset$shikensu_gren$Shikensu$recursiveList = F3(function(permission, fo
 		return A2($gren_lang$core$Task$andThen, function(listing) {
 				return A2($gren_lang$core$Task$map, $gren_lang$core$Array$flatten, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$filterMap, function(entry) {
 								switch (entry.$) {
-									case 'File':
+									case 0:
 										var name = entry.a;
 										return A2($gren_lang$core$String$startsWith, '.', name) ? $gren_lang$core$Maybe$Nothing : $gren_lang$core$Maybe$Just($gren_lang$core$Task$succeed($gren_lang$core$Array$singleton($icidasset$shikensu_gren$Shikensu$Definition$create(A2($icidasset$shikensu_gren$Shikensu$Path$combine, relativePath, $icidasset$shikensu_gren$Shikensu$Path$file($gren_lang$core$Array$singleton(name)))))));
-									case 'Directory':
+									case 1:
 										var name = entry.a;
 										return $gren_lang$core$Maybe$Just(A3($icidasset$shikensu_gren$Shikensu$recursiveList, permission, focusDirectory, A2($icidasset$shikensu_gren$Shikensu$Path$combine, relativePath, $icidasset$shikensu_gren$Shikensu$Path$directory($gren_lang$core$Array$singleton(name)))));
 									default:
@@ -3867,15 +3861,15 @@ var $icidasset$shikensu_gren$Shikensu$recursiveList = F3(function(permission, fo
 								}
 							}, listing)));
 			}, function(path) {
-				return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A2($gren_lang$node$FileSystem$listDirectory, permission, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { absolute: true }, path)));
+				return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A2($gren_lang$node$FileSystem$listDirectory, permission, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { aQ: true }, path)));
 			}(A2($icidasset$shikensu_gren$Shikensu$Path$combine, focusDirectory, relativePath)));
 	});
 var $icidasset$shikensu_gren$Shikensu$Focus$toAbsolutePath = F2(function(_v0, focus) {
-		var cwd = _v0.cwd;
+		var cwd = _v0.ae;
 		switch (focus.$) {
-			case 'CurrentDirectory':
+			case 0:
 				return cwd;
-			case 'Relative':
+			case 1:
 				var path = focus.a;
 				return A2($icidasset$shikensu_gren$Shikensu$Path$combine, cwd, path);
 			default:
@@ -3885,15 +3879,15 @@ var $icidasset$shikensu_gren$Shikensu$Focus$toAbsolutePath = F2(function(_v0, fo
 	});
 var $icidasset$shikensu_gren$Shikensu$list = F2(function(fsPermission, focus) {
 		return A2($gren_lang$core$Task$andThen, function(cwd) {
-				var listFocusDirectory = A2($icidasset$shikensu_gren$Shikensu$Focus$toAbsolutePath, { cwd: cwd }, focus);
+				var listFocusDirectory = A2($icidasset$shikensu_gren$Shikensu$Focus$toAbsolutePath, { ae: cwd }, focus);
 				return A2($gren_lang$core$Task$map, function(compendium) {
-						return { compendium: compendium, fsPermission: fsPermission, readingDirectory: $gren_lang$core$Maybe$Just(listFocusDirectory), workingDirectory: cwd };
+						return { F: compendium, a9: fsPermission, bA: $gren_lang$core$Maybe$Just(listFocusDirectory), bY: cwd };
 					}, A3($icidasset$shikensu_gren$Shikensu$recursiveList, fsPermission, listFocusDirectory, $icidasset$shikensu_gren$Shikensu$Path$directory([  ])));
 			}, $icidasset$shikensu_gren$Shikensu$currentWorkingDirectory(fsPermission));
 	});
 var $author$project$CodeGen$tryList = F2(function(fsPermission, focus) {
 		return A2($gren_lang$core$Task$onError, function(error) {
-				if ((error.$ === 'PlatformAccessError') && (error.b.$ === 'AccessErrorNotFound')) {
+				if ((error.$ === 1) && (!error.b.$)) {
 					var _v1 = error.b;
 					return $gren_lang$core$Task$succeed($author$project$CodeGen$emptyBundle(fsPermission));
 				} else {
@@ -3908,31 +3902,31 @@ var $gren_lang$core$Array$filter = F2(function(pred, array) {
 				}), [  ], array);
 	});
 var $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium = F2(function(fn, bundle) {
-		return _Utils_update(bundle, { compendium: fn(bundle.compendium) });
+		return _Utils_update(bundle, { F: fn(bundle.F) });
 	});
 var $icidasset$shikensu_gren$Shikensu$Contrib$withExtension = function(extension) {
 	return $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium($gren_lang$core$Array$filter(function(def) {
-				return _Utils_eq(def.extensionName, $gren_lang$core$Maybe$Just(extension));
+				return _Utils_eq(def.a3, $gren_lang$core$Maybe$Just(extension));
 			}));
 };
 var $author$project$CodeGen$listComponents = function(fsPermission) {
 	return A2($gren_lang$core$Task$map, $icidasset$shikensu_gren$Shikensu$Contrib$withExtension('gren'), A2($author$project$CodeGen$tryList, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory([ 'client', 'src', 'Components' ]))));
 };
 var $author$project$CodeGen$FileSystemError = function (a) {
-	return { $: 'FileSystemError', a: a };
+	return { $: 1, a: a };
 };
 var $author$project$CodeGen$PipelineError = function (a) {
-	return { $: 'PipelineError', a: a };
+	return { $: 0, a: a };
 };
 var $gren_lang$core$String$append = _String_append;
 var $author$project$CodeGen$mapError = function(error) {
 	switch (error.$) {
-		case 'ErrorMessage':
+		case 0:
 			var str = error.a;
 			return $author$project$CodeGen$PipelineError(str);
-		case 'PlatformAccessError':
+		case 1:
 			var path = error.a;
-			return $author$project$CodeGen$FileSystemError(A2($gren_lang$core$String$append, 'Error accessing ', A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { absolute: false }, path)));
+			return $author$project$CodeGen$FileSystemError(A2($gren_lang$core$String$append, 'Error accessing ', A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { aQ: false }, path)));
 		default:
 			return $author$project$CodeGen$FileSystemError('Unknown FileSystem error');
 	}
@@ -3940,11 +3934,11 @@ var $author$project$CodeGen$mapError = function(error) {
 var $author$project$CodeGen$generatedComponentPaths = function(fsPermission) {
 	return A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, function(bundle) {
 				return $gren_lang$core$Task$succeed(A2($gren_lang$core$Array$map, function(d) {
-							var filename = _Utils_ap(d.baseName, '.gren');
-							var dir = $icidasset$shikensu_gren$Shikensu$Path$unwrap(d.directoryPath);
+							var filename = _Utils_ap(d.z, '.gren');
+							var dir = $icidasset$shikensu_gren$Shikensu$Path$unwrap(d.ag);
 							var parent = _Utils_ap([ '.prettynice', 'Gen', 'Components' ], dir);
 							return $gren_lang$node$FileSystem$buildPath(_Utils_ap(parent, [ filename ]));
-						}, bundle.compendium));
+						}, bundle.F));
 			}, $author$project$CodeGen$listComponents(fsPermission)));
 };
 
@@ -3955,46 +3949,46 @@ var childProcess = require("node:child_process");
 
 var _ChildProcess_run = function (options) {
   return _Scheduler_binding(function (callback) {
-    var workingDir = options.workingDirectory;
-    var env = options.environmentVariables;
-    var shell = options.shell;
+    var workingDir = options.bY;
+    var env = options.H;
+    var shell = options.U;
 
     childProcess.execFile(
-      options.program,
-      options._arguments,
+      options.bx,
+      options.aT,
       {
         encoding: "buffer",
-        cwd: workingDir.inherit ? process.cwd() : workingDir.override,
+        cwd: workingDir.an ? process.cwd() : workingDir.aE,
         env:
-          env.option === 0
+          env.M === 0
             ? process.env
-            : env.option === 1
-            ? _Utils_update(process.env, _ChildProcess_dictToObj(env.value))
-            : _ChildProcess_dictToObj(env.value),
-        timeout: options.runDuration,
-        maxBuffer: options.maximumBytesWrittenToStreams,
+            : env.M === 1
+            ? _Utils_update(process.env, _ChildProcess_dictToObj(env.aO))
+            : _ChildProcess_dictToObj(env.aO),
+        timeout: options.S,
+        maxBuffer: options.K,
         shell:
-          shell.choice === 0
+          shell.D === 0
             ? false
-            : shell.choice === 1
+            : shell.D === 1
             ? true
-            : shell.value,
+            : shell.aO,
       },
       function (err, stdout, stderr) {
         if (err == null) {
           callback(
             _Scheduler_succeed({
-              stdout: new DataView(stdout.buffer, stdout.byteOffset),
-              stderr: new DataView(stderr.buffer, stderr.byteOffset),
+              e: new DataView(stdout.buffer, stdout.byteOffset),
+              h: new DataView(stderr.buffer, stderr.byteOffset),
             })
           );
         } else {
           callback(
             _Scheduler_fail({
-              exitCode:
+              a2:
                 typeof err.errno === "undefined" ? err.code : err.errno,
-              stdout: new DataView(stdout.buffer, stdout.byteOffset),
-              stderr: new DataView(stderr.buffer, stderr.byteOffset),
+              e: new DataView(stdout.buffer, stdout.byteOffset),
+              h: new DataView(stderr.buffer, stderr.byteOffset),
             })
           );
         }
@@ -4019,44 +4013,44 @@ var $gren_lang$core$Basics$max = F2(function(x, y) {
 		return (_Utils_cmp(x, y) > 0) ? x : y;
 	});
 var $gren_lang$node$ChildProcess$run = F4(function(_v0, program, _arguments, opts) {
-		return _ChildProcess_run({ _arguments: _arguments, environmentVariables: function () {
-				var _v1 = opts.environmentVariables;
+		return _ChildProcess_run({ aT: _arguments, H: function () {
+				var _v1 = opts.H;
 				switch (_v1.$) {
-					case 'InheritEnvironmentVariables':
-						return { option: 0, value: $gren_lang$core$Dict$empty };
-					case 'MergeWithEnvironmentVariables':
+					case 0:
+						return { M: 0, aO: $gren_lang$core$Dict$empty };
+					case 1:
 						var value = _v1.a;
-						return { option: 1, value: value };
+						return { M: 1, aO: value };
 					default:
 						var value = _v1.a;
-						return { option: 2, value: value };
+						return { M: 2, aO: value };
 				}
-			}(), maximumBytesWrittenToStreams: opts.maximumBytesWrittenToStreams, program: program, runDuration: function () {
-				var _v2 = opts.runDuration;
-				if (_v2.$ === 'NoLimit') {
+			}(), K: opts.K, bx: program, S: function () {
+				var _v2 = opts.S;
+				if (!_v2.$) {
 					return 0;
 				} else {
 					var ms = _v2.a;
 					return A2($gren_lang$core$Basics$max, 0, ms);
 				}
-			}(), shell: function () {
-				var _v3 = opts.shell;
+			}(), U: function () {
+				var _v3 = opts.U;
 				switch (_v3.$) {
-					case 'NoShell':
-						return { choice: 0, value: '' };
-					case 'DefaultShell':
-						return { choice: 1, value: '' };
+					case 0:
+						return { D: 0, aO: '' };
+					case 1:
+						return { D: 1, aO: '' };
 					default:
 						var value = _v3.a;
-						return { choice: 2, value: value };
+						return { D: 2, aO: value };
 				}
-			}(), workingDirectory: function () {
-				var _v4 = opts.workingDirectory;
-				if (_v4.$ === 'InheritWorkingDirectory') {
-					return { inherit: true, override: '' };
+			}(), bY: function () {
+				var _v4 = opts.bY;
+				if (!_v4.$) {
+					return { an: true, aE: '' };
 				} else {
 					var value = _v4.a;
-					return { inherit: false, override: value };
+					return { an: false, aE: value };
 				}
 			}() });
 	});
@@ -4064,7 +4058,7 @@ var $author$project$Main$buildClientComponents = F2(function(fsPermission, procP
 		var workingDirectory = $gren_lang$node$FileSystem$buildPath([ 'client' ]);
 		var outputPath = $gren_lang$node$FileSystem$buildPath([ '..', 'dist', 'client', 'main.js' ]);
 		var buildComponents = function(components) {
-			return _Utils_eq(components, '') ? $gren_lang$core$Task$succeed($author$project$Main$NoComponents) : A2($gren_lang$core$Task$mapError, $author$project$Main$ComponentBuildFailed, A2($gren_lang$core$Task$map, $author$project$Main$ComponentBuildSucceeded, A4($gren_lang$node$ChildProcess$run, procPermission, 'gren', [ 'make', components, _Utils_ap('--output=', outputPath) ], _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { workingDirectory: $gren_lang$node$ChildProcess$SetWorkingDirectory(workingDirectory) }))));
+			return _Utils_eq(components, '') ? $gren_lang$core$Task$succeed($author$project$Main$NoComponents) : A2($gren_lang$core$Task$mapError, $author$project$Main$ComponentBuildFailed, A2($gren_lang$core$Task$map, $author$project$Main$ComponentBuildSucceeded, A4($gren_lang$node$ChildProcess$run, procPermission, 'gren', [ 'make', components, '--optimize', _Utils_ap('--output=', outputPath) ], _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { bY: $gren_lang$node$ChildProcess$SetWorkingDirectory(workingDirectory) }))));
 		};
 		return A2($gren_lang$core$Task$andThen, buildComponents, A2($gren_lang$core$Task$map, $gren_lang$core$String$join(' '), A2($gren_lang$core$Task$mapError, A2($gren_lang$core$Basics$composeR, $author$project$CodeGen$errorString, $author$project$Main$ListComponentsFailed), $author$project$CodeGen$generatedComponentPaths(fsPermission))));
 	});
@@ -4072,17 +4066,15 @@ var $author$project$Main$buildServer = function(procPermission) {
 	var workingDirectory = $gren_lang$node$FileSystem$buildPath([ 'server' ]);
 	var outputPath = $gren_lang$node$FileSystem$buildPath([ '..', 'dist', 'server', 'main.js' ]);
 	var inputPath = $gren_lang$node$FileSystem$buildPath([ 'src', 'Main.gren' ]);
-	return A4($gren_lang$node$ChildProcess$run, procPermission, 'gren', [ 'make', inputPath, _Utils_ap('--output=', outputPath) ], _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { workingDirectory: $gren_lang$node$ChildProcess$SetWorkingDirectory(workingDirectory) }));
+	return A4($gren_lang$node$ChildProcess$run, procPermission, 'gren', [ 'make', inputPath, _Utils_ap('--output=', outputPath) ], _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { bY: $gren_lang$node$ChildProcess$SetWorkingDirectory(workingDirectory) }));
 };
 var $gren_lang$core$Bytes$Decode$decode = F2(function(_v0, bs) {
-		var decoder = _v0.a;
+		var decoder = _v0;
 		return A2(_Bytes_decode, decoder, bs);
 	});
-var $gren_lang$core$Bytes$Decode$Decoder = function (a) {
-	return { $: 'Decoder', a: a };
-};
+var $gren_lang$core$Bytes$Decode$Decoder = $gren_lang$core$Basics$identity;
 var $gren_lang$core$Bytes$Decode$string = function(n) {
-	return $gren_lang$core$Bytes$Decode$Decoder(_Bytes_read_string(n));
+	return _Bytes_read_string(n);
 };
 var $gren_lang$core$Bytes$width = _Bytes_width;
 var $author$project$Main$bytesToString = function(bytes) {
@@ -4093,7 +4085,7 @@ var $author$project$Main$bytesToString = function(bytes) {
 var $gren_lang$core$Basics$never = function(_v0) {
 	never:
 	while (true) {
-		var nvr = _v0.a;
+		var nvr = _v0;
 		var $temp$_v0 = nvr;
 		_v0 = $temp$_v0;
 		continue never;
@@ -4108,11 +4100,9 @@ var $author$project$Main$endWithErrorMessage = F2(function(stream, message) {
 var $author$project$Main$codeGenError = F2(function(stream, error) {
 		return A2($author$project$Main$endWithErrorMessage, stream, $author$project$CodeGen$errorString(error));
 	});
-var $author$project$CodeGen$Result = function (a) {
-	return { $: 'Result', a: a };
-};
+var $author$project$CodeGen$Result = $gren_lang$core$Basics$identity;
 var $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError = function (a) {
-	return { $: 'PlatformUnknownError', a: a };
+	return { $: 2, a: a };
 };
 var $gren_lang$node$FileSystem$close = _FileSystem_close;
 var $gren_lang$node$FileSystem$openImpl = _FileSystem_open;
@@ -4121,12 +4111,12 @@ var $gren_lang$node$FileSystem$openForRead = F2(function(_v0, path) {
 	});
 var $gren_lang$node$FileSystem$readFromOffset = _FileSystem_readFromOffset;
 var $gren_lang$node$FileSystem$read = function(fh) {
-	return A2($gren_lang$node$FileSystem$readFromOffset, fh, { length: -1, offset: 0 });
+	return A2($gren_lang$node$FileSystem$readFromOffset, fh, { bn: -1, d: 0 });
 };
 var $icidasset$shikensu_gren$Shikensu$Definition$relativePath = function(def) {
-	return A2($icidasset$shikensu_gren$Shikensu$Path$combine, def.directoryPath, $icidasset$shikensu_gren$Shikensu$Path$file([ _Utils_ap(def.baseName, A2($gren_lang$core$Maybe$withDefault, '', A2($gren_lang$core$Maybe$map, function(e) {
+	return A2($icidasset$shikensu_gren$Shikensu$Path$combine, def.ag, $icidasset$shikensu_gren$Shikensu$Path$file([ _Utils_ap(def.z, A2($gren_lang$core$Maybe$withDefault, '', A2($gren_lang$core$Maybe$map, function(e) {
 							return _Utils_ap('.', e);
-						}, def.extensionName))) ]));
+						}, def.a3))) ]));
 };
 var $icidasset$shikensu_gren$Shikensu$readDefinition = F3(function(fsPermission, readingDirectory, def) {
 		return A2($gren_lang$core$Task$andThen, function(handle) {
@@ -4135,32 +4125,32 @@ var $icidasset$shikensu_gren$Shikensu$readDefinition = F3(function(fsPermission,
 									return updatedDef;
 								}, $gren_lang$node$FileSystem$close(handle)));
 					}, A2($gren_lang$core$Task$map, function(bytes) {
-							return _Utils_update(def, { content: $gren_lang$core$Maybe$Just(bytes) });
+							return _Utils_update(def, { t: $gren_lang$core$Maybe$Just(bytes) });
 						}, A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError, $gren_lang$node$FileSystem$read(handle))));
 			}, function(path) {
-				return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A2($gren_lang$node$FileSystem$openForRead, fsPermission, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { absolute: true }, path)));
+				return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A2($gren_lang$node$FileSystem$openForRead, fsPermission, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { aQ: true }, path)));
 			}(A2($icidasset$shikensu_gren$Shikensu$Path$combine, readingDirectory, $icidasset$shikensu_gren$Shikensu$Definition$relativePath(def))));
 	});
 var $icidasset$shikensu_gren$Shikensu$read = function(bun) {
 	return A2($gren_lang$core$Task$map, function(compendium) {
-			return _Utils_update(bun, { compendium: compendium });
+			return _Utils_update(bun, { F: compendium });
 		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, function(def) {
-					var _v0 = bun.readingDirectory;
-					if (_v0.$ === 'Just') {
+					var _v0 = bun.bA;
+					if (!_v0.$) {
 						var readingDirectory = _v0.a;
-						return A3($icidasset$shikensu_gren$Shikensu$readDefinition, bun.fsPermission, readingDirectory, def);
+						return A3($icidasset$shikensu_gren$Shikensu$readDefinition, bun.a9, readingDirectory, def);
 					} else {
 						return $gren_lang$core$Task$succeed(def);
 					}
-				}, bun.compendium)));
+				}, bun.F)));
 };
-var $gren_lang$node$FileSystem$EnsureEmpty = { $: 'EnsureEmpty' };
+var $gren_lang$node$FileSystem$EnsureEmpty = 0;
 var $gren_lang$node$FileSystem$openForWrite = F3(function(_v0, behaviour, path) {
 		var access = function () {
-			switch (behaviour.$) {
-				case 'EnsureEmpty':
+			switch (behaviour) {
+				case 0:
 					return 'w';
-				case 'ExpectExisting':
+				case 1:
 					return 'r+';
 				default:
 					return 'wx';
@@ -4174,46 +4164,46 @@ var $gren_lang$node$FileSystem$write = F2(function(fh, bytes) {
 	});
 var $icidasset$shikensu_gren$Shikensu$writeDefinition = F3(function(permission, destinationDirectory, def) {
 		return A2($gren_lang$core$Task$onError, function(err) {
-				if ((err.$ === 'PlatformAccessError') && (err.b.$ === 'AccessErrorNotFound')) {
+				if ((err.$ === 1) && (!err.b.$)) {
 					var path = err.a;
 					var _v2 = err.b;
 					var directoryPath = $icidasset$shikensu_gren$Shikensu$Path$directory(A2($gren_lang$core$Array$dropLast, 1, $icidasset$shikensu_gren$Shikensu$Path$unwrap(path)));
-					var directoryPathString = A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { absolute: true }, directoryPath);
+					var directoryPathString = A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { aQ: true }, directoryPath);
 					return A2($gren_lang$core$Task$andThen, function(_v3) {
 							return A3($icidasset$shikensu_gren$Shikensu$writeDefinition, permission, destinationDirectory, def);
-						}, A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(directoryPath)), A3($gren_lang$node$FileSystem$makeDirectory, permission, directoryPathString, { recursive: true })));
+						}, A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(directoryPath)), A3($gren_lang$node$FileSystem$makeDirectory, permission, directoryPathString, { aI: true })));
 				} else {
 					return $gren_lang$core$Task$fail(err);
 				}
 			}, A2($gren_lang$core$Task$map, function(_v0) {
 					return {  };
 				}, A2($gren_lang$core$Task$andThen, function(handle) {
-						return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError, A2($gren_lang$node$FileSystem$write, handle, A2($gren_lang$core$Maybe$withDefault, $gren_lang$core$Bytes$Encode$encode($gren_lang$core$Bytes$Encode$string('')), def.content)));
+						return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError, A2($gren_lang$node$FileSystem$write, handle, A2($gren_lang$core$Maybe$withDefault, $gren_lang$core$Bytes$Encode$encode($gren_lang$core$Bytes$Encode$string('')), def.t)));
 					}, function(path) {
-						return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A3($gren_lang$node$FileSystem$openForWrite, permission, $gren_lang$node$FileSystem$EnsureEmpty, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { absolute: true }, path)));
+						return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A3($gren_lang$node$FileSystem$openForWrite, permission, 0, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { aQ: true }, path)));
 					}(A2($icidasset$shikensu_gren$Shikensu$Path$combine, destinationDirectory, $icidasset$shikensu_gren$Shikensu$Definition$relativePath(def))))));
 	});
 var $icidasset$shikensu_gren$Shikensu$write = F2(function(destinationFocus, bun) {
 		return function(destinationDirectory) {
 			return A2($gren_lang$core$Task$map, function(_v0) {
 					return bun;
-				}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, A2($icidasset$shikensu_gren$Shikensu$writeDefinition, bun.fsPermission, destinationDirectory), bun.compendium)));
-		}(A2($icidasset$shikensu_gren$Shikensu$Focus$toAbsolutePath, { cwd: bun.workingDirectory }, destinationFocus));
+				}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, A2($icidasset$shikensu_gren$Shikensu$writeDefinition, bun.a9, destinationDirectory), bun.F)));
+		}(A2($icidasset$shikensu_gren$Shikensu$Focus$toAbsolutePath, { ae: bun.bY }, destinationFocus));
 	});
 var $author$project$CodeGen$write = function(destinationDir) {
 	return $icidasset$shikensu_gren$Shikensu$write($icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory(destinationDir)));
 };
 var $author$project$CodeGen$copyPublicAssets = function(fsPermission) {
-	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'client' ]), A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, A2($author$project$CodeGen$tryList, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory([ 'public' ])))))));
+	return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'client' ]), A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, A2($author$project$CodeGen$tryList, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory([ 'public' ])))))));
 };
 var $author$project$Main$fileSystemError = F2(function(stream, error) {
 		return A2($author$project$Main$endWithErrorMessage, stream, function () {
 				switch (error.$) {
-					case 'AccessErrorNotFound':
+					case 0:
 						return 'File not found';
-					case 'AccessErrorNoAccess':
+					case 1:
 						return 'Cannot access file';
-					case 'AccessErrorNotADirectory':
+					case 2:
 						return 'Path is not a directory';
 					default:
 						var str = error.a;
@@ -4222,7 +4212,7 @@ var $author$project$Main$fileSystemError = F2(function(stream, error) {
 			}());
 	});
 var $gren_lang$core$Maybe$andThen = F2(function(callback, maybeValue) {
-		if (maybeValue.$ === 'Just') {
+		if (!maybeValue.$) {
 			var value = maybeValue.a;
 			return callback(value);
 		} else {
@@ -4233,7 +4223,7 @@ var $author$project$CodeGen$toBytes = function(string) {
 	return $gren_lang$core$Bytes$Encode$encode($gren_lang$core$Bytes$Encode$string(string));
 };
 var $author$project$CodeGen$moduleName = function(def) {
-	var path = $icidasset$shikensu_gren$Shikensu$Path$unwrap(def.directoryPath);
+	var path = $icidasset$shikensu_gren$Shikensu$Path$unwrap(def.ag);
 	var modulePath = function () {
 		if (path.length === 0) {
 			return 'Components.';
@@ -4242,13 +4232,13 @@ var $author$project$CodeGen$moduleName = function(def) {
 			return _Utils_ap('Components.', _Utils_ap(A2($gren_lang$core$String$join, '.', dirs), '.'));
 		}
 	}();
-	return _Utils_ap(modulePath, def.baseName);
+	return _Utils_ap(modulePath, def.z);
 };
 var $gren_lang$core$String$replace = F3(function(before, after, string) {
 		return A2($gren_lang$core$String$join, after, A2($gren_lang$core$String$split, before, string));
 	});
 var $author$project$CodeGen$toClientComponent = F2(function(def, contents) {
-		return A3($gren_lang$core$String$replace, '{{MODULE_NAME}}', $author$project$CodeGen$moduleName(def), A3($gren_lang$core$String$replace, '{{NAME}}', def.baseName, 'module Gen.{{MODULE_NAME}} exposing (main)\n\nimport Transmutable.Html.VirtualDom exposing (toVirtualDom)\nimport {{MODULE_NAME}} as {{NAME}}\nimport Browser\n\nmain : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg\nmain =\n    let\n        e = {{NAME}}.component\n    in\n    Browser.element\n        { init = e.init\n        , update = e.update\n        , subscriptions = e.subscriptions\n        , view = e.view >> toVirtualDom\n        }'));
+		return A3($gren_lang$core$String$replace, '{{MODULE_NAME}}', $author$project$CodeGen$moduleName(def), A3($gren_lang$core$String$replace, '{{NAME}}', def.z, 'module Gen.{{MODULE_NAME}} exposing (main)\n\nimport Transmutable.Html.VirtualDom exposing (toVirtualDom)\nimport {{MODULE_NAME}} as {{NAME}}\nimport Browser\n\nmain : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg\nmain =\n    let\n        e = {{NAME}}.component\n    in\n    Browser.element\n        { init = e.init\n        , update = e.update\n        , subscriptions = e.subscriptions\n        , view = e.view >> toVirtualDom\n        }'));
 	});
 var $author$project$CodeGen$toString = function(bytes) {
 	return function(decoder) {
@@ -4256,22 +4246,22 @@ var $author$project$CodeGen$toString = function(bytes) {
 	}($gren_lang$core$Bytes$Decode$string($gren_lang$core$Bytes$width(bytes)));
 };
 var $author$project$CodeGen$clientComponentFromDef = function(def) {
-	return A2($gren_lang$core$Maybe$map, $author$project$CodeGen$toBytes, A2($gren_lang$core$Maybe$map, $author$project$CodeGen$toClientComponent(def), A2($gren_lang$core$Maybe$andThen, $author$project$CodeGen$toString, def.content)));
+	return A2($gren_lang$core$Maybe$map, $author$project$CodeGen$toBytes, A2($gren_lang$core$Maybe$map, $author$project$CodeGen$toClientComponent(def), A2($gren_lang$core$Maybe$andThen, $author$project$CodeGen$toString, def.t)));
 };
 var $author$project$CodeGen$readComponents = function(fsPermission) {
 	return A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, $author$project$CodeGen$listComponents(fsPermission));
 };
 var $icidasset$shikensu_gren$Shikensu$Contrib$Definition$renderContent = F2(function(renderer, def) {
-		return _Utils_update(def, { content: renderer(def) });
+		return _Utils_update(def, { t: renderer(def) });
 	});
 var $icidasset$shikensu_gren$Shikensu$Contrib$renderContent = function(renderer) {
 	return $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium($gren_lang$core$Array$map($icidasset$shikensu_gren$Shikensu$Contrib$Definition$renderContent(renderer)));
 };
 var $author$project$CodeGen$genClientComponents = function(fsPermission) {
-	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'client', '.prettynice', 'Gen', 'Components' ]), A2($gren_lang$core$Task$map, $icidasset$shikensu_gren$Shikensu$Contrib$renderContent($author$project$CodeGen$clientComponentFromDef), $author$project$CodeGen$readComponents(fsPermission)))));
+	return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'client', '.prettynice', 'Gen', 'Components' ]), A2($gren_lang$core$Task$map, $icidasset$shikensu_gren$Shikensu$Contrib$renderContent($author$project$CodeGen$clientComponentFromDef), $author$project$CodeGen$readComponents(fsPermission)))));
 };
 var $icidasset$shikensu_gren$Shikensu$Contrib$Definition$renameExtension = F3(function(oldExtname, newExtname, def) {
-		return _Utils_eq(def.extensionName, $gren_lang$core$Maybe$Just(oldExtname)) ? _Utils_update(def, { extensionName: $gren_lang$core$Maybe$Just(newExtname) }) : def;
+		return _Utils_eq(def.a3, $gren_lang$core$Maybe$Just(oldExtname)) ? _Utils_update(def, { a3: $gren_lang$core$Maybe$Just(newExtname) }) : def;
 	});
 var $icidasset$shikensu_gren$Shikensu$Contrib$renameExtension = F2(function(old, _new) {
 		return $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium($gren_lang$core$Array$map(A2($icidasset$shikensu_gren$Shikensu$Contrib$Definition$renameExtension, old, _new)));
@@ -4282,33 +4272,31 @@ var $author$project$CodeGen$tryRead = $gren_lang$core$Task$andThen(function(bund
 			}, $icidasset$shikensu_gren$Shikensu$read(bundle));
 	});
 var $author$project$CodeGen$genClientPorts = function(fsPermission) {
-	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'client', 'Components' ]), $author$project$CodeGen$tryRead(A2($gren_lang$core$Task$map, A2($icidasset$shikensu_gren$Shikensu$Contrib$renameExtension, 'gren', 'js'), $author$project$CodeGen$listComponents(fsPermission))))));
+	return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'client', 'Components' ]), $author$project$CodeGen$tryRead(A2($gren_lang$core$Task$map, A2($icidasset$shikensu_gren$Shikensu$Contrib$renameExtension, 'gren', 'js'), $author$project$CodeGen$listComponents(fsPermission))))));
 };
 var $icidasset$shikensu_gren$Shikensu$bundle = F2(function(fsPermission, compendium) {
 		return A2($gren_lang$core$Task$map, function(cwd) {
-				return { compendium: compendium, fsPermission: fsPermission, readingDirectory: $gren_lang$core$Maybe$Nothing, workingDirectory: cwd };
+				return { F: compendium, a9: fsPermission, bA: $gren_lang$core$Maybe$Nothing, bY: cwd };
 			}, $icidasset$shikensu_gren$Shikensu$currentWorkingDirectory(fsPermission));
 	});
 var $author$project$CodeGen$createDef = F2(function(content, path) {
 		var def = $icidasset$shikensu_gren$Shikensu$Definition$create($icidasset$shikensu_gren$Shikensu$Path$file(path));
-		return _Utils_update(def, { content: $gren_lang$core$Maybe$Just($author$project$CodeGen$toBytes(content)) });
+		return _Utils_update(def, { t: $gren_lang$core$Maybe$Just($author$project$CodeGen$toBytes(content)) });
 	});
 var $author$project$CodeGen$prettyniceComponentModule = 'module Prettynice.Component exposing (Component)\n\nimport Transmutable.Html exposing (Html)\n\ntype alias Component props model msg =\n    { init : props -> { model : model, command : Cmd msg }\n    , view : model -> Html msg\n    , update : msg -> model -> { model : model, command : Cmd msg }\n    , subscriptions : model -> Sub msg\n    }';
 var $author$project$CodeGen$serverWrapper = 'const main = require("./main.js");\nconst app = main.Gren.Main.init({});\n\ntry {\n    const ports = require("./ports.js");\n    if (ports.init) {\n      ports.init(app);\n    }\n} catch (e) {\n    if (e.code !== \'MODULE_NOT_FOUND\') {\n        throw e;\n    }\n}';
 var $author$project$CodeGen$genDependencies = function(fsPermission) {
-	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([  ]), A2($icidasset$shikensu_gren$Shikensu$bundle, fsPermission, [ A2($author$project$CodeGen$createDef, '', [ 'dist', 'client', 'main.js' ]), A2($author$project$CodeGen$createDef, $author$project$CodeGen$prettyniceComponentModule, [ 'client', '.prettynice', 'Prettynice', 'Component.gren' ]), A2($author$project$CodeGen$createDef, $author$project$CodeGen$serverWrapper, [ 'dist', 'server', 'index.js' ]) ]))));
+	return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([  ]), A2($icidasset$shikensu_gren$Shikensu$bundle, fsPermission, [ A2($author$project$CodeGen$createDef, '', [ 'dist', 'client', 'main.js' ]), A2($author$project$CodeGen$createDef, $author$project$CodeGen$prettyniceComponentModule, [ 'client', '.prettynice', 'Prettynice', 'Component.gren' ]), A2($author$project$CodeGen$createDef, $author$project$CodeGen$serverWrapper, [ 'dist', 'server', 'index.js' ]) ]))));
 };
 var $gren_lang$core$Array$findFirst = _Array_findFirst;
-var $gren_lang$parser$Parser$Forbidden = { $: 'Forbidden' };
+var $gren_lang$parser$Parser$Forbidden = 0;
 var $gren_lang$parser$Parser$Advanced$Bad = F2(function (a, b) {
-		return { $: 'Bad', a: a, b: b };
+		return { $: 1, a: a, b: b };
 	});
 var $gren_lang$parser$Parser$Advanced$Good = F3(function (a, b, c) {
-		return { $: 'Good', a: a, b: b, c: c };
+		return { $: 0, a: a, b: b, c: c };
 	});
-var $gren_lang$parser$Parser$Advanced$Parser = function (a) {
-	return { $: 'Parser', a: a };
-};
+var $gren_lang$parser$Parser$Advanced$Parser = $gren_lang$core$Basics$identity;
 
 
 
@@ -4334,9 +4322,9 @@ var _Parser_isSubString = F5(function(smallString, offset, row, col, bigString)
 	}
 
 	return { 
-		newOffset: isGood ? offset : -1, 
-		newRow: row, 
-		newCol: col 
+		ay: isGood ? offset : -1, 
+		az: row, 
+		ax: col 
 	};
 });
 
@@ -4395,8 +4383,8 @@ var _Parser_consumeBase = F3(function(base, offset, string)
 		total = base * total + digit;
 	}
 	return { 
-		offset: offset, 
-		total: total 
+		d: offset, 
+		aN: total 
 	};
 });
 
@@ -4424,8 +4412,8 @@ var _Parser_consumeBase16 = F2(function(offset, string)
 		}
 	}
 	return { 
-		offset: offset, 
-		total: total 
+		d: offset, 
+		aN: total 
 	};
 });
 
@@ -4448,35 +4436,35 @@ var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString
 	}
 
 	return { 
-		newOffset: newOffset, 
-		newRow: row, 
-		newCol: col 
+		ay: newOffset, 
+		az: row, 
+		ax: col 
 	};
 });
 var $gren_lang$parser$Parser$Advanced$findSubString = _Parser_findSubString;
 var $gren_lang$parser$Parser$Advanced$AddRight = F2(function (a, b) {
-		return { $: 'AddRight', a: a, b: b };
+		return { $: 1, a: a, b: b };
 	});
-var $gren_lang$parser$Parser$Advanced$Empty = { $: 'Empty' };
+var $gren_lang$parser$Parser$Advanced$Empty = { $: 0 };
 var $gren_lang$parser$Parser$Advanced$fromInfo = F4(function(row, col, x, context) {
-		return A2($gren_lang$parser$Parser$Advanced$AddRight, $gren_lang$parser$Parser$Advanced$Empty, { col: col, contextStack: context, problem: x, row: row });
+		return A2($gren_lang$parser$Parser$Advanced$AddRight, $gren_lang$parser$Parser$Advanced$Empty, { E: col, ad: context, O: x, R: row });
 	});
 var $gren_lang$parser$Parser$Advanced$chompUntil = function(_v0) {
 	var str = _v0.a;
 	var expecting = _v0.b;
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			var _v1 = A5($gren_lang$parser$Parser$Advanced$findSubString, str, s.offset, s.row, s.col, s.src);
-			var newOffset = _v1.newOffset;
-			var newRow = _v1.newRow;
-			var newCol = _v1.newCol;
-			return _Utils_eq(newOffset, -1) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A4($gren_lang$parser$Parser$Advanced$fromInfo, newRow, newCol, expecting, s.context)) : A3($gren_lang$parser$Parser$Advanced$Good, _Utils_cmp(s.offset, newOffset) < 0, {  }, { col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src });
-		});
+	return function(s) {
+		var _v1 = A5($gren_lang$parser$Parser$Advanced$findSubString, str, s.d, s.R, s.E, s.a);
+		var newOffset = _v1.ay;
+		var newRow = _v1.az;
+		var newCol = _v1.ax;
+		return _Utils_eq(newOffset, -1) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A4($gren_lang$parser$Parser$Advanced$fromInfo, newRow, newCol, expecting, s.b)) : A3($gren_lang$parser$Parser$Advanced$Good, _Utils_cmp(s.d, newOffset) < 0, {  }, { E: newCol, b: s.b, c: s.c, d: newOffset, R: newRow, a: s.a });
+	};
 };
 var $gren_lang$parser$Parser$Expecting = function (a) {
-	return { $: 'Expecting', a: a };
+	return { $: 0, a: a };
 };
 var $gren_lang$parser$Parser$Advanced$Token = F2(function (a, b) {
-		return { $: 'Token', a: a, b: b };
+		return { $: 0, a: a, b: b };
 	});
 var $gren_lang$parser$Parser$toToken = function(str) {
 	return A2($gren_lang$parser$Parser$Advanced$Token, str, $gren_lang$parser$Parser$Expecting(str));
@@ -4484,27 +4472,25 @@ var $gren_lang$parser$Parser$toToken = function(str) {
 var $gren_lang$parser$Parser$chompUntil = function(str) {
 	return $gren_lang$parser$Parser$Advanced$chompUntil($gren_lang$parser$Parser$toToken(str));
 };
-var $gren_lang$core$Set$Set_gren_builtin = function (a) {
-	return { $: 'Set_gren_builtin', a: a };
-};
-var $gren_lang$core$Set$empty = $gren_lang$core$Set$Set_gren_builtin($gren_lang$core$Dict$empty);
+var $gren_lang$core$Set$Set_gren_builtin = $gren_lang$core$Basics$identity;
+var $gren_lang$core$Set$empty = $gren_lang$core$Dict$empty;
 var $blaix$prettynice$Prettynice$Props$ArrayType = function (a) {
-	return { $: 'ArrayType', a: a };
+	return { $: 4, a: a };
 };
-var $blaix$prettynice$Prettynice$Props$BoolType = { $: 'BoolType' };
-var $blaix$prettynice$Prettynice$Props$FloatType = { $: 'FloatType' };
-var $blaix$prettynice$Prettynice$Props$IntType = { $: 'IntType' };
+var $blaix$prettynice$Prettynice$Props$BoolType = { $: 3 };
+var $blaix$prettynice$Prettynice$Props$FloatType = { $: 1 };
+var $blaix$prettynice$Prettynice$Props$IntType = { $: 0 };
 var $blaix$prettynice$Prettynice$Props$MaybeType = function (a) {
-	return { $: 'MaybeType', a: a };
+	return { $: 5, a: a };
 };
-var $blaix$prettynice$Prettynice$Props$StringType = { $: 'StringType' };
+var $blaix$prettynice$Prettynice$Props$StringType = { $: 2 };
 var $gren_lang$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
 var $gren_lang$parser$Parser$Advanced$chompWhileHelp = F5(function(isGood, offset, row, col, s0) {
 		chompWhileHelp:
 		while (true) {
-			var newOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, isGood, offset, s0.src);
+			var newOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, isGood, offset, s0.a);
 			if (_Utils_eq(newOffset, -1)) {
-				return A3($gren_lang$parser$Parser$Advanced$Good, _Utils_cmp(s0.offset, offset) < 0, {  }, { col: col, context: s0.context, indent: s0.indent, offset: offset, row: row, src: s0.src });
+				return A3($gren_lang$parser$Parser$Advanced$Good, _Utils_cmp(s0.d, offset) < 0, {  }, { E: col, b: s0.b, c: s0.c, d: offset, R: row, a: s0.a });
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -4535,40 +4521,40 @@ var $gren_lang$parser$Parser$Advanced$chompWhileHelp = F5(function(isGood, offse
 		}
 	});
 var $gren_lang$parser$Parser$Advanced$chompWhile = function(isGood) {
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			return A5($gren_lang$parser$Parser$Advanced$chompWhileHelp, isGood, s.offset, s.row, s.col, s);
-		});
+	return function(s) {
+		return A5($gren_lang$parser$Parser$Advanced$chompWhileHelp, isGood, s.d, s.R, s.E, s);
+	};
 };
 var $gren_lang$parser$Parser$chompWhile = $gren_lang$parser$Parser$Advanced$chompWhile;
 var $gren_lang$core$Basics$always = F2(function(a, _v0) {
 		return a;
 	});
 var $gren_lang$parser$Parser$Advanced$map2 = F3(function(func, _v0, _v1) {
-		var parseA = _v0.a;
-		var parseB = _v1.a;
-		return $gren_lang$parser$Parser$Advanced$Parser(function(s0) {
-				var _v2 = parseA(s0);
-				if (_v2.$ === 'Bad') {
-					var p = _v2.a;
-					var x = _v2.b;
-					return A2($gren_lang$parser$Parser$Advanced$Bad, p, x);
+		var parseA = _v0;
+		var parseB = _v1;
+		return function(s0) {
+			var _v2 = parseA(s0);
+			if (_v2.$ === 1) {
+				var p = _v2.a;
+				var x = _v2.b;
+				return A2($gren_lang$parser$Parser$Advanced$Bad, p, x);
+			} else {
+				var p1 = _v2.a;
+				var a = _v2.b;
+				var s1 = _v2.c;
+				var _v3 = parseB(s1);
+				if (_v3.$ === 1) {
+					var p2 = _v3.a;
+					var x = _v3.b;
+					return A2($gren_lang$parser$Parser$Advanced$Bad, p1 || p2, x);
 				} else {
-					var p1 = _v2.a;
-					var a = _v2.b;
-					var s1 = _v2.c;
-					var _v3 = parseB(s1);
-					if (_v3.$ === 'Bad') {
-						var p2 = _v3.a;
-						var x = _v3.b;
-						return A2($gren_lang$parser$Parser$Advanced$Bad, p1 || p2, x);
-					} else {
-						var p2 = _v3.a;
-						var b = _v3.b;
-						var s2 = _v3.c;
-						return A3($gren_lang$parser$Parser$Advanced$Good, p1 || p2, A2(func, a, b), s2);
-					}
+					var p2 = _v3.a;
+					var b = _v3.b;
+					var s2 = _v3.c;
+					return A3($gren_lang$parser$Parser$Advanced$Good, p1 || p2, A2(func, a, b), s2);
 				}
-			});
+			}
+		};
 	});
 var $gren_lang$parser$Parser$Advanced$ignorer = F2(function(keepParser, ignoreParser) {
 		return A3($gren_lang$parser$Parser$Advanced$map2, $gren_lang$core$Basics$always, keepParser, ignoreParser);
@@ -4579,10 +4565,10 @@ var $gren_lang$parser$Parser$Advanced$keeper = F2(function(parseFunc, parseArg) 
 	});
 var $gren_lang$parser$Parser$keeper = $gren_lang$parser$Parser$Advanced$keeper;
 var $gren_lang$parser$Parser$ExpectingKeyword = function (a) {
-	return { $: 'ExpectingKeyword', a: a };
+	return { $: 9, a: a };
 };
 var $gren_lang$parser$Parser$Advanced$fromState = F2(function(s, x) {
-		return A2($gren_lang$parser$Parser$Advanced$AddRight, $gren_lang$parser$Parser$Advanced$Empty, { col: s.col, contextStack: s.context, problem: x, row: s.row });
+		return A2($gren_lang$parser$Parser$Advanced$AddRight, $gren_lang$parser$Parser$Advanced$Empty, { E: s.E, ad: s.b, O: x, R: s.R });
 	});
 var $gren_lang$core$String$isEmpty = function(string) {
 	return _Utils_eq(string, '');
@@ -4593,35 +4579,35 @@ var $gren_lang$parser$Parser$Advanced$keyword = function(_v0) {
 	var kwd = _v0.a;
 	var expecting = _v0.b;
 	var progress = !$gren_lang$core$String$isEmpty(kwd);
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, kwd, s.offset, s.row, s.col, s.src);
-			var newOffset = _v1.newOffset;
-			var newRow = _v1.newRow;
-			var newCol = _v1.newCol;
-			return (_Utils_eq(newOffset, -1) || (_Utils_cmp(0, A3($gren_lang$parser$Parser$Advanced$isSubChar, function(c) {
-						return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, _Utils_chr('_'));
-					}, newOffset, s.src)) < 1)) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, expecting)) : A3($gren_lang$parser$Parser$Advanced$Good, progress, {  }, { col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src });
-		});
+	return function(s) {
+		var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, kwd, s.d, s.R, s.E, s.a);
+		var newOffset = _v1.ay;
+		var newRow = _v1.az;
+		var newCol = _v1.ax;
+		return (_Utils_eq(newOffset, -1) || (_Utils_cmp(0, A3($gren_lang$parser$Parser$Advanced$isSubChar, function(c) {
+					return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, '_');
+				}, newOffset, s.a)) < 1)) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, expecting)) : A3($gren_lang$parser$Parser$Advanced$Good, progress, {  }, { E: newCol, b: s.b, c: s.c, d: newOffset, R: newRow, a: s.a });
+	};
 };
 var $gren_lang$parser$Parser$keyword = function(kwd) {
 	return $gren_lang$parser$Parser$Advanced$keyword(A2($gren_lang$parser$Parser$Advanced$Token, kwd, $gren_lang$parser$Parser$ExpectingKeyword(kwd)));
 };
 var $gren_lang$parser$Parser$Advanced$lazy = function(thunk) {
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			var _v0 = thunk({  });
-			var parse = _v0.a;
-			return parse(s);
-		});
+	return function(s) {
+		var _v0 = thunk({  });
+		var parse = _v0;
+		return parse(s);
+	};
 };
 var $gren_lang$parser$Parser$lazy = $gren_lang$parser$Parser$Advanced$lazy;
 var $gren_lang$parser$Parser$Advanced$Append = F2(function (a, b) {
-		return { $: 'Append', a: a, b: b };
+		return { $: 2, a: a, b: b };
 	});
 var $gren_lang$core$Array$popFirst = function(array) {
 	var _v0 = $gren_lang$core$Array$first(array);
-	if (_v0.$ === 'Just') {
+	if (!_v0.$) {
 		var value = _v0.a;
-		return $gren_lang$core$Maybe$Just({ first: value, rest: A2($gren_lang$core$Array$dropFirst, 1, array) });
+		return $gren_lang$core$Maybe$Just({ a5: value, bC: A2($gren_lang$core$Array$dropFirst, 1, array) });
 	} else {
 		return $gren_lang$core$Maybe$Nothing;
 	}
@@ -4630,14 +4616,14 @@ var $gren_lang$parser$Parser$Advanced$oneOfHelp = F3(function(s0, bag, parsers) 
 		oneOfHelp:
 		while (true) {
 			var _v0 = $gren_lang$core$Array$popFirst(parsers);
-			if (_v0.$ === 'Nothing') {
+			if (_v0.$ === 1) {
 				return A2($gren_lang$parser$Parser$Advanced$Bad, false, bag);
 			} else {
 				var _v1 = _v0.a;
-				var parse = _v1.first.a;
-				var remainingParsers = _v1.rest;
+				var parse = _v1.a5;
+				var remainingParsers = _v1.bC;
 				var _v2 = parse(s0);
-				if (_v2.$ === 'Good') {
+				if (!_v2.$) {
 					var step = _v2;
 					return step;
 				} else {
@@ -4660,85 +4646,82 @@ var $gren_lang$parser$Parser$Advanced$oneOfHelp = F3(function(s0, bag, parsers) 
 		}
 	});
 var $gren_lang$parser$Parser$Advanced$oneOf = function(parsers) {
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			return A3($gren_lang$parser$Parser$Advanced$oneOfHelp, s, $gren_lang$parser$Parser$Advanced$Empty, parsers);
-		});
+	return function(s) {
+		return A3($gren_lang$parser$Parser$Advanced$oneOfHelp, s, $gren_lang$parser$Parser$Advanced$Empty, parsers);
+	};
 };
 var $gren_lang$parser$Parser$oneOf = $gren_lang$parser$Parser$Advanced$oneOf;
 var $gren_lang$parser$Parser$Advanced$spaces = $gren_lang$parser$Parser$Advanced$chompWhile(function(c) {
-		return _Utils_eq(c, _Utils_chr(' ')) || (_Utils_eq(c, _Utils_chr('\n')) || _Utils_eq(c, _Utils_chr('\r')));
+		return _Utils_eq(c, ' ') || (_Utils_eq(c, '\n') || _Utils_eq(c, '\r'));
 	});
 var $gren_lang$parser$Parser$spaces = $gren_lang$parser$Parser$Advanced$spaces;
 var $gren_lang$parser$Parser$Advanced$succeed = function(a) {
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			return A3($gren_lang$parser$Parser$Advanced$Good, false, a, s);
-		});
+	return function(s) {
+		return A3($gren_lang$parser$Parser$Advanced$Good, false, a, s);
+	};
 };
 var $gren_lang$parser$Parser$succeed = $gren_lang$parser$Parser$Advanced$succeed;
 function $blaix$prettynice$Prettynice$Props$cyclic$fieldParser() {
 	return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Basics$identity), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
-						return _Utils_eq(c, _Utils_chr('('));
+						return _Utils_eq(c, '(');
 					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf([ A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$IntType), $gren_lang$parser$Parser$keyword('Int')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$FloatType), $gren_lang$parser$Parser$keyword('Float')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$StringType), $gren_lang$parser$Parser$keyword('String')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$BoolType), $gren_lang$parser$Parser$keyword('Bool')), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$ArrayType), $gren_lang$parser$Parser$keyword('Array')), $gren_lang$parser$Parser$lazy(function(_v0) {
 									return $blaix$prettynice$Prettynice$Props$cyclic$fieldParser();
 								})), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$MaybeType), $gren_lang$parser$Parser$keyword('Maybe')), $gren_lang$parser$Parser$lazy(function(_v1) {
 									return $blaix$prettynice$Prettynice$Props$cyclic$fieldParser();
 								})) ]), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
-						return _Utils_eq(c, _Utils_chr(')'));
+						return _Utils_eq(c, ')');
 					})), $gren_lang$parser$Parser$spaces));
 }
-try {
-	var $blaix$prettynice$Prettynice$Props$fieldParser = $blaix$prettynice$Prettynice$Props$cyclic$fieldParser();
-	$blaix$prettynice$Prettynice$Props$cyclic$fieldParser = function () {
-		return $blaix$prettynice$Prettynice$Props$fieldParser;
-	};
-} catch ($) {
-	throw 'Some top-level definitions from `Prettynice.Props` are causing infinite recursion:\n\n  ┌─────┐\n  │    fieldParser\n  └─────┘\n\nThese errors are very tricky, so read https://gren-lang.org/0.3.0/bad-recursion to learn how to fix it!';}
+var $blaix$prettynice$Prettynice$Props$fieldParser = $blaix$prettynice$Prettynice$Props$cyclic$fieldParser();
+$blaix$prettynice$Prettynice$Props$cyclic$fieldParser = function () {
+	return $blaix$prettynice$Prettynice$Props$fieldParser;
+};
 var $gren_lang$core$Dict$fromArray = function(assocs) {
 	return A3($gren_lang$core$Array$foldl, F2(function(_v0, dict) {
-				var key = _v0.key;
-				var value = _v0.value;
+				var key = _v0.bl;
+				var value = _v0.aO;
 				return A3($gren_lang$core$Dict$insert, key, value, dict);
 			}), $gren_lang$core$Dict$empty, assocs);
 };
 var $gren_lang$parser$Parser$Advanced$andThen = F2(function(callback, _v0) {
-		var parseA = _v0.a;
-		return $gren_lang$parser$Parser$Advanced$Parser(function(s0) {
-				var _v1 = parseA(s0);
-				if (_v1.$ === 'Bad') {
-					var p = _v1.a;
-					var x = _v1.b;
-					return A2($gren_lang$parser$Parser$Advanced$Bad, p, x);
+		var parseA = _v0;
+		return function(s0) {
+			var _v1 = parseA(s0);
+			if (_v1.$ === 1) {
+				var p = _v1.a;
+				var x = _v1.b;
+				return A2($gren_lang$parser$Parser$Advanced$Bad, p, x);
+			} else {
+				var p1 = _v1.a;
+				var a = _v1.b;
+				var s1 = _v1.c;
+				var _v2 = callback(a);
+				var parseB = _v2;
+				var _v3 = parseB(s1);
+				if (_v3.$ === 1) {
+					var p2 = _v3.a;
+					var x = _v3.b;
+					return A2($gren_lang$parser$Parser$Advanced$Bad, p1 || p2, x);
 				} else {
-					var p1 = _v1.a;
-					var a = _v1.b;
-					var s1 = _v1.c;
-					var _v2 = callback(a);
-					var parseB = _v2.a;
-					var _v3 = parseB(s1);
-					if (_v3.$ === 'Bad') {
-						var p2 = _v3.a;
-						var x = _v3.b;
-						return A2($gren_lang$parser$Parser$Advanced$Bad, p1 || p2, x);
-					} else {
-						var p2 = _v3.a;
-						var b = _v3.b;
-						var s2 = _v3.c;
-						return A3($gren_lang$parser$Parser$Advanced$Good, p1 || p2, b, s2);
-					}
+					var p2 = _v3.a;
+					var b = _v3.b;
+					var s2 = _v3.c;
+					return A3($gren_lang$parser$Parser$Advanced$Good, p1 || p2, b, s2);
 				}
-			});
+			}
+		};
 	});
 var $gren_lang$parser$Parser$Advanced$loopHelp = F4(function(p, state, callback, s0) {
 		loopHelp:
 		while (true) {
 			var _v0 = callback(state);
-			var parse = _v0.a;
+			var parse = _v0;
 			var _v1 = parse(s0);
-			if (_v1.$ === 'Good') {
+			if (!_v1.$) {
 				var p1 = _v1.a;
 				var step = _v1.b;
 				var s1 = _v1.c;
-				if (step.$ === 'Loop') {
+				if (!step.$) {
 					var newState = step.a;
 					var $temp$p = p || p1,
 					$temp$state = newState,
@@ -4761,31 +4744,31 @@ var $gren_lang$parser$Parser$Advanced$loopHelp = F4(function(p, state, callback,
 		}
 	});
 var $gren_lang$parser$Parser$Advanced$loop = F2(function(state, callback) {
-		return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-				return A4($gren_lang$parser$Parser$Advanced$loopHelp, false, state, callback, s);
-			});
+		return function(s) {
+			return A4($gren_lang$parser$Parser$Advanced$loopHelp, false, state, callback, s);
+		};
 	});
 var $gren_lang$parser$Parser$Advanced$map = F2(function(func, _v0) {
-		var parse = _v0.a;
-		return $gren_lang$parser$Parser$Advanced$Parser(function(s0) {
-				var _v1 = parse(s0);
-				if (_v1.$ === 'Good') {
-					var p = _v1.a;
-					var a = _v1.b;
-					var s1 = _v1.c;
-					return A3($gren_lang$parser$Parser$Advanced$Good, p, func(a), s1);
-				} else {
-					var p = _v1.a;
-					var x = _v1.b;
-					return A2($gren_lang$parser$Parser$Advanced$Bad, p, x);
-				}
-			});
+		var parse = _v0;
+		return function(s0) {
+			var _v1 = parse(s0);
+			if (!_v1.$) {
+				var p = _v1.a;
+				var a = _v1.b;
+				var s1 = _v1.c;
+				return A3($gren_lang$parser$Parser$Advanced$Good, p, func(a), s1);
+			} else {
+				var p = _v1.a;
+				var x = _v1.b;
+				return A2($gren_lang$parser$Parser$Advanced$Bad, p, x);
+			}
+		};
 	});
 var $gren_lang$parser$Parser$Advanced$Done = function (a) {
-	return { $: 'Done', a: a };
+	return { $: 1, a: a };
 };
 var $gren_lang$parser$Parser$Advanced$Loop = function (a) {
-	return { $: 'Loop', a: a };
+	return { $: 0, a: a };
 };
 var $gren_lang$parser$Parser$Advanced$revAlways = F2(function(_v0, b) {
 		return b;
@@ -4820,10 +4803,10 @@ var $gren_lang$parser$Parser$Advanced$sequenceEndOptional = F5(function(ender, w
 	});
 var $gren_lang$parser$Parser$Advanced$sequenceEnd = F5(function(ender, ws, parseItem, sep, trailing) {
 		var chompRest = function(item) {
-			switch (trailing.$) {
-				case 'Forbidden':
+			switch (trailing) {
+				case 0:
 					return A2($gren_lang$parser$Parser$Advanced$loop, [ item ], A4($gren_lang$parser$Parser$Advanced$sequenceEndForbidden, ender, ws, parseItem, sep));
-				case 'Optional':
+				case 1:
 					return A2($gren_lang$parser$Parser$Advanced$loop, [ item ], A4($gren_lang$parser$Parser$Advanced$sequenceEndOptional, ender, ws, parseItem, sep));
 				default:
 					return A2($gren_lang$parser$Parser$Advanced$ignorer, A2($gren_lang$parser$Parser$Advanced$skip, ws, A2($gren_lang$parser$Parser$Advanced$skip, sep, A2($gren_lang$parser$Parser$Advanced$skip, ws, A2($gren_lang$parser$Parser$Advanced$loop, [ item ], A3($gren_lang$parser$Parser$Advanced$sequenceEndMandatory, ws, parseItem, sep))))), ender);
@@ -4837,35 +4820,35 @@ var $gren_lang$parser$Parser$Advanced$token = function(_v0) {
 	var str = _v0.a;
 	var expecting = _v0.b;
 	var progress = !$gren_lang$core$String$isEmpty(str);
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, str, s.offset, s.row, s.col, s.src);
-			var newOffset = _v1.newOffset;
-			var newRow = _v1.newRow;
-			var newCol = _v1.newCol;
-			return _Utils_eq(newOffset, -1) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, expecting)) : A3($gren_lang$parser$Parser$Advanced$Good, progress, {  }, { col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src });
-		});
+	return function(s) {
+		var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, str, s.d, s.R, s.E, s.a);
+		var newOffset = _v1.ay;
+		var newRow = _v1.az;
+		var newCol = _v1.ax;
+		return _Utils_eq(newOffset, -1) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, expecting)) : A3($gren_lang$parser$Parser$Advanced$Good, progress, {  }, { E: newCol, b: s.b, c: s.c, d: newOffset, R: newRow, a: s.a });
+	};
 };
 var $gren_lang$parser$Parser$Advanced$sequence = function(i) {
-	return A2($gren_lang$parser$Parser$Advanced$skip, $gren_lang$parser$Parser$Advanced$token(i.start), A2($gren_lang$parser$Parser$Advanced$skip, i.spaces, A5($gren_lang$parser$Parser$Advanced$sequenceEnd, $gren_lang$parser$Parser$Advanced$token(i.end), i.spaces, i.item, $gren_lang$parser$Parser$Advanced$token(i.separator), i.trailing)));
+	return A2($gren_lang$parser$Parser$Advanced$skip, $gren_lang$parser$Parser$Advanced$token(i.aK), A2($gren_lang$parser$Parser$Advanced$skip, i.bH, A5($gren_lang$parser$Parser$Advanced$sequenceEnd, $gren_lang$parser$Parser$Advanced$token(i.a1), i.bH, i.bk, $gren_lang$parser$Parser$Advanced$token(i.bF), i.bO)));
 };
-var $gren_lang$parser$Parser$Advanced$Forbidden = { $: 'Forbidden' };
-var $gren_lang$parser$Parser$Advanced$Mandatory = { $: 'Mandatory' };
-var $gren_lang$parser$Parser$Advanced$Optional = { $: 'Optional' };
+var $gren_lang$parser$Parser$Advanced$Forbidden = 0;
+var $gren_lang$parser$Parser$Advanced$Mandatory = 2;
+var $gren_lang$parser$Parser$Advanced$Optional = 1;
 var $gren_lang$parser$Parser$toAdvancedTrailing = function(trailing) {
-	switch (trailing.$) {
-		case 'Forbidden':
-			return $gren_lang$parser$Parser$Advanced$Forbidden;
-		case 'Optional':
-			return $gren_lang$parser$Parser$Advanced$Optional;
+	switch (trailing) {
+		case 0:
+			return 0;
+		case 1:
+			return 1;
 		default:
-			return $gren_lang$parser$Parser$Advanced$Mandatory;
+			return 2;
 	}
 };
 var $gren_lang$parser$Parser$sequence = function(i) {
-	return $gren_lang$parser$Parser$Advanced$sequence({ end: $gren_lang$parser$Parser$toToken(i.end), item: i.item, separator: $gren_lang$parser$Parser$toToken(i.separator), spaces: i.spaces, start: $gren_lang$parser$Parser$toToken(i.start), trailing: $gren_lang$parser$Parser$toAdvancedTrailing(i.trailing) });
+	return $gren_lang$parser$Parser$Advanced$sequence({ a1: $gren_lang$parser$Parser$toToken(i.a1), bk: i.bk, bF: $gren_lang$parser$Parser$toToken(i.bF), bH: i.bH, aK: $gren_lang$parser$Parser$toToken(i.aK), bO: $gren_lang$parser$Parser$toAdvancedTrailing(i.bO) });
 };
 var $gren_lang$parser$Parser$ExpectingSymbol = function (a) {
-	return { $: 'ExpectingSymbol', a: a };
+	return { $: 8, a: a };
 };
 var $gren_lang$parser$Parser$Advanced$symbol = $gren_lang$parser$Parser$Advanced$token;
 var $gren_lang$parser$Parser$symbol = function(str) {
@@ -4874,9 +4857,9 @@ var $gren_lang$parser$Parser$symbol = function(str) {
 var $gren_lang$parser$Parser$token = function(str) {
 	return $gren_lang$parser$Parser$Advanced$token($gren_lang$parser$Parser$toToken(str));
 };
-var $gren_lang$parser$Parser$ExpectingVariable = { $: 'ExpectingVariable' };
+var $gren_lang$parser$Parser$ExpectingVariable = { $: 7 };
 var $gren_lang$core$Set$member = F2(function(key, _v0) {
-		var dict = _v0.a;
+		var dict = _v0;
 		return A2($gren_lang$core$Dict$member, key, dict);
 	});
 var $gren_lang$parser$Parser$Advanced$varHelp = F7(function(isGood, offset, row, col, src, indent, context) {
@@ -4884,7 +4867,7 @@ var $gren_lang$parser$Parser$Advanced$varHelp = F7(function(isGood, offset, row,
 		while (true) {
 			var newOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, isGood, offset, src);
 			if (_Utils_eq(newOffset, -1)) {
-				return { col: col, context: context, indent: indent, offset: offset, row: row, src: src };
+				return { E: col, b: context, c: indent, d: offset, R: row, a: src };
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -4923,27 +4906,27 @@ var $gren_lang$parser$Parser$Advanced$varHelp = F7(function(isGood, offset, row,
 		}
 	});
 var $gren_lang$parser$Parser$Advanced$variable = function(i) {
-	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			var firstOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, i.start, s.offset, s.src);
-			if (_Utils_eq(firstOffset, -1)) {
-				return A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, i.expecting));
-			} else {
-				var s1 = _Utils_eq(firstOffset, -2) ? A7($gren_lang$parser$Parser$Advanced$varHelp, i.inner, s.offset + 1, s.row + 1, 1, s.src, s.indent, s.context) : A7($gren_lang$parser$Parser$Advanced$varHelp, i.inner, firstOffset, s.row, s.col + 1, s.src, s.indent, s.context);
-				var name = A3($gren_lang$core$String$slice, s.offset, s1.offset, s.src);
-				return A2($gren_lang$core$Set$member, name, i.reserved) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, i.expecting)) : A3($gren_lang$parser$Parser$Advanced$Good, true, name, s1);
-			}
-		});
+	return function(s) {
+		var firstOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, i.aK, s.d, s.a);
+		if (_Utils_eq(firstOffset, -1)) {
+			return A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, i.ah));
+		} else {
+			var s1 = _Utils_eq(firstOffset, -2) ? A7($gren_lang$parser$Parser$Advanced$varHelp, i.bh, s.d + 1, s.R + 1, 1, s.a, s.c, s.b) : A7($gren_lang$parser$Parser$Advanced$varHelp, i.bh, firstOffset, s.R, s.E + 1, s.a, s.c, s.b);
+			var name = A3($gren_lang$core$String$slice, s.d, s1.d, s.a);
+			return A2($gren_lang$core$Set$member, name, i.bB) ? A2($gren_lang$parser$Parser$Advanced$Bad, false, A2($gren_lang$parser$Parser$Advanced$fromState, s, i.ah)) : A3($gren_lang$parser$Parser$Advanced$Good, true, name, s1);
+		}
+	};
 };
 var $gren_lang$parser$Parser$variable = function(i) {
-	return $gren_lang$parser$Parser$Advanced$variable({ expecting: $gren_lang$parser$Parser$ExpectingVariable, inner: i.inner, reserved: i.reserved, start: i.start });
+	return $gren_lang$parser$Parser$Advanced$variable({ ah: $gren_lang$parser$Parser$ExpectingVariable, bh: i.bh, bB: i.bB, aK: i.aK });
 };
-var $blaix$prettynice$Prettynice$Props$parser = A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Dict$fromArray), $gren_lang$parser$Parser$chompUntil('type alias Props')), $gren_lang$parser$Parser$token('type alias Props')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol('=')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$sequence({ end: '}', item: A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed(F2(function(field, fieldType) {
-							return { key: field, value: fieldType };
-						})), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$variable({ inner: function(c) {
-									return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, _Utils_chr('_'));
-								}, reserved: $gren_lang$core$Set$empty, start: $gren_lang$core$Char$isLower }), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol(':')), $gren_lang$parser$Parser$spaces)), $blaix$prettynice$Prettynice$Props$fieldParser), separator: ',', spaces: $gren_lang$parser$Parser$spaces, start: '{', trailing: $gren_lang$parser$Parser$Forbidden }));
+var $blaix$prettynice$Prettynice$Props$parser = A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Dict$fromArray), $gren_lang$parser$Parser$chompUntil('type alias Props')), $gren_lang$parser$Parser$token('type alias Props')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol('=')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$sequence({ a1: '}', bk: A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed(F2(function(field, fieldType) {
+							return { bl: field, aO: fieldType };
+						})), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$variable({ bh: function(c) {
+									return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, '_');
+								}, bB: $gren_lang$core$Set$empty, aK: $gren_lang$core$Char$isLower }), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol(':')), $gren_lang$parser$Parser$spaces)), $blaix$prettynice$Prettynice$Props$fieldParser), bF: ',', bH: $gren_lang$parser$Parser$spaces, aK: '{', bO: 0 }));
 var $gren_lang$parser$Parser$problemToDeadEnd = function(p) {
-	return { col: p.col, problem: p.problem, row: p.row };
+	return { E: p.E, O: p.O, R: p.R };
 };
 var $gren_lang$core$Array$pushFirst = F2(function(value, array) {
 		return A2($gren_lang$core$Array$prefix, [ value ], array);
@@ -4952,9 +4935,9 @@ var $gren_lang$parser$Parser$Advanced$bagToArray = F2(function(bag, array) {
 		bagToArray:
 		while (true) {
 			switch (bag.$) {
-				case 'Empty':
+				case 0:
 					return array;
-				case 'AddRight':
+				case 1:
 					var bag1 = bag.a;
 					var x = bag.b;
 					var $temp$bag = bag1,
@@ -4974,9 +4957,9 @@ var $gren_lang$parser$Parser$Advanced$bagToArray = F2(function(bag, array) {
 		}
 	});
 var $gren_lang$parser$Parser$Advanced$run = F2(function(_v0, src) {
-		var parse = _v0.a;
-		var _v1 = parse({ col: 1, context: [  ], indent: 1, offset: 0, row: 1, src: src });
-		if (_v1.$ === 'Good') {
+		var parse = _v0;
+		var _v1 = parse({ E: 1, b: [  ], c: 1, d: 0, R: 1, a: src });
+		if (!_v1.$) {
 			var value = _v1.b;
 			return $gren_lang$core$Result$Ok(value);
 		} else {
@@ -4986,7 +4969,7 @@ var $gren_lang$parser$Parser$Advanced$run = F2(function(_v0, src) {
 	});
 var $gren_lang$parser$Parser$run = F2(function(parser, source) {
 		var _v0 = A2($gren_lang$parser$Parser$Advanced$run, parser, source);
-		if (_v0.$ === 'Ok') {
+		if (!_v0.$) {
 			var a = _v0.a;
 			return $gren_lang$core$Result$Ok(a);
 		} else {
@@ -5001,15 +4984,15 @@ var $blaix$prettynice$Prettynice$Props$get = function(content) {
 };
 var $blaix$prettynice$Prettynice$Props$fieldTypeToEncoder = function(fieldType) {
 	switch (fieldType.$) {
-		case 'IntType':
+		case 0:
 			return 'Encode.int';
-		case 'FloatType':
+		case 1:
 			return 'Encode.float';
-		case 'StringType':
+		case 2:
 			return 'Encode.string';
-		case 'BoolType':
+		case 3:
 			return 'Encode.bool';
-		case 'ArrayType':
+		case 4:
 			var t = fieldType.a;
 			return _Utils_ap('(Encode.array ', _Utils_ap($blaix$prettynice$Prettynice$Props$fieldTypeToEncoder(t), ')'));
 		default:
@@ -5027,15 +5010,15 @@ var $blaix$prettynice$Prettynice$Props$encoder = function(props) {
 };
 var $blaix$prettynice$Prettynice$Props$fieldTypeToString = function(fieldType) {
 	switch (fieldType.$) {
-		case 'IntType':
+		case 0:
 			return 'Int';
-		case 'FloatType':
+		case 1:
 			return 'Float';
-		case 'StringType':
+		case 2:
 			return 'String';
-		case 'BoolType':
+		case 3:
 			return 'Bool';
-		case 'ArrayType':
+		case 4:
 			var t = fieldType.a;
 			return _Utils_ap('(Array ', _Utils_ap($blaix$prettynice$Prettynice$Props$fieldTypeToString(t), ')'));
 		default:
@@ -5056,10 +5039,10 @@ var $author$project$CodeGen$toServerComponent = F2(function(def, props) {
 	});
 var $author$project$CodeGen$serverComponentsFromBundle = function(bundle) {
 	var newBundle = A2($icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium, $gren_lang$core$Array$map(function(def) {
-				var content = A2($gren_lang$core$Maybe$withDefault, '', A2($gren_lang$core$Maybe$andThen, $author$project$CodeGen$toString, def.content));
+				var content = A2($gren_lang$core$Maybe$withDefault, '', A2($gren_lang$core$Maybe$andThen, $author$project$CodeGen$toString, def.t));
 				var propsResult = $blaix$prettynice$Prettynice$Props$get(content);
-				return _Utils_update(def, { content: function () {
-						if (propsResult.$ === 'Ok') {
+				return _Utils_update(def, { t: function () {
+						if (!propsResult.$) {
 							var props = propsResult.a;
 							return $gren_lang$core$Maybe$Just($author$project$CodeGen$toBytes(A2($author$project$CodeGen$toServerComponent, def, props)));
 						} else {
@@ -5069,137 +5052,137 @@ var $author$project$CodeGen$serverComponentsFromBundle = function(bundle) {
 					}() });
 			}), bundle);
 	var badDef = A2($gren_lang$core$Array$findFirst, function(def) {
-			return _Utils_eq(def.content, $gren_lang$core$Maybe$Nothing);
-		}, newBundle.compendium);
-	if (badDef.$ === 'Nothing') {
+			return _Utils_eq(def.t, $gren_lang$core$Maybe$Nothing);
+		}, newBundle.F);
+	if (badDef.$ === 1) {
 		return $gren_lang$core$Task$succeed(newBundle);
 	} else {
 		var def = badDef.a;
-		return $gren_lang$core$Task$fail($icidasset$shikensu_gren$Shikensu$Error$ErrorMessage(A3($gren_lang$core$String$replace, '{{COMPONENT}}', def.baseName, 'Oops! I can\'t parse props for the {{COMPONENT}} component.\n   I\'m looking for a type alias that looks like this:\n\n        type alias Props =\n            { myField : String\n            , myOtherField : Int\n            }\n\n   It either doesn\'t exist, is formatted in a way I\n   can\'t recognize, or it uses unsupported field types.\n   See Prettynice.Props.Fieldtype for supported types:\n   https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren')));
+		return $gren_lang$core$Task$fail($icidasset$shikensu_gren$Shikensu$Error$ErrorMessage(A3($gren_lang$core$String$replace, '{{COMPONENT}}', def.z, 'Oops! I can\'t parse props for the {{COMPONENT}} component.\n   I\'m looking for a type alias that looks like this:\n\n        type alias Props =\n            { myField : String\n            , myOtherField : Int\n            }\n\n   It either doesn\'t exist, is formatted in a way I\n   can\'t recognize, or it uses unsupported field types.\n   See Prettynice.Props.Fieldtype for supported types:\n   https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren')));
 	}
 };
 var $author$project$CodeGen$genServerComponents = function(fsPermission) {
-	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'server', '.prettynice', 'Gen', 'Components' ]), A2($gren_lang$core$Task$andThen, $author$project$CodeGen$serverComponentsFromBundle, $author$project$CodeGen$readComponents(fsPermission)))));
+	return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'server', '.prettynice', 'Gen', 'Components' ]), A2($gren_lang$core$Task$andThen, $author$project$CodeGen$serverComponentsFromBundle, $author$project$CodeGen$readComponents(fsPermission)))));
 };
 var $icidasset$shikensu_gren$Shikensu$Contrib$withBaseName = function(baseName) {
 	return $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium($gren_lang$core$Array$filter(function(def) {
-				return _Utils_eq(def.baseName, baseName);
+				return _Utils_eq(def.z, baseName);
 			}));
 };
 var $author$project$CodeGen$genServerPorts = function(fsPermission) {
-	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'server' ]), $author$project$CodeGen$tryRead(A2($gren_lang$core$Task$map, $icidasset$shikensu_gren$Shikensu$Contrib$withBaseName('ports'), A2($gren_lang$core$Task$map, $icidasset$shikensu_gren$Shikensu$Contrib$withExtension('js'), A2($author$project$CodeGen$tryList, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory([ 'server', 'src' ])))))))));
+	return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'server' ]), $author$project$CodeGen$tryRead(A2($gren_lang$core$Task$map, $icidasset$shikensu_gren$Shikensu$Contrib$withBaseName('ports'), A2($gren_lang$core$Task$map, $icidasset$shikensu_gren$Shikensu$Contrib$withExtension('js'), A2($author$project$CodeGen$tryList, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory([ 'server', 'src' ])))))))));
 };
 var $author$project$Main$update = F2(function(msg, model) {
 		switch (msg.$) {
-			case 'Cleaned':
+			case 0:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
-						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.stdout, 'Generating prettynice dependencies'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedDependencies, $author$project$CodeGen$genDependencies(model.fsPermission)) ]);
+				return { i: function () {
+					if (!result.$) {
+						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.e, 'Generating prettynice dependencies'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedDependencies, $author$project$CodeGen$genDependencies(model.a9)) ]);
 					} else {
 						var e = result.a;
-						return A2($author$project$Main$fileSystemError, model.stderr, e);
+						return A2($author$project$Main$fileSystemError, model.h, e);
 					}
-				}(), model: model };
-			case 'GeneratedDependencies':
+				}(), j: model };
+			case 1:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
-						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.stdout, 'Generating server components'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedServerComponents, $author$project$CodeGen$genServerComponents(model.fsPermission)) ]);
+				return { i: function () {
+					if (!result.$) {
+						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.e, 'Generating server components'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedServerComponents, $author$project$CodeGen$genServerComponents(model.a9)) ]);
 					} else {
 						var e = result.a;
-						return A2($author$project$Main$codeGenError, model.stderr, e);
+						return A2($author$project$Main$codeGenError, model.h, e);
 					}
-				}(), model: model };
-			case 'GeneratedServerComponents':
+				}(), j: model };
+			case 2:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
-						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.stdout, 'Generating client components'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedClientComponents, $author$project$CodeGen$genClientComponents(model.fsPermission)) ]);
+				return { i: function () {
+					if (!result.$) {
+						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.e, 'Generating client components'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedClientComponents, $author$project$CodeGen$genClientComponents(model.a9)) ]);
 					} else {
 						var e = result.a;
-						return A2($author$project$Main$codeGenError, model.stderr, e);
+						return A2($author$project$Main$codeGenError, model.h, e);
 					}
-				}(), model: model };
-			case 'GeneratedClientComponents':
+				}(), j: model };
+			case 3:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
-						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.stdout, 'Generating server ports'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedServerPorts, $author$project$CodeGen$genServerPorts(model.fsPermission)) ]);
+				return { i: function () {
+					if (!result.$) {
+						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.e, 'Generating server ports'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedServerPorts, $author$project$CodeGen$genServerPorts(model.a9)) ]);
 					} else {
 						var e = result.a;
-						return A2($author$project$Main$codeGenError, model.stderr, e);
+						return A2($author$project$Main$codeGenError, model.h, e);
 					}
-				}(), model: model };
-			case 'GeneratedServerPorts':
+				}(), j: model };
+			case 4:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
-						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.stdout, 'Generating client ports'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedClientPorts, $author$project$CodeGen$genClientPorts(model.fsPermission)) ]);
+				return { i: function () {
+					if (!result.$) {
+						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.e, 'Generating client ports'), A2($gren_lang$core$Task$attempt, $author$project$Main$GeneratedClientPorts, $author$project$CodeGen$genClientPorts(model.a9)) ]);
 					} else {
 						var e = result.a;
-						return A2($author$project$Main$codeGenError, model.stderr, e);
+						return A2($author$project$Main$codeGenError, model.h, e);
 					}
-				}(), model: model };
-			case 'GeneratedClientPorts':
+				}(), j: model };
+			case 5:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
-						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.stdout, 'Copying public assets'), A2($gren_lang$core$Task$attempt, $author$project$Main$CopiedPublicAssets, $author$project$CodeGen$copyPublicAssets(model.fsPermission)) ]);
+				return { i: function () {
+					if (!result.$) {
+						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.e, 'Copying public assets'), A2($gren_lang$core$Task$attempt, $author$project$Main$CopiedPublicAssets, $author$project$CodeGen$copyPublicAssets(model.a9)) ]);
 					} else {
 						var e = result.a;
-						return A2($author$project$Main$codeGenError, model.stderr, e);
+						return A2($author$project$Main$codeGenError, model.h, e);
 					}
-				}(), model: model };
-			case 'CopiedPublicAssets':
+				}(), j: model };
+			case 6:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
-						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.stdout, 'Building client components'), A2($gren_lang$core$Task$attempt, $author$project$Main$BuiltClientComponents, A2($author$project$Main$buildClientComponents, model.fsPermission, model.procPermission)) ]);
+				return { i: function () {
+					if (!result.$) {
+						return $gren_lang$core$Platform$Cmd$batch([ A2($author$project$Main$progress, model.e, 'Building client components'), A2($gren_lang$core$Task$attempt, $author$project$Main$BuiltClientComponents, A2($author$project$Main$buildClientComponents, model.a9, model.P)) ]);
 					} else {
 						var e = result.a;
-						return A2($author$project$Main$codeGenError, model.stderr, e);
+						return A2($author$project$Main$codeGenError, model.h, e);
 					}
-				}(), model: model };
-			case 'BuiltClientComponents':
+				}(), j: model };
+			case 7:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
+				return { i: function () {
+					if (!result.$) {
 						var success = result.a;
 						return $gren_lang$core$Platform$Cmd$batch([ function () {
-								if (success.$ === 'NoComponents') {
-									return A2($gren_lang$node$Stream$sendLine, model.stdout, 'No components to build');
+								if (success.$ === 1) {
+									return A2($gren_lang$node$Stream$sendLine, model.e, 'No components to build');
 								} else {
 									var s = success.a;
-									return A2($gren_lang$node$Stream$send, model.stdout, s.stdout);
+									return A2($gren_lang$node$Stream$send, model.e, s.e);
 								}
-							}(), A2($author$project$Main$progress, model.stdout, 'Building server'), A2($gren_lang$core$Task$attempt, $author$project$Main$BuiltServer, $author$project$Main$buildServer(model.procPermission)) ]);
+							}(), A2($author$project$Main$progress, model.e, 'Building server'), A2($gren_lang$core$Task$attempt, $author$project$Main$BuiltServer, $author$project$Main$buildServer(model.P)) ]);
 					} else {
-						if (result.a.$ === 'ComponentBuildFailed') {
+						if (!result.a.$) {
 							var failure = result.a.a;
-							return A2($author$project$Main$endWithErrorMessage, model.stderr, A2($gren_lang$core$Maybe$withDefault, 'Unknown error building client components', $author$project$Main$bytesToString(failure.stderr)));
+							return A2($author$project$Main$endWithErrorMessage, model.h, A2($gren_lang$core$Maybe$withDefault, 'Unknown error building client components', $author$project$Main$bytesToString(failure.h)));
 						} else {
 							var message = result.a.a;
-							return A2($author$project$Main$endWithErrorMessage, model.stderr, message);
+							return A2($author$project$Main$endWithErrorMessage, model.h, message);
 						}
 					}
-				}(), model: model };
+				}(), j: model };
 			default:
 				var result = msg.a;
-				return { command: function () {
-					if (result.$ === 'Ok') {
+				return { i: function () {
+					if (!result.$) {
 						var success = result.a;
-						return $gren_lang$core$Platform$Cmd$batch([ A2($gren_lang$node$Stream$send, model.stdout, success.stdout), A2($gren_lang$node$Stream$sendLine, model.stdout, '✅ Done') ]);
+						return $gren_lang$core$Platform$Cmd$batch([ A2($gren_lang$node$Stream$send, model.e, success.e), A2($gren_lang$node$Stream$sendLine, model.e, '✅ Done') ]);
 					} else {
 						var error = result.a;
-						return A2($author$project$Main$endWithErrorMessage, model.stderr, A2($gren_lang$core$Maybe$withDefault, 'Unknown error building server', $author$project$Main$bytesToString(error.stderr)));
+						return A2($author$project$Main$endWithErrorMessage, model.h, A2($gren_lang$core$Maybe$withDefault, 'Unknown error building server', $author$project$Main$bytesToString(error.h)));
 					}
-				}(), model: model };
+				}(), j: model };
 		}
 	});
-var $author$project$Main$main = $gren_lang$node$Node$defineProgram({ init: $author$project$Main$init, subscriptions: function(_v0) {
+var $author$project$Main$main = $gren_lang$node$Node$defineProgram({ be: $author$project$Main$init, bK: function(_v0) {
 		return $gren_lang$core$Platform$Sub$none;
-	}, update: $author$project$Main$update });
+	}, bP: $author$project$Main$update });
 _Platform_export({'Main':{'init':$author$project$Main$main($gren_lang$core$Json$Decode$succeed({  }))(0)}});}(this.module ? this.module.exports : this));
 this.Gren.Main.init({});
 }

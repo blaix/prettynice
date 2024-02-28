@@ -269,7 +269,7 @@ buildClientComponents fsPermission procPermission =
                 Task.succeed NoComponents
             else
                 ChildProcess.run procPermission "gren" 
-                    [ "make", components, "--output=" ++ outputPath ]
+                    [ "make", components, "--optimize", "--output=" ++ outputPath ]
                     { ChildProcess.defaultRunOptions 
                         | workingDirectory = 
                             ChildProcess.SetWorkingDirectory workingDirectory

@@ -20,7 +20,7 @@ prep-example NAME:
   cd examples/{{NAME}} && npm install
 
 build-cli:
-  cd cli && npx gren make src/Main.gren && mv app bin/index.js 
+  cd cli && npx gren make src/Main.gren --optimize && mv app bin/index.js
 
 examples:
   for example in `ls examples`; do just example $example; done

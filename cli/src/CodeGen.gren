@@ -125,6 +125,7 @@ copyPublicAssets fsPermission =
         |> Shikensu.Path.directory
         |> Shikensu.Focus.Relative
         |> tryList fsPermission
+        |> Task.andThen Shikensu.read
         |> Task.andThen (write [ "dist", "client" ])
         |> Task.mapError mapError
         |> Task.map Result

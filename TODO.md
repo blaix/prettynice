@@ -24,12 +24,11 @@
 - [X] Fix components nested under a parent module (e.g. client/Components/Foo/Bar.gren)
 - [X] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
 - [X] Use HttpServer.requestInfo for request logging in the terminal.
-- [.] Move build logic into cli:
+- [o] Move build logic into cli:
   - [X] Refactor cli to full MVU node program [IN PROGRESS]
   - [X] Remove build.sh
-  - [ ] Move Props.gren to cli
-  - [ ] Test `cd example/[example] && npm install && npm serve`
-  - [ ] Fix static-assets example (static assets not loading)
+  - [X] Test `cd example/[example] && npm install && npm serve`
+  - [X] Fix static-assets example (static assets not loading)
   - [ ] Fix database-ports example (blank page)
   - [ ] Prod builds with --optimize
   - [ ] Blog about writing a command line app in gren

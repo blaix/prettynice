@@ -4111,11 +4111,50 @@ var $author$project$Main$codeGenError = F2(function(stream, error) {
 var $author$project$CodeGen$Result = function (a) {
 	return { $: 'Result', a: a };
 };
-var $gren_lang$node$FileSystem$EnsureEmpty = { $: 'EnsureEmpty' };
 var $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError = function (a) {
 	return { $: 'PlatformUnknownError', a: a };
 };
+var $gren_lang$node$FileSystem$close = _FileSystem_close;
 var $gren_lang$node$FileSystem$openImpl = _FileSystem_open;
+var $gren_lang$node$FileSystem$openForRead = F2(function(_v0, path) {
+		return A2($gren_lang$node$FileSystem$openImpl, 'r', path);
+	});
+var $gren_lang$node$FileSystem$readFromOffset = _FileSystem_readFromOffset;
+var $gren_lang$node$FileSystem$read = function(fh) {
+	return A2($gren_lang$node$FileSystem$readFromOffset, fh, { length: -1, offset: 0 });
+};
+var $icidasset$shikensu_gren$Shikensu$Definition$relativePath = function(def) {
+	return A2($icidasset$shikensu_gren$Shikensu$Path$combine, def.directoryPath, $icidasset$shikensu_gren$Shikensu$Path$file([ _Utils_ap(def.baseName, A2($gren_lang$core$Maybe$withDefault, '', A2($gren_lang$core$Maybe$map, function(e) {
+							return _Utils_ap('.', e);
+						}, def.extensionName))) ]));
+};
+var $icidasset$shikensu_gren$Shikensu$readDefinition = F3(function(fsPermission, readingDirectory, def) {
+		return A2($gren_lang$core$Task$andThen, function(handle) {
+				return A2($gren_lang$core$Task$andThen, function(updatedDef) {
+						return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError, A2($gren_lang$core$Task$map, function(_v0) {
+									return updatedDef;
+								}, $gren_lang$node$FileSystem$close(handle)));
+					}, A2($gren_lang$core$Task$map, function(bytes) {
+							return _Utils_update(def, { content: $gren_lang$core$Maybe$Just(bytes) });
+						}, A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError, $gren_lang$node$FileSystem$read(handle))));
+			}, function(path) {
+				return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A2($gren_lang$node$FileSystem$openForRead, fsPermission, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { absolute: true }, path)));
+			}(A2($icidasset$shikensu_gren$Shikensu$Path$combine, readingDirectory, $icidasset$shikensu_gren$Shikensu$Definition$relativePath(def))));
+	});
+var $icidasset$shikensu_gren$Shikensu$read = function(bun) {
+	return A2($gren_lang$core$Task$map, function(compendium) {
+			return _Utils_update(bun, { compendium: compendium });
+		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, function(def) {
+					var _v0 = bun.readingDirectory;
+					if (_v0.$ === 'Just') {
+						var readingDirectory = _v0.a;
+						return A3($icidasset$shikensu_gren$Shikensu$readDefinition, bun.fsPermission, readingDirectory, def);
+					} else {
+						return $gren_lang$core$Task$succeed(def);
+					}
+				}, bun.compendium)));
+};
+var $gren_lang$node$FileSystem$EnsureEmpty = { $: 'EnsureEmpty' };
 var $gren_lang$node$FileSystem$openForWrite = F3(function(_v0, behaviour, path) {
 		var access = function () {
 			switch (behaviour.$) {
@@ -4129,11 +4168,6 @@ var $gren_lang$node$FileSystem$openForWrite = F3(function(_v0, behaviour, path) 
 		}();
 		return A2($gren_lang$node$FileSystem$openImpl, access, path);
 	});
-var $icidasset$shikensu_gren$Shikensu$Definition$relativePath = function(def) {
-	return A2($icidasset$shikensu_gren$Shikensu$Path$combine, def.directoryPath, $icidasset$shikensu_gren$Shikensu$Path$file([ _Utils_ap(def.baseName, A2($gren_lang$core$Maybe$withDefault, '', A2($gren_lang$core$Maybe$map, function(e) {
-							return _Utils_ap('.', e);
-						}, def.extensionName))) ]));
-};
 var $gren_lang$node$FileSystem$writeFromOffset = _FileSystem_writeFromOffset;
 var $gren_lang$node$FileSystem$write = F2(function(fh, bytes) {
 		return A3($gren_lang$node$FileSystem$writeFromOffset, fh, 0, bytes);
@@ -4170,7 +4204,7 @@ var $author$project$CodeGen$write = function(destinationDir) {
 	return $icidasset$shikensu_gren$Shikensu$write($icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory(destinationDir)));
 };
 var $author$project$CodeGen$copyPublicAssets = function(fsPermission) {
-	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'client' ]), A2($author$project$CodeGen$tryList, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory([ 'public' ]))))));
+	return A2($gren_lang$core$Task$map, $author$project$CodeGen$Result, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ 'dist', 'client' ]), A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, A2($author$project$CodeGen$tryList, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Relative($icidasset$shikensu_gren$Shikensu$Path$directory([ 'public' ])))))));
 };
 var $author$project$Main$fileSystemError = F2(function(stream, error) {
 		return A2($author$project$Main$endWithErrorMessage, stream, function () {
@@ -4223,40 +4257,6 @@ var $author$project$CodeGen$toString = function(bytes) {
 };
 var $author$project$CodeGen$clientComponentFromDef = function(def) {
 	return A2($gren_lang$core$Maybe$map, $author$project$CodeGen$toBytes, A2($gren_lang$core$Maybe$map, $author$project$CodeGen$toClientComponent(def), A2($gren_lang$core$Maybe$andThen, $author$project$CodeGen$toString, def.content)));
-};
-var $gren_lang$node$FileSystem$close = _FileSystem_close;
-var $gren_lang$node$FileSystem$openForRead = F2(function(_v0, path) {
-		return A2($gren_lang$node$FileSystem$openImpl, 'r', path);
-	});
-var $gren_lang$node$FileSystem$readFromOffset = _FileSystem_readFromOffset;
-var $gren_lang$node$FileSystem$read = function(fh) {
-	return A2($gren_lang$node$FileSystem$readFromOffset, fh, { length: -1, offset: 0 });
-};
-var $icidasset$shikensu_gren$Shikensu$readDefinition = F3(function(fsPermission, readingDirectory, def) {
-		return A2($gren_lang$core$Task$andThen, function(handle) {
-				return A2($gren_lang$core$Task$andThen, function(updatedDef) {
-						return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError, A2($gren_lang$core$Task$map, function(_v0) {
-									return updatedDef;
-								}, $gren_lang$node$FileSystem$close(handle)));
-					}, A2($gren_lang$core$Task$map, function(bytes) {
-							return _Utils_update(def, { content: $gren_lang$core$Maybe$Just(bytes) });
-						}, A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformUnknownError, $gren_lang$node$FileSystem$read(handle))));
-			}, function(path) {
-				return A2($gren_lang$core$Task$mapError, $icidasset$shikensu_gren$Shikensu$Error$PlatformAccessError($icidasset$shikensu_gren$Shikensu$Path$encapsulate(path)), A2($gren_lang$node$FileSystem$openForRead, fsPermission, A2($icidasset$shikensu_gren$Shikensu$Path$toPosix, { absolute: true }, path)));
-			}(A2($icidasset$shikensu_gren$Shikensu$Path$combine, readingDirectory, $icidasset$shikensu_gren$Shikensu$Definition$relativePath(def))));
-	});
-var $icidasset$shikensu_gren$Shikensu$read = function(bun) {
-	return A2($gren_lang$core$Task$map, function(compendium) {
-			return _Utils_update(bun, { compendium: compendium });
-		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, function(def) {
-					var _v0 = bun.readingDirectory;
-					if (_v0.$ === 'Just') {
-						var readingDirectory = _v0.a;
-						return A3($icidasset$shikensu_gren$Shikensu$readDefinition, bun.fsPermission, readingDirectory, def);
-					} else {
-						return $gren_lang$core$Task$succeed(def);
-					}
-				}, bun.compendium)));
 };
 var $author$project$CodeGen$readComponents = function(fsPermission) {
 	return A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, $author$project$CodeGen$listComponents(fsPermission));

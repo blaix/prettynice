@@ -108,7 +108,6 @@ genDependencies fsPermission =
     -- Need this for things like connecting ports.
     , createDef 
         serverWrapper
-        -- TODO: update scripts to call app.js instead of app
         [ "dist", "server", "index.js" ]
     ]
         |> Shikensu.bundle fsPermission

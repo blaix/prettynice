@@ -13,7 +13,7 @@ example NAME:
 watch-example NAME:
   @just header "WATCHING EXAMPLE: {{NAME}}"
   just prep-example {{NAME}}
-  cd examples/{{NAME}} && fd ".+\.(gren|js)$" ../.. | entr -r npm start
+  cd examples/{{NAME}} && fd ".+\.(gren|js|json)$" ../.. | entr -r npm start
 
 prep-example NAME:
   just build-cli

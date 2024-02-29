@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/blaix/prettynice/issues"
   },
-  "homepage": "https://github.com/blaix/prettynice/tree/main/cli"
+  "homepage": "https://github.com/blaix/prettynice/tree/main/cli",
+  "dependencies": {
+    "gren-lang": "0.3.x"
+  }
 }

@@ -1,10 +1,5 @@
 # Prettynice CLI
 
-Command line interface for Pretty Nice framework.
-Currently only responsible for the build step, but may expand to things like generators, starting the server, or more.
+Command line interface for [Pretty Nice](https://github.com/blaix/prettynice), a fullstack web framework for [Gren](https://gren-lang.org/).
 
-`bin/index.js` is a node app, built from the gren files in `src/`
-
-Build from the root of this repo with `just build-cli`
-
-Will be published as an npm package. See `package.json`.
+Build from the root of this repo with: `just build-cli`

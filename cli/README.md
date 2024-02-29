@@ -1,9 +1,9 @@
 # Prettynice CLI
 
-`bin/index.js` is a node app, built from the gren files in `src/`
+Command line interface for Pretty Nice framework.
+Currently only responsible for the build step, but may expand to things like generators, starting the server, or more.
 
-Currently it's only responsible for building the app.
-May expand this to running the server, generators, etc.
+`bin/index.js` is a node app, built from the gren files in `src/`
 
 Build from the root of this repo with `just build-cli`
 

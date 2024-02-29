@@ -28,6 +28,12 @@
 - [X] Add --optimize flag to cli
 - [X] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
 - [X] Improve cli interface and server startup output (with charm.sh/gum?)
+- [ ] cli commands:
+    - [ ] prettynice build
+    - [ ] prettynice build --optimize
+    - [ ] prettynice serve
+    - [ ] [-h|--help] options for each subcommand
+    - [ ] prettynice [help|-h|--help]
 - [ ] New project generator (charm.sh/gum?) with variants for:
   - [ ] Single file - Router
   - [ ] Single File - Program

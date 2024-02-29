@@ -3,7 +3,7 @@
   "scripts": {
     "start": "npm run build && npm run serve",
     "serve": "node dist/server/index.js",
-    "build": "node ../../cli/bin/index.js"
+    "build": "node ../../cli/bin/index.js --optimize"
   },
   "dependencies": {
     "gren-lang": "^0.3.0"

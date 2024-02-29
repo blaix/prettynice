@@ -252,15 +252,17 @@ toServerComponent def props =
             [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []
             , H.node "script" []
                 [ H.text <|
-                    \"""
+                    \"""\n
                     var $__components = $__components || {};
                     $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];
                     $__components["{{MODULE_NAME}}"].push(
-                        Gren.Gen.{{MODULE_NAME}}.init({
-                            node: document.currentScript.parentNode.getElementsByClassName("prettynice-component-{{MODULE_NAME}}")[0],
+                        Gren.Gen.{{MODULE_NAME}}.init({\n
                             flags: \""" ++ propJson ++ \""",
+                            node: document.currentScript.parentNode.getElementsByClassName(
+                                "prettynice-component-{{MODULE_NAME}}"
+                            )[0],
                         })
-                    );
+                    );\n
                     \"""
                 ]
             ]

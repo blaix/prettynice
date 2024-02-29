@@ -99,23 +99,25 @@ setBody bodyVariant response =
                                       , H.title [ H.text title ]
                                       ] ++ head
                                     )
-                                , H.body [] body
-                                , H.node "script" []
-                                    [ H.text <|
-                                        """
-                                        if (typeof($__components) !== 'undefined') {
-                                            Object.keys($__components).map((name) => {
-                                                let path = name.replace(/\\./g, '/');
-                                                import("/" + path + ".js").then((mod) => {
-                                                    if (mod.init) {
-                                                        $__components[name].map((comp) => {
-                                                            mod.init(comp);
-                                                        });
-                                                    }
+                                , H.body [] <|
+                                    body ++
+                                    [ H.node "script" []
+                                        [ H.text <|
+                                            """
+                                            if (typeof($__components) !== 'undefined') {
+                                                Object.keys($__components).map((name) => {
+                                                    let path = name.replace(/\\./g, '/');
+                                                    import("/" + path + ".js").then((mod) => {
+                                                        if (mod.init) {
+                                                            $__components[name].map((comp) => {
+                                                                mod.init(comp);
+                                                            });
+                                                        }
+                                                    });
                                                 });
-                                            });
-                                        }
-                                        """
+                                            }
+                                            """
+                                        ]
                                     ]
                                 ]
                             )

@@ -28,6 +28,7 @@ type alias Model =
     , procPermission : ChildProcess.Permission
     , stdout : Stream
     , stderr : Stream
+    , optimize : Bool
     }
 
 
@@ -41,6 +42,7 @@ init env =
                     , procPermission = procPermission
                     , stdout = env.stdout
                     , stderr = env.stderr
+                    , optimize = Array.member "--optimize" env.args
                     }
                 , command = 
                     Cmd.batch
@@ -176,7 +178,7 @@ update msg model =
                         Cmd.batch
                             [ progress model.stdout "Building client components"
                             , Task.attempt BuiltClientComponents <|
-                                buildClientComponents model.fsPermission model.procPermission
+                                buildClientComponents model.fsPermission model.procPermission model.optimize
                             ]
 
                     Err e ->
@@ -196,7 +198,7 @@ update msg model =
                                     Stream.send model.stdout s.stdout
                             , progress model.stdout "Building server"
                             , Task.attempt BuiltServer <|
-                                buildServer model.procPermission
+                                buildServer model.procPermission model.optimize
                             ]
 
                     Err (ComponentBuildFailed failure) ->
@@ -255,8 +257,12 @@ clean fsPermission =
         |> Task.map (\_ -> {})
 
 
-buildClientComponents : FileSystem.Permission -> ChildProcess.Permission -> Task ComponentBuildError ComponentBuildSuccess
-buildClientComponents fsPermission procPermission =
+buildClientComponents :
+    FileSystem.Permission
+    -> ChildProcess.Permission
+    -> Bool
+    -> Task ComponentBuildError ComponentBuildSuccess
+buildClientComponents fsPermission procPermission optimize =
     let
         workingDirectory =
             FileSystem.buildPath [ "client" ]
@@ -264,16 +270,29 @@ buildClientComponents fsPermission procPermission =
         outputPath =
             FileSystem.buildPath [ "..", "dist", "client", "main.js" ]
 
+        optimizeFlag =
+            if optimize then
+                "--optimize"
+            else
+                ""
+
+        runOptions =
+            { ChildProcess.defaultRunOptions 
+                | workingDirectory = 
+                    ChildProcess.SetWorkingDirectory workingDirectory
+            }
+
         buildComponents components =
             if components == "" then
                 Task.succeed NoComponents
             else
                 ChildProcess.run procPermission "gren" 
-                    [ "make", components, "--optimize", "--output=" ++ outputPath ]
-                    { ChildProcess.defaultRunOptions 
-                        | workingDirectory = 
-                            ChildProcess.SetWorkingDirectory workingDirectory
-                    }
+                    [ "make"
+                    , components
+                    , optimizeFlag
+                    , "--output=" ++ outputPath
+                    ]
+                    runOptions
                     |> Task.map ComponentBuildSucceeded
                     |> Task.mapError ComponentBuildFailed
     in
@@ -283,8 +302,11 @@ buildClientComponents fsPermission procPermission =
         |> Task.andThen buildComponents
 
 
-buildServer : ChildProcess.Permission -> Task ChildProcess.FailedRun ChildProcess.SuccessfulRun
-buildServer procPermission =
+buildServer :
+    ChildProcess.Permission 
+    -> Bool
+    -> Task ChildProcess.FailedRun ChildProcess.SuccessfulRun
+buildServer procPermission optimize =
     let
         workingDirectory =
             FileSystem.buildPath [ "server" ]
@@ -294,9 +316,15 @@ buildServer procPermission =
 
         outputPath =
             FileSystem.buildPath [ "..", "dist", "server", "main.js" ]
+
+        optimizeFlag =
+            if optimize then
+                "--optimize"
+            else
+                ""
     in
     ChildProcess.run procPermission "gren" 
-        [ "make", inputPath, "--output=" ++ outputPath ]
+        [ "make", inputPath, optimizeFlag, "--output=" ++ outputPath ]
         { ChildProcess.defaultRunOptions 
             | workingDirectory = 
                 ChildProcess.SetWorkingDirectory workingDirectory

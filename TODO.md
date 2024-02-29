@@ -26,7 +26,7 @@
 - [X] Use HttpServer.requestInfo for request logging in the terminal.
 - [X] Move build logic into cli
 - [X] Add --optimize flag to cli
-- [ ] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
+- [X] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
 - [ ] Better examples dir + README. See https://github.com/lustre-labs/lustre/blob/main/examples/README.md
 - [ ] Improve cli interface and server startup output (with charm.sh/gum?)
 - [ ] New project generator (charm.sh/gum?) with variants for:

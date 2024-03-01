@@ -1,5 +1,5 @@
 {
-  "name": "prettynice-cli",
+  "name": "prettynice",
   "version": "0.0.1",
   "description": "CLI for the Prettynice Gren framework.",
   "bin": {

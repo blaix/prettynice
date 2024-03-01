@@ -88,7 +88,9 @@
 
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Databases:
-  - [ ] db-over-http once node HttpClient lands
+  - [ ] db-over-http once node HttpClient lands:
+    - [ ] couchdb / pouchdb
+    - [ ] sqlite-over-http? https://github.com/proofrock/ws4sqlite
   - [ ] expand on ports/prisma example?
   - [ ] direct connection over tcp?:
     - [ ] kernel bindings for node's 'net' api (and maybe 'crypto')

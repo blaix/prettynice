@@ -35,34 +35,35 @@
     - [ ] [-h|--help] options for each subcommand
     - [ ] prettynice [help|-h|--help]
 - [ ] Switch examples to use cli npm package
-- [ ] New project generator (charm.sh/gum?) with variants for:
+- [ ] API Docs (reminder: use gren-doc-preview):
+- [ ] **=== release 1.0 ===**
+- [ ] New project generator. Consider variants for:
   - [ ] Single file - Router
   - [ ] Single File - Program
   - [ ] Multi-file - Router
   - [ ] Multi-file - Program
-- [ ] Document/Support (via generator?) trying the framework without an official package released
+- [ ] Update README with cli instructions:
+  - [ ] Starting a new project with prettynice cli
+  - [ ] Adding prettynice to an existing gren project
+- [ ] Doc site:
+  - [ ] Link on github project settings and README
+  - [ ] Link to relevant sections from the example READMEs
+  - [ ] Link in the error message for failed props parsing
+  - [ ] Flesh out gren guide if needed:
+    - [ ] Arrays missing from pattern matching section, but I'm linking to this from my basic router example
+    - [ ] Nothing about creating full applications (in browser or in node)
+  - [ ] Consider an interactive language tour ala tour.gleam.run
 - [ ] Deployment example + docs.
   - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
   - [ ] Fly.io vs Render.com
-- [ ] **=== Pre-release for testing / feedback ===**
-- [ ] Unit Tests. Especially Prettynice.Props
-- [ ] Start migrating pencils.dev
-- [ ] API Docs (reminder: use gren-doc-preview):
-- [ ] **=== release 1.0 ===**
-- [ ] Doc site. Link on github project.
-- [ ] Link to appropriate sections of the doc site from prettynice READMEs and API docs:
-    - [ ] Client-side component example README (prop field types)
-    - [ ] Main project README
-    - [ ] Error message when props can't be parsed in cli.
-- [ ] Flesh out gren guide with application info?:
-  - [ ] Add arrays to pattern matching section (I'm linking to this from my basic router example)
-  - [ ] Add section on creating full applications (in browser and in node?)
-- [ ] Post:
+- [ ] Offically announce the release:
   - [ ] blog.blaix.com
   - [ ] zulip
   - [ ] mastodon
   - [ ] discord
   - [ ] twitter?
+- [ ] Start migrating pencils.dev
+- [ ] Unit Tests. Especially Prettynice.Props
 - [ ] Think about CSS post-processing:
   - [ ] tailwind? (meh)
   - [ ] bulma.io looks nice (no js!), maybe worth a UI package? look at https://package.elm-lang.org/packages/surprisetalk/elm-bulma/

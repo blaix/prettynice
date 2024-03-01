@@ -34,6 +34,7 @@
     - [ ] prettynice serve
     - [ ] [-h|--help] options for each subcommand
     - [ ] prettynice [help|-h|--help]
+- [ ] Switch examples to use cli npm package
 - [ ] New project generator (charm.sh/gum?) with variants for:
   - [ ] Single file - Router
   - [ ] Single File - Program
@@ -86,8 +87,13 @@
 ## Open questions and future ideas
 
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
-- [ ] Persistence? Database interaction? (Ports/Prisma, Gren Process API, TCP protocol, actual adapter?)
-- [ ] ^ Keep an eye on the [elm->pgsql](https://discourse.elm-lang.org/t/elm-postgres-and-nothing-inbetween/9557/1) stuff by @damir (watch elm discourse and Incremental Elm discord).
+- [ ] Databases:
+  - [ ] db-over-http once node HttpClient lands
+  - [ ] expand on ports/prisma example?
+  - [ ] direct connection over tcp?:
+    - [ ] kernel bindings for node's 'net' api (and maybe 'crypto')
+    - [ ] example here: https://github.com/Asaye/PgDriverDemo (explanation here: https://info.deal-corner.com/post/311c1057-f94b-4b48-aadc-02de4ee5f0e0)
+  - [ ] See https://github.com/pghttp and elm-pghttp channel in incremental elm discord
 - [ ] SSE? Websockets?
 - [ ] SSR + hydration for components? Is there value?
 - [ ] Emails? (Mario from Lamdera recommends https://postmarkapp.com/)

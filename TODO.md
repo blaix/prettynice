@@ -90,6 +90,7 @@
 - [ ] Databases:
   - [ ] db-over-http once node HttpClient lands:
     - [ ] couchdb / pouchdb
+    - [ ] AWS RDS Data API
     - [ ] sqlite-over-http? https://github.com/proofrock/ws4sqlite
   - [ ] expand on ports/prisma example?
   - [ ] direct connection over tcp?:

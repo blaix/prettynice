@@ -28,11 +28,7 @@
 - [X] Add --optimize flag to cli
 - [X] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
 - [X] Improve cli interface and server startup output (with charm.sh/gum?)
-- [ ] cli commands:
-    - [ ] prettynice build
-    - [ ] prettynice build --optimize
-    - [ ] [-h|--help] options for each subcommand
-    - [ ] prettynice [help|-h|--help]
+- [X] cli commands build, build --optimize, and help commands
 - [ ] Switch examples to use cli npm package
 - [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] **=== release 1.0 ===**

@@ -36,20 +36,71 @@ init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Init.await FileSystem.initialize <| \fsPermission ->
         Init.await ChildProcess.initialize <| \procPermission ->
-            Node.startProgram
-                { model =
+            let
+                model = 
                     { fsPermission = fsPermission
                     , procPermission = procPermission
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , optimize = Array.member "--optimize" env.args
                     }
-                , command = 
-                    Cmd.batch
-                        [ progress env.stdout "Cleaning up previous builds"
-                        , clean fsPermission |> Task.attempt Cleaned
-                        ]
+            in
+            Node.startProgram
+                { model = model
+                , command = run model env.args
                 }
+
+
+run : Model -> Array String -> Cmd Msg
+run model args =
+    case args of
+        [ _, _ ] ->
+            Stream.sendLine model.stdout help
+
+        [ _, _, "--help" ] ->
+            Stream.sendLine model.stdout help
+
+        [ _, _, "-h" ] ->
+            Stream.sendLine model.stdout help
+
+        [ _, _, "build" ] ->
+            runBuild model
+
+        [ _, _, "build", "--optimize" ] ->
+            -- no need to do anything different here,
+            -- optimize flag is already set via init.
+            runBuild model
+
+        _ ->
+            Cmd.batch
+                [ Stream.sendLine model.stderr "I don't recognize those arguments."
+                , Stream.sendLine model.stderr help
+                , Node.setExitCode 1
+                ]
+
+
+runBuild : Model -> Cmd Msg
+runBuild model =
+    Cmd.batch
+        [ progress model.stdout "Cleaning up previous builds"
+        , clean model.fsPermission |> Task.attempt Cleaned
+        ]
+
+
+help : String
+help = 
+    """
+    Usage:
+        
+        prettynice build
+            Compile the web app into javascript under dist/
+
+        prettynice build --optimize
+            Compile the web app with optimizations enabled.
+
+        prettynice --help
+            Show this help text.
+    """
 
 
 -- UPDATE

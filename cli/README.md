@@ -2,4 +2,4 @@
 
 Command line interface for [Pretty Nice](https://github.com/blaix/prettynice), a fullstack web framework for [Gren](https://gren-lang.org/).
 
-Build from the root of this repo with: `just build-cli`
+Build from the root of [the repo](https://github.com/blaix/prettynice) with: `just build-cli`

@@ -31,7 +31,6 @@
 - [ ] cli commands:
     - [ ] prettynice build
     - [ ] prettynice build --optimize
-    - [ ] prettynice serve
     - [ ] [-h|--help] options for each subcommand
     - [ ] prettynice [help|-h|--help]
 - [ ] Switch examples to use cli npm package
@@ -88,6 +87,9 @@
 ## Open questions and future ideas
 
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
+- [ ] Should there be a prettynice cli "serve" command?
+    - [ ] Originally tried to do this but having trouble getting server's stdout to pass through the parent process
+    - [ ] Is there any benefit over running the built server with node directly?
 - [ ] Databases:
   - [ ] db-over-http once node HttpClient lands:
     - [ ] couchdb / pouchdb

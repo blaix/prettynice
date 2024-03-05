@@ -15,10 +15,6 @@ watch-example NAME:
   just prep-example {{NAME}}
   cd examples/{{NAME}} && fd ".+\.(gren|js|json)$" ../.. | entr -r npm start
 
-prep-example NAME:
-  just build-cli
-  cd examples/{{NAME}} && npm install
-
 build-cli:
   cd cli && npx gren make src/Main.gren --optimize && chmod a+x app && mv app bin/index.js
 

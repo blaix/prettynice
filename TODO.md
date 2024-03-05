@@ -82,6 +82,7 @@
 
 ## Open questions and future ideas
 
+- [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/tea-modules`
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Should there be a prettynice cli "serve" command?
     - [ ] Originally tried to do this but having trouble getting server's stdout to pass through the parent process

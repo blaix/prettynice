@@ -29,7 +29,8 @@
 - [X] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
 - [X] Improve cli interface and server startup output (with charm.sh/gum?)
 - [X] cli commands build, build --optimize, and help commands
-- [ ] Switch examples to use cli npm package
+- [X] Switch examples to use cli npm package
+- [ ] _Try one more time to make tea-modules simpler!_
 - [ ] API Docs (reminder: use gren-doc-preview):
 - [ ] **=== release 1.0 ===**
 - [ ] New project generator. Consider variants for:

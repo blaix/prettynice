@@ -1,6 +1,12 @@
 {
   "private": true,
+  "scripts": {
+    "docs": "npx gren-doc-preview"
+  },
   "dependencies": {
     "gren-lang": "^0.3.0"
+  },
+  "devDependencies": {
+    "gren-packages": "^3.1.0"
   }
 }

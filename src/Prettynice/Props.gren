@@ -1,16 +1,67 @@
 module Prettynice.Props exposing 
     ( Props
+    , FieldType
     , get
     , encoder
     , typeSig
     )
+
+
+{-| Extract and encode Prettynice component props.
+
+Props define the shape of the data passed into your component when you embed it in your server-side HTML.
+They are similar to [flags in elm](https://guide.elm-lang.org/interop/flags).
+
+**This module is used internally by the framework. It is not intended to be used in your application code.**
+
+...but it may be helpful to understand how your component props are parsed and what [field types](#FieldType) are supported.
+
+@docs Props, FieldType, get, encoder, typeSig
+
+-}
+
 
 import Dict exposing (Dict)
 import Parser as P exposing ((|.), (|=), Parser, Trailing(..))
 import Set
 
 
+{-| Internal mapping of prop field name to field type.
+
+For example, props like this:
+
+    type alias Props =
+        { name : String
+        , age : Int
+        }
+
+would be represented internally like this:
+
+    Dict.fromArray
+        [ { key = "name", value = StringType }
+        , { key = "age", value = IntType }
+        ]
+
+See [`FieldType`](#FieldType) for supported types.
+-}
+type alias Props =
+    Dict String FieldType
+
+
+{-| Represents the type of a prop field.
+
+Support prop field types are:
+
+* Int
+* Float
+* String
+* Bool
+* Array
+* Maybe
+
+-}
 type FieldType
+    -- Update docs above if updating this list.
     = IntType
     | FloatType
     | StringType
@@ -19,10 +70,8 @@ type FieldType
     | MaybeType FieldType
 
 
-type alias Props =
-    Dict String FieldType
-
-
+{-| Return a string with the gren type signature for the given props.
+-}
 typeSig : Props -> String
 typeSig props =
     let
@@ -65,6 +114,8 @@ fieldTypeToString fieldType =
             "(Maybe " ++ (fieldTypeToString t) ++ ")"
 
 
+{-| Return a string with the gren code to encode the given props.
+-}
 encoder : Props -> String
 encoder props =
     let
@@ -173,7 +224,10 @@ fieldParser =
         |. P.spaces
 
 
-get: String -> Result (Array P.DeadEnd) (Dict String FieldType)
+{-| Given the string contents of a component source file,
+parse the [Props](#Props) and return the result.
+-}
+get : String -> Result (Array P.DeadEnd) Props
 get content =
     let
         normalized =

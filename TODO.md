@@ -31,6 +31,7 @@
 - [X] cli commands build, build --optimize, and help commands
 - [X] Switch examples to use cli npm package
 - [ ] API Docs (reminder: use gren-doc-preview):
+- [ ] Address any remaining TODOs in the docs and code.
 - [ ] **=== release 1.0 ===**
 - [ ] New project generator. Consider variants for:
   - [ ] Single file - Router

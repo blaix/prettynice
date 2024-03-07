@@ -1,4 +1,4 @@
-module Prettynice.Props exposing 
+module Prettynice.Internal.Props exposing 
     ( Props
     , FieldType
     , get

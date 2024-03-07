@@ -8,6 +8,8 @@ example NAME:
 
 build-cli:
   cd cli && npx gren make src/Main.gren --optimize && chmod a+x app && mv app bin/index.js
+  # Force a reinstall in examples
+  for example in `ls examples`; do rm -rf examples/$example/node_modules; done
 
 examples:
   for example in `ls examples`; do just example $example; done

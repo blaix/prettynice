@@ -17,7 +17,7 @@ import Bytes exposing (Bytes)
 import Bytes.Encode
 import Bytes.Decode
 import FileSystem
-import Prettynice.Props as Props exposing (Props)
+import Prettynice.Internal.Props as Props exposing (Props)
 import Shikensu
 import Shikensu.Bundle exposing (Bundle)
 import Shikensu.Contrib as Shikensu
@@ -218,8 +218,8 @@ serverComponentsFromBundle bundle =
 
                            It either doesn't exist, is formatted in a way I
                            can't recognize, or it uses unsupported field types.
-                           See Prettynice.Props.Fieldtype for supported types:
-                           https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren
+                           See Prettynice.Internal.Props.Fieldtype for supported types:
+                           https://github.com/blaix/prettynice/blob/main/src/Prettynice/Internal/Props.gren
                         """
                 )
 
@@ -232,7 +232,7 @@ toServerComponent def props =
     module Gen.{{MODULE_NAME}} exposing (init)
 
     import Json.Encode as Encode
-    import Prettynice.Props as Props
+    import Prettynice.Internal.Props as Props
     import Transmutable.Html as H exposing (Html)
     import Transmutable.Html.Attributes as A
 

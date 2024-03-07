@@ -24,7 +24,7 @@ npm start
 
 **Note:** Prettynice has a parser that looks for your Props to generate the corresponding server-side types and encoders,
 so it must be a [record](https://gren-lang.org/book/syntax/records.html) named `Props`,
-and only contain fields with types that match one of the corresponding variants of [Prettynice.Props.FieldType](https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren).
+and only contain fields with types that match one of the corresponding variants of [Prettynice.Internal.Props.FieldType](https://github.com/blaix/prettynice/blob/main/src/Prettynice/Internal/Props.gren).
 
 But don't worry, if you color outside the lines (mess up the name, type
 signature, use an unsupported type, etc), you will get an error in the build

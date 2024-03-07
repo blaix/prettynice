@@ -8,7 +8,7 @@
     "exposed-modules": [
         "Prettynice",
         "Prettynice.FormData",
-        "Prettynice.Props",
+        "Prettynice.Internal.Props",
         "Prettynice.Request",
         "Prettynice.Response",
         "Prettynice.SimpleRouter"

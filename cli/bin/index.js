@@ -4521,16 +4521,16 @@ var $gren_lang$parser$Parser$chompUntil = function(str) {
 };
 var $gren_lang$core$Set$Set_gren_builtin = $gren_lang$core$Basics$identity;
 var $gren_lang$core$Set$empty = $gren_lang$core$Dict$empty;
-var $blaix$prettynice$Prettynice$Props$ArrayType = function (a) {
+var $blaix$prettynice$Prettynice$Internal$Props$ArrayType = function (a) {
 	return { $: 4, a: a };
 };
-var $blaix$prettynice$Prettynice$Props$BoolType = { $: 3 };
-var $blaix$prettynice$Prettynice$Props$FloatType = { $: 1 };
-var $blaix$prettynice$Prettynice$Props$IntType = { $: 0 };
-var $blaix$prettynice$Prettynice$Props$MaybeType = function (a) {
+var $blaix$prettynice$Prettynice$Internal$Props$BoolType = { $: 3 };
+var $blaix$prettynice$Prettynice$Internal$Props$FloatType = { $: 1 };
+var $blaix$prettynice$Prettynice$Internal$Props$IntType = { $: 0 };
+var $blaix$prettynice$Prettynice$Internal$Props$MaybeType = function (a) {
 	return { $: 5, a: a };
 };
-var $blaix$prettynice$Prettynice$Props$StringType = { $: 2 };
+var $blaix$prettynice$Prettynice$Internal$Props$StringType = { $: 2 };
 var $gren_lang$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
 var $gren_lang$parser$Parser$Advanced$chompWhileHelp = F5(function(isGood, offset, row, col, s0) {
 		chompWhileHelp:
@@ -4708,20 +4708,20 @@ var $gren_lang$parser$Parser$Advanced$succeed = function(a) {
 	};
 };
 var $gren_lang$parser$Parser$succeed = $gren_lang$parser$Parser$Advanced$succeed;
-function $blaix$prettynice$Prettynice$Props$cyclic$fieldParser() {
+function $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser() {
 	return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Basics$identity), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
 						return _Utils_eq(c, '(');
-					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf([ A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$IntType), $gren_lang$parser$Parser$keyword('Int')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$FloatType), $gren_lang$parser$Parser$keyword('Float')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$StringType), $gren_lang$parser$Parser$keyword('String')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$BoolType), $gren_lang$parser$Parser$keyword('Bool')), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$ArrayType), $gren_lang$parser$Parser$keyword('Array')), $gren_lang$parser$Parser$lazy(function(_v0) {
-									return $blaix$prettynice$Prettynice$Props$cyclic$fieldParser();
-								})), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Props$MaybeType), $gren_lang$parser$Parser$keyword('Maybe')), $gren_lang$parser$Parser$lazy(function(_v1) {
-									return $blaix$prettynice$Prettynice$Props$cyclic$fieldParser();
+					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf([ A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$IntType), $gren_lang$parser$Parser$keyword('Int')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$FloatType), $gren_lang$parser$Parser$keyword('Float')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$StringType), $gren_lang$parser$Parser$keyword('String')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$BoolType), $gren_lang$parser$Parser$keyword('Bool')), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$ArrayType), $gren_lang$parser$Parser$keyword('Array')), $gren_lang$parser$Parser$lazy(function(_v0) {
+									return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
+								})), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$MaybeType), $gren_lang$parser$Parser$keyword('Maybe')), $gren_lang$parser$Parser$lazy(function(_v1) {
+									return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
 								})) ]), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
 						return _Utils_eq(c, ')');
 					})), $gren_lang$parser$Parser$spaces));
 }
-var $blaix$prettynice$Prettynice$Props$fieldParser = $blaix$prettynice$Prettynice$Props$cyclic$fieldParser();
-$blaix$prettynice$Prettynice$Props$cyclic$fieldParser = function () {
-	return $blaix$prettynice$Prettynice$Props$fieldParser;
+var $blaix$prettynice$Prettynice$Internal$Props$fieldParser = $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
+$blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser = function () {
+	return $blaix$prettynice$Prettynice$Internal$Props$fieldParser;
 };
 var $gren_lang$core$Dict$fromArray = function(assocs) {
 	return A3($gren_lang$core$Array$foldl, F2(function(_v0, dict) {
@@ -4967,11 +4967,11 @@ var $gren_lang$parser$Parser$Advanced$variable = function(i) {
 var $gren_lang$parser$Parser$variable = function(i) {
 	return $gren_lang$parser$Parser$Advanced$variable({ aj: $gren_lang$parser$Parser$ExpectingVariable, bi: i.bi, bC: i.bC, aM: i.aM });
 };
-var $blaix$prettynice$Prettynice$Props$parser = A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Dict$fromArray), $gren_lang$parser$Parser$chompUntil('type alias Props')), $gren_lang$parser$Parser$token('type alias Props')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol('=')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$sequence({ a2: '}', bl: A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed(F2(function(field, fieldType) {
+var $blaix$prettynice$Prettynice$Internal$Props$parser = A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Dict$fromArray), $gren_lang$parser$Parser$chompUntil('type alias Props')), $gren_lang$parser$Parser$token('type alias Props')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol('=')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$sequence({ a2: '}', bl: A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed(F2(function(field, fieldType) {
 							return { bm: field, aQ: fieldType };
 						})), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$variable({ bi: function(c) {
 									return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, '_');
-								}, bC: $gren_lang$core$Set$empty, aM: $gren_lang$core$Char$isLower }), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol(':')), $gren_lang$parser$Parser$spaces)), $blaix$prettynice$Prettynice$Props$fieldParser), bG: ',', bI: $gren_lang$parser$Parser$spaces, aM: '{', bP: 0 }));
+								}, bC: $gren_lang$core$Set$empty, aM: $gren_lang$core$Char$isLower }), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol(':')), $gren_lang$parser$Parser$spaces)), $blaix$prettynice$Prettynice$Internal$Props$fieldParser), bG: ',', bI: $gren_lang$parser$Parser$spaces, aM: '{', bP: 0 }));
 var $gren_lang$parser$Parser$problemToDeadEnd = function(p) {
 	return { E: p.E, P: p.P, S: p.S };
 };
@@ -5025,11 +5025,11 @@ var $gren_lang$parser$Parser$run = F2(function(parser, source) {
 		}
 	});
 var $gren_lang$core$String$words = _String_words;
-var $blaix$prettynice$Prettynice$Props$get = function(content) {
+var $blaix$prettynice$Prettynice$Internal$Props$get = function(content) {
 	var normalized = A2($gren_lang$core$String$join, ' ', $gren_lang$core$String$words(content));
-	return A2($gren_lang$parser$Parser$run, $blaix$prettynice$Prettynice$Props$parser, normalized);
+	return A2($gren_lang$parser$Parser$run, $blaix$prettynice$Prettynice$Internal$Props$parser, normalized);
 };
-var $blaix$prettynice$Prettynice$Props$fieldTypeToEncoder = function(fieldType) {
+var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder = function(fieldType) {
 	switch (fieldType.$) {
 		case 0:
 			return 'Encode.int';
@@ -5041,21 +5041,21 @@ var $blaix$prettynice$Prettynice$Props$fieldTypeToEncoder = function(fieldType) 
 			return 'Encode.bool';
 		case 4:
 			var t = fieldType.a;
-			return _Utils_ap('(Encode.array ', _Utils_ap($blaix$prettynice$Prettynice$Props$fieldTypeToEncoder(t), ')'));
+			return _Utils_ap('(Encode.array ', _Utils_ap($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(t), ')'));
 		default:
 			var t = fieldType.a;
-			return _Utils_ap('(Maybe.map (', _Utils_ap($blaix$prettynice$Prettynice$Props$fieldTypeToEncoder(t), ') >> Maybe.withDefault Encode.null)'));
+			return _Utils_ap('(Maybe.map (', _Utils_ap($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(t), ') >> Maybe.withDefault Encode.null)'));
 	}
 };
-var $blaix$prettynice$Prettynice$Props$addFieldEncoder = F3(function(name, fieldType, encoders) {
-		var field = A3($gren_lang$core$String$replace, '{{ENCODER}}', $blaix$prettynice$Prettynice$Props$fieldTypeToEncoder(fieldType), A3($gren_lang$core$String$replace, '{{NAME}}', name, '{ key = "{{NAME}}"\n          , value = {{ENCODER}} props.{{NAME}}\n          }'));
+var $blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder = F3(function(name, fieldType, encoders) {
+		var field = A3($gren_lang$core$String$replace, '{{ENCODER}}', $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(fieldType), A3($gren_lang$core$String$replace, '{{NAME}}', name, '{ key = "{{NAME}}"\n          , value = {{ENCODER}} props.{{NAME}}\n          }'));
 		return A2($gren_lang$core$Array$pushLast, field, encoders);
 	});
-var $blaix$prettynice$Prettynice$Props$encoder = function(props) {
-	var fields = A2($gren_lang$core$String$join, '\n        , ', A3($gren_lang$core$Dict$foldl, $blaix$prettynice$Prettynice$Props$addFieldEncoder, [  ], props));
+var $blaix$prettynice$Prettynice$Internal$Props$encoder = function(props) {
+	var fields = A2($gren_lang$core$String$join, '\n        , ', A3($gren_lang$core$Dict$foldl, $blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder, [  ], props));
 	return A3($gren_lang$core$String$replace, '{{FIELDS}}', fields, 'Encode.object \n        [ {{FIELDS}}\n        ]');
 };
-var $blaix$prettynice$Prettynice$Props$fieldTypeToString = function(fieldType) {
+var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString = function(fieldType) {
 	switch (fieldType.$) {
 		case 0:
 			return 'Int';
@@ -5067,27 +5067,27 @@ var $blaix$prettynice$Prettynice$Props$fieldTypeToString = function(fieldType) {
 			return 'Bool';
 		case 4:
 			var t = fieldType.a;
-			return _Utils_ap('(Array ', _Utils_ap($blaix$prettynice$Prettynice$Props$fieldTypeToString(t), ')'));
+			return _Utils_ap('(Array ', _Utils_ap($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(t), ')'));
 		default:
 			var t = fieldType.a;
-			return _Utils_ap('(Maybe ', _Utils_ap($blaix$prettynice$Prettynice$Props$fieldTypeToString(t), ')'));
+			return _Utils_ap('(Maybe ', _Utils_ap($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(t), ')'));
 	}
 };
-var $blaix$prettynice$Prettynice$Props$addFieldSig = F3(function(name, fieldType, sigs) {
-		var field = _Utils_ap(name, _Utils_ap(' : ', $blaix$prettynice$Prettynice$Props$fieldTypeToString(fieldType)));
+var $blaix$prettynice$Prettynice$Internal$Props$addFieldSig = F3(function(name, fieldType, sigs) {
+		var field = _Utils_ap(name, _Utils_ap(' : ', $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(fieldType)));
 		return A2($gren_lang$core$Array$pushLast, field, sigs);
 	});
-var $blaix$prettynice$Prettynice$Props$typeSig = function(props) {
-	var fields = A2($gren_lang$core$String$join, ', ', A3($gren_lang$core$Dict$foldl, $blaix$prettynice$Prettynice$Props$addFieldSig, [  ], props));
+var $blaix$prettynice$Prettynice$Internal$Props$typeSig = function(props) {
+	var fields = A2($gren_lang$core$String$join, ', ', A3($gren_lang$core$Dict$foldl, $blaix$prettynice$Prettynice$Internal$Props$addFieldSig, [  ], props));
 	return _Utils_ap('{ ', _Utils_ap(fields, ' }'));
 };
 var $author$project$CodeGen$toServerComponent = F2(function(def, props) {
-		return A3($gren_lang$core$String$replace, '{{PROPS_ENCODER}}', $blaix$prettynice$Prettynice$Props$encoder(props), A3($gren_lang$core$String$replace, '{{PROPS_TYPE}}', $blaix$prettynice$Prettynice$Props$typeSig(props), A3($gren_lang$core$String$replace, '{{MODULE_NAME}}', $author$project$CodeGen$moduleName(def), 'module Gen.{{MODULE_NAME}} exposing (init)\n\nimport Json.Encode as Encode\nimport Prettynice.Props as Props\nimport Transmutable.Html as H exposing (Html)\nimport Transmutable.Html.Attributes as A\n\ntype alias Props =\n    {{PROPS_TYPE}}\n\nencoder : Props -> Encode.Value\nencoder props =\n    {{PROPS_ENCODER}}\n\ninit : Props -> Html msg\ninit props =\n    let\n        propJson = Encode.encode 0 (encoder props)\n    in\n    H.span []\n        [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []\n        , H.node "script" []\n            [ H.text <|\n                \"""\n\n                var $__components = $__components || {};\n                $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];\n                $__components["{{MODULE_NAME}}"].push(\n                    Gren.Gen.{{MODULE_NAME}}.init({\n\n                        flags: \""" ++ propJson ++ \""",\n                        node: document.currentScript.parentNode.getElementsByClassName(\n                            "prettynice-component-{{MODULE_NAME}}"\n                        )[0],\n                    })\n                );\n\n                \"""\n            ]\n        ]')));
+		return A3($gren_lang$core$String$replace, '{{PROPS_ENCODER}}', $blaix$prettynice$Prettynice$Internal$Props$encoder(props), A3($gren_lang$core$String$replace, '{{PROPS_TYPE}}', $blaix$prettynice$Prettynice$Internal$Props$typeSig(props), A3($gren_lang$core$String$replace, '{{MODULE_NAME}}', $author$project$CodeGen$moduleName(def), 'module Gen.{{MODULE_NAME}} exposing (init)\n\nimport Json.Encode as Encode\nimport Prettynice.Internal.Props as Props\nimport Transmutable.Html as H exposing (Html)\nimport Transmutable.Html.Attributes as A\n\ntype alias Props =\n    {{PROPS_TYPE}}\n\nencoder : Props -> Encode.Value\nencoder props =\n    {{PROPS_ENCODER}}\n\ninit : Props -> Html msg\ninit props =\n    let\n        propJson = Encode.encode 0 (encoder props)\n    in\n    H.span []\n        [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []\n        , H.node "script" []\n            [ H.text <|\n                \"""\n\n                var $__components = $__components || {};\n                $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];\n                $__components["{{MODULE_NAME}}"].push(\n                    Gren.Gen.{{MODULE_NAME}}.init({\n\n                        flags: \""" ++ propJson ++ \""",\n                        node: document.currentScript.parentNode.getElementsByClassName(\n                            "prettynice-component-{{MODULE_NAME}}"\n                        )[0],\n                    })\n                );\n\n                \"""\n            ]\n        ]')));
 	});
 var $author$project$CodeGen$serverComponentsFromBundle = function(bundle) {
 	var newBundle = A2($icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium, $gren_lang$core$Array$map(function(def) {
 				var content = A2($gren_lang$core$Maybe$withDefault, '', A2($gren_lang$core$Maybe$andThen, $author$project$CodeGen$toString, def.t));
-				var propsResult = $blaix$prettynice$Prettynice$Props$get(content);
+				var propsResult = $blaix$prettynice$Prettynice$Internal$Props$get(content);
 				return _Utils_update(def, { t: function () {
 						if (!propsResult.$) {
 							var props = propsResult.a;
@@ -5105,7 +5105,7 @@ var $author$project$CodeGen$serverComponentsFromBundle = function(bundle) {
 		return $gren_lang$core$Task$succeed(newBundle);
 	} else {
 		var def = badDef.a;
-		return $gren_lang$core$Task$fail($icidasset$shikensu_gren$Shikensu$Error$ErrorMessage(A3($gren_lang$core$String$replace, '{{COMPONENT}}', def.z, 'Oops! I can\'t parse props for the {{COMPONENT}} component.\n   I\'m looking for a type alias that looks like this:\n\n        type alias Props =\n            { myField : String\n            , myOtherField : Int\n            }\n\n   It either doesn\'t exist, is formatted in a way I\n   can\'t recognize, or it uses unsupported field types.\n   See Prettynice.Props.Fieldtype for supported types:\n   https://github.com/blaix/prettynice/blob/main/src/Prettynice/Props.gren')));
+		return $gren_lang$core$Task$fail($icidasset$shikensu_gren$Shikensu$Error$ErrorMessage(A3($gren_lang$core$String$replace, '{{COMPONENT}}', def.z, 'Oops! I can\'t parse props for the {{COMPONENT}} component.\n   I\'m looking for a type alias that looks like this:\n\n        type alias Props =\n            { myField : String\n            , myOtherField : Int\n            }\n\n   It either doesn\'t exist, is formatted in a way I\n   can\'t recognize, or it uses unsupported field types.\n   See Prettynice.Internal.Props.Fieldtype for supported types:\n   https://github.com/blaix/prettynice/blob/main/src/Prettynice/Internal/Props.gren')));
 	}
 };
 var $author$project$CodeGen$genServerComponents = function(fsPermission) {

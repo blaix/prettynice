@@ -6,6 +6,32 @@ module Prettynice exposing
  , startProgram
  )
 
+ 
+{-| Use this module to define your server as a full-fledged program that can
+send commands, respond to messages, and listen for subscriptions, just like
+a normal [Node](https://packages.gren-lang.org/package/gren-lang/node) program.
+
+_If all you want to do is respond to requests with simple responses,
+look at [`Prettynice.SimpleRouter`](Prettynice.SimpleRouter) instead._
+
+Typically you will use [`defineProgram`](#defineProgram) in your `main`,
+and [`startProgram`](#startProgram) in your `init`. See below for details.
+Or check out some complete example programs that use this module:
+
+* [examples/running-tasks](/examples/running-tasks)
+* [examples/running-commands](/examples/running-commands)
+* [examples/server-side-state](/examples/server-side-state)
+
+## Defining your program
+
+@docs defineProgram, Program
+
+## Starting your program
+
+@docs startProgram, Config, Init
+
+-}
+
 import FileSystem
 import HttpServer as Http exposing (ServerError(..), Method(..))
 import HttpServer.Response as HttpResponse 
@@ -21,10 +47,21 @@ import Transmutable.Html.Attributes as A
 import Url exposing (Url)
 
 
+{-| The definition of your Prettynice program.
+-}
 type alias Program appModel appMsg =
     Node.Program (Model appModel) (Msg appModel appMsg)
 
 
+{-| The task that starts your program.
+It should be returned from your `init` function.
+
+You will get this from [`startProgram`](#startProgram), which you can wrap in an
+[`await`](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/Init#await)
+if you need to initialize other subsystems (see the 
+[running-tasks example](https://github.com/blaix/prettynice/blob/main/examples/running-tasks/server/src/Main.gren)
+for an example of this).
+-}
 type alias Init appModel appMsg =
     Init.Task { model : Model appModel, command : Cmd (Msg appModel appMsg) }
 
@@ -41,6 +78,8 @@ type alias Model appModel =
     }
 
 
+{-| Application config. You will pass this to [`startProgram`](#startProgram).
+-}
 type alias Config appModel =
     { host : String
     , port_ : Int
@@ -53,6 +92,14 @@ type alias AppUpdate appModel appMsg =
     appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
 
 
+{-| Define your Prettynice program.
+
+This will give you a [`Program`](#Program) that you can return from your `main`
+function.
+
+If you don't need the full model/update/view cycle, see
+[`Prettynice.SimpleRouter`](Prettynice.SimpleRouter) instead.
+-}
 defineProgram :
     { init : Environment -> Init appModel appMsg
     , update : AppUpdate appModel appMsg
@@ -67,6 +114,10 @@ defineProgram app =
         }
 
 
+{-| Start your server!
+
+This creates the startup task you can return from your `init` function.
+-}
 startProgram : Config appModel -> Init appModel appMsg
 startProgram config =
     Init.await Http.initialize <| \serverPermission ->

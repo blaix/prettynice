@@ -33,11 +33,10 @@
 - [X] API Docs (reminder: use gren-doc-preview):
 - [X] **=== release 1.0 ===**
 - [ ] Verify type safety of components in a newly installed project outside of this repo
-- [ ] New project generator. Consider variants for:
-  - [ ] Single file - Router
-  - [ ] Single File - Program
-  - [ ] Multi-file - Router
-  - [ ] Multi-file - Program
+- [ ] Generators for:
+  - [ ] New project: Router
+  - [ ] New client-side component
+  - [ ] New project: Program
 - [ ] Update README with cli instructions:
   - [ ] Starting a new project with prettynice cli
   - [ ] Adding prettynice to an existing gren project

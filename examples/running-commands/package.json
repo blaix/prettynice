@@ -13,7 +13,7 @@
     ]
   },
   "dependencies": {
-    "prettynice": "file:../../cli"
+    "prettynice": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

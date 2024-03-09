@@ -2,6 +2,9 @@
 
 A purely functional, fully type-safe, full-stack web framework for [Gren](https://gren-lang.org/).
 
+Your code runs on the server, but your responses can include fully-interactive, client-side components that run in the browser.
+Initialize those components with data server-side and you don't have to deal with loading states or data fetching errors.
+
 Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zulip](https://gren.zulipchat.com/) for updates.
 
 ## Table of Contents

@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import Args
 import Bytes exposing (Bytes)
 import Bytes.Decode
 import ChildProcess
@@ -47,36 +48,28 @@ init env =
             in
             Node.startProgram
                 { model = model
-                , command = run model env.args
+                , command = 
+                    env.args
+                        |> Array.dropFirst 2 -- These will always be "node" and the filename
+                        |> Args.parse
+                        |> run model
                 }
 
 
-run : Model -> Array String -> Cmd Msg
-run model args =
-    case args of
-        [ _, _ ] ->
-            Stream.sendLine model.stdout help
+run : Model -> Args.Result -> Cmd Msg
+run model { args, options } =
+    if args == [] then
+        Stream.sendLine model.stdout help
 
-        [ _, _, "--help" ] ->
-            Stream.sendLine model.stdout help
+    else if args == [ "build" ] then
+        runBuild model
 
-        [ _, _, "-h" ] ->
-            Stream.sendLine model.stdout help
-
-        [ _, _, "build" ] ->
-            runBuild model
-
-        [ _, _, "build", "--optimize" ] ->
-            -- no need to do anything different here,
-            -- optimize flag is already set via init.
-            runBuild model
-
-        _ ->
-            Cmd.batch
-                [ Stream.sendLine model.stderr "I don't recognize those arguments."
-                , Stream.sendLine model.stderr help
-                , Node.setExitCode 1
-                ]
+    else
+        Cmd.batch
+            [ Stream.sendLine model.stderr "I don't recognize those arguments."
+            , Stream.sendLine model.stderr help
+            , Node.setExitCode 1
+            ]
 
 
 runBuild : Model -> Cmd Msg

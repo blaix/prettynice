@@ -3,6 +3,13 @@ module Prettynice.Request exposing
     , new
     )
 
+
+{-| Incoming HTTP requests.
+
+@docs Request, new
+-}
+
+
 import Array exposing (Array)
 import Bytes exposing (Bytes)
 import Dict exposing (Dict)
@@ -11,6 +18,8 @@ import Prettynice.FormData as FormData exposing (FormData)
 import Url exposing (Url)
 
 
+{-| An incoming HTTP request record.
+-}
 type alias Request =
     { headers : Dict String String
     , body : Bytes
@@ -21,6 +30,9 @@ type alias Request =
     }
 
 
+{-| Turn a [Node HttpServer Request](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/HttpServer#Request)
+into a Prettynice Request.
+-}
 new : Http.Request -> Request
 new request =
     { headers = request.headers

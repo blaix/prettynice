@@ -5,14 +5,43 @@ module Prettynice.FormData exposing
     , getAll
     )
 
+
+{-| Normal `<form>` elements with `action="post"` will have the data available at `Request.formData`.
+
+It is a [`FormData`](#FormData) value which is a mapping of field names to arrays of values.
+
+You can use [`get`](#get) to get a `Maybe String` of the first value associated with a
+field name, or [`getAll`](#getAll) to get an `Array String` of all values associated with the field name.
+
+See [`examples/forms`](https://github.com/blaix/prettynice/tree/main/examples/forms) for the full working example.
+
+## Querying form data
+
+@docs FormData, get, getAll
+
+## Parsing form data
+
+Normally you should only need the query functions in your programs,
+but if you have a string of [urlencoded formdata](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST),
+you can turn it into a [`FormData`](#FormData) value with [`fromString`](#fromString).
+
+@docs fromString
+
+-}
+
+
 import Dict exposing (Dict)
 import Url
 
 
+{-| Mapping of form field names to their values.
+-}
 type alias FormData =
     Dict String (Array String)
 
 
+{-| Turn a string of urlencoded form data into a [`FormData`](#FormData) value.
+-}
 fromString : String -> FormData
 fromString body =
     body
@@ -40,6 +69,8 @@ fromString body =
             Dict.empty
 
 
+{-| Get a `Maybe String` for the first value associated with a form field name.
+-}
 get : String -> FormData -> Maybe String
 get key data =
     data
@@ -47,6 +78,8 @@ get key data =
         |> Array.first 
 
 
+{-| Get an array of all the values associated with a form field name.
+-}
 getAll : String -> FormData -> Array String
 getAll key data =
     data

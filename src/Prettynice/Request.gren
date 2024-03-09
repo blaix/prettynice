@@ -4,7 +4,7 @@ module Prettynice.Request exposing
     )
 
 
-{-| Incoming HTTP requests.
+{-| HTTP requests
 
 @docs Request, new
 -}
@@ -32,6 +32,9 @@ type alias Request =
 
 {-| Turn a [Node HttpServer Request](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/HttpServer#Request)
 into a Prettynice Request.
+
+You shouldn't need this in your normal application code.
+The request you get in a Prettynice request message is already a Prettynice Request.
 -}
 new : Http.Request -> Request
 new request =

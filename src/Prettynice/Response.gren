@@ -13,6 +13,23 @@ module Prettynice.Response exposing
     ) 
 
 
+{-| HTTP Responses
+
+@docs Response, Body, new
+
+## Updating Responses
+
+@docs setStatus, setHeader, setBody
+
+## Sending Responses
+
+You can construct and send a [`Response`](#Response) directly with [`send`](#send),
+or you can use one of the `send*` helpers to send data with the content-type set automatically.
+
+@docs send, sendHtml, sendText, sendJson, sendBytes
+
+-}
+
 import Bytes exposing (Bytes)
 import HttpServer.Response as Http
 import Prettynice.Request exposing (Request)
@@ -22,10 +39,14 @@ import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
 
 
+{-| An HTTP response value.
+-}
 type Response
     = Response Http.Response
 
 
+{-| Custom type for text-based response bodies.
+-}
 type Body msg
     = HtmlBody 
         { title : String
@@ -36,11 +57,19 @@ type Body msg
     | TextBody String
 
 
+{-| Turn a [Node HttpServer Response](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/HttpServer.Response#Response)
+into a Prettynice Response.
+
+You shouldn't need this in your normal application code.
+The response you get in a Prettynice request message is already a Prettynice Response.
+-}
 new : Http.Response -> Response
 new httpResponse =
     Response httpResponse
 
 
+{-| Command to send a response to the current HTTP request.
+-}
 send : Response -> Cmd a
 send response =
     response
@@ -48,6 +77,10 @@ send response =
         |> Http.send
 
 
+{-| Respond with raw bytes.
+
+Use this to send binary data like files, images, etc.
+-}
 sendBytes : { contentType : String, body : Bytes } -> Response -> Cmd a
 sendBytes { contentType, body } response =
     response
@@ -57,6 +90,8 @@ sendBytes { contentType, body } response =
         |> Http.send
 
 
+{-| Respond with plain text.
+-}
 sendText : String -> Response -> Cmd a
 sendText text response =
     response
@@ -64,6 +99,8 @@ sendText text response =
         |> send
 
 
+{-| Respond with Json.
+-}
 sendJson : Json.Encode.Value -> Response -> Cmd a
 sendJson json response =
     response
@@ -71,6 +108,15 @@ sendJson json response =
         |> send
 
 
+{-| Respond with HTML.
+
+`title` will go into the `<title>` tag,
+`head` will be added to the `<head>` tag,
+and `body` will go into the `<body>` tag.
+
+Note that Prettynice uses and expects Html from [icidasset/html-gren](https://packages.gren-lang.org/package/icidasset/html-gren),
+not from gren-lang/browser. The API is the same, but html-gren is needed because it supports server-side rendering.
+-}
 sendHtml : 
     { title : String, head : Array (Html msg), body : Array (Html msg) } 
     -> Response 
@@ -81,6 +127,11 @@ sendHtml { title, head, body } response =
         |> send
 
 
+{-| Set the body of the response directly.
+
+Normally you can use one of the `send*` functions,
+but if you need more control, you can set a [`Body`](#Body) directly.
+-}
 setBody : Body msg -> Response -> Response
 setBody bodyVariant response =
     let
@@ -142,6 +193,8 @@ setBody bodyVariant response =
         |> new
 
 
+{-| Add a header to the response.
+-}
 setHeader : String -> String -> Response -> Response
 setHeader key val (Response httpResponse) =
     httpResponse
@@ -149,6 +202,8 @@ setHeader key val (Response httpResponse) =
         |> Response
     
 
+{-| Set the status of the response.
+-}
 setStatus : Int -> Response -> Response
 setStatus status (Response httpResponse) =
     httpResponse

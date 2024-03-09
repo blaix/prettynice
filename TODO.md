@@ -32,7 +32,7 @@
 - [X] Switch examples to use cli npm package
 - [X] API Docs (reminder: use gren-doc-preview):
 - [X] **=== release 1.0 ===**
-- [ ] Verify type safety of components in a newly installed project outside of this repo
+- [X] Verify type safety of components in a newly installed project outside of this repo
 - [ ] Generators for:
   - [ ] New project: Router
   - [ ] New client-side component

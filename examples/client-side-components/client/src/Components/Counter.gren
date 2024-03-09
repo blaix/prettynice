@@ -4,8 +4,6 @@ import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Events as E
 import Prettynice.Component exposing (Component)
 
--- TODO (after the cli changes): verify that removing component type sig and taking non-Props in Init fails build
-
 {-| A component is a wrapper around Browser.element.
 -}
 component : Component Props Model Msg

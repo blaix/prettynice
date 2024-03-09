@@ -30,10 +30,9 @@
 - [X] Improve cli interface and server startup output (with charm.sh/gum?)
 - [X] cli commands build, build --optimize, and help commands
 - [X] Switch examples to use cli npm package
-- [ ] API Docs (reminder: use gren-doc-preview):
-- [ ] Hide `<!-- comments -->` in gren-packages output? (`<!-- vim-markdown-toc GFM -->` is visible in README)
-- [ ] Address any remaining TODOs in the docs and code.
-- [ ] **=== release 1.0 ===**
+- [X] API Docs (reminder: use gren-doc-preview):
+- [X] **=== release 1.0 ===**
+- [ ] Verify type safety of components in a newly installed project outside of this repo
 - [ ] New project generator. Consider variants for:
   - [ ] Single file - Router
   - [ ] Single File - Program

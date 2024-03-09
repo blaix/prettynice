@@ -18,9 +18,9 @@ Typically you will use [`defineProgram`](#defineProgram) in your `main`,
 and [`startProgram`](#startProgram) in your `init`. See below for details.
 Or check out some complete example programs that use this module:
 
-* [examples/running-tasks](/examples/running-tasks)
-* [examples/running-commands](/examples/running-commands)
-* [examples/server-side-state](/examples/server-side-state)
+* [https://github.com/blaix/prettynice/tree/main/examples/running-tasks](/examples/running-tasks)
+* [https://github.com/blaix/prettynice/tree/main/examples/running-commands](/examples/running-commands)
+* [https://github.com/blaix/prettynice/tree/main/examples/server-side-state](/examples/server-side-state)
 
 ## Defining your program
 

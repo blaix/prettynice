@@ -4,7 +4,8 @@ A purely functional, fully type-safe, full-stack web framework for [Gren](https:
 
 **Things are still very early!**
 
-All the [examples](/examples) work in the conext of this repo, but still working on buttoning things up and packaging this into something installable.
+
+All the [examples](https://github.com/blaix/prettynice/tree/main/examples) work in the conext of this repo, but still working on buttoning things up and packaging this into something installable.
 
 Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zulip](https://gren.zulipchat.com/) for updates.
 
@@ -72,7 +73,7 @@ router request response =
                 |> Response.sendText "Oops!"
 ```
 
-See [examples/routing/server/src/Main.gren](examples/routing/server/src/Main.gren).
+See [examples/routing/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/routing/server/src/Main.gren).
 
 ## Server-side HTML
 
@@ -91,7 +92,7 @@ Response.sendHtml
     }
 ```
 
-See [examples/content-types/server/src/Main.gren](examples/content-types/server/src/Main.gren).
+See [examples/content-types/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/content-types/server/src/Main.gren).
 
 ## Client-side Components
 
@@ -165,7 +166,7 @@ subscriptions _ =
     Sub.none
 ```
 
-See [examples/client-side-components/client/src/Components/Counter.gren](examples/client-side-components/client/src/Components/Counter.gren).
+See [examples/client-side-components/client/src/Components/Counter.gren](https://github.com/blaix/prettynice/tree/main/examples/client-side-components/client/src/Components/Counter.gren).
 
 Dropping a component in `client/src/Components/` makes it available to embed in
 your server-side HTML:
@@ -193,14 +194,14 @@ myResponse =
     }
 ```
 
-See [examples/client-side-components/server/src/Main.gren](examples/client-side-components/server/src/Main.gren).
+See [examples/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/client-side-components/server/src/Main.gren).
 
 Because you can initialize your client-side components with data from the
 server, **you don't need loading states or encoders, and the data will be
 type-checked at compile time.**
 
 Note: This is still a work-in-progress, and only works with certain types. See
-[examples/client-side-components/README.md](examples/client-side-components/README.md)
+[examples/client-side-components/README.md](https://github.com/blaix/prettynice/tree/main/examples/client-side-components/README.md)
 for details.
 
 ## Forms
@@ -257,14 +258,14 @@ viewResult request =
         name ++ " likes: " ++ hobbies
 ``` 
 
-See [examples/forms](/examples/forms) for a full working example.
+See [examples/forms](https://github.com/blaix/prettynice/tree/main/examples/forms) for a full working example.
 
 ## Static assets
 
 Any files in `public/` will be copied to `dist/client` and available at the
 root url path.
 
-See [examples/static-assets](examples/static-assets) for a full working example.
+See [examples/static-assets](https://github.com/blaix/prettynice/tree/main/examples/static-assets) for a full working example.
 
 ## Customizing `<head>`
 
@@ -285,7 +286,7 @@ Response.sendHtml
     }
 ```
 
-See [examples/static-assets](examples/static-assets) for a full working example.
+See [examples/static-assets](https://github.com/blaix/prettynice/tree/main/examples/static-assets) for a full working example.
 
 ## Javascript Interop in the Browser
 
@@ -318,7 +319,7 @@ update msg model =
             }
 ```
 
-See [examples/client-side-ports](examples/client-side-ports) for a full working example.
+See [examples/client-side-ports](https://github.com/blaix/prettynice/tree/main/examples/client-side-ports) for a full working example.
 
 ## More Control
 
@@ -368,9 +369,9 @@ update msg model =
 
 See:
 
-* [examples/running-tasks](examples/running-tasks)
-* [examples/running-commands](examples/running-commands)
-* [examples/server-side-state](examples/server-side-state)
+* [examples/running-tasks](https://github.com/blaix/prettynice/tree/main/examples/running-tasks)
+* [examples/running-commands](https://github.com/blaix/prettynice/tree/main/examples/running-commands)
+* [examples/server-side-state](https://github.com/blaix/prettynice/tree/main/examples/server-side-state)
 
 ## Javascript Interop in Node
 
@@ -427,15 +428,15 @@ subscriptions model =
 
 See:
 
-* [examples/server-side-ports](examples/server-side-ports).
-* [examples/database-ports](examples/database-ports).
+* [examples/server-side-ports](https://github.com/blaix/prettynice/tree/main/examples/server-side-ports).
+* [examples/database-ports](https://github.com/blaix/prettynice/tree/main/examples/database-ports).
 
 ## Databases
 
 Gren does not yet have a way to natively connect to a database,
 but you can do it through ports.
 
-See [examples/database-ports](examples/database-ports) for a working example of doing this with prisma.
+See [examples/database-ports](https://github.com/blaix/prettynice/tree/main/examples/database-ports) for a working example of doing this with prisma.
 
 ## Goals
 
@@ -495,7 +496,7 @@ and then look at the `buildInputs` list in `shell.nix` for other things you'll n
 
 ### Running examples
 
-See directories under [`examples/`](/examples).
+See directories under [`examples/`](https://github.com/blaix/prettynice/tree/main/examples).
 You can `cd` to a directory and run `npm start`, or use [`just`](https://github.com/casey/just) from the root of the repo:
 
 * Run a single example with `just example [EXAMPLE NAME]` (e.g. `just example hello-world`).

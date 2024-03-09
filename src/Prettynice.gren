@@ -11,16 +11,16 @@ module Prettynice exposing
 send commands, respond to messages, and listen for subscriptions, just like
 a normal [Node](https://packages.gren-lang.org/package/gren-lang/node) program.
 
-_If all you want to do is respond to requests with simple responses,
-look at [`Prettynice.SimpleRouter`](Prettynice.SimpleRouter) instead._
+**Note:** If all you want to do is respond to requests with simple responses,
+look at [`Prettynice.SimpleRouter`](Prettynice.SimpleRouter) instead.
 
 Typically you will use [`defineProgram`](#defineProgram) in your `main`,
 and [`startProgram`](#startProgram) in your `init`. See below for details.
 Or check out some complete example programs that use this module:
 
-* [https://github.com/blaix/prettynice/tree/main/examples/running-tasks](/examples/running-tasks)
-* [https://github.com/blaix/prettynice/tree/main/examples/running-commands](/examples/running-commands)
-* [https://github.com/blaix/prettynice/tree/main/examples/server-side-state](/examples/server-side-state)
+* [examples/server-side-state](/examples/server-side-state)
+* [examples/running-tasks](/examples/running-tasks)
+* [examples/running-commands](/examples/running-commands)
 
 ## Defining your program
 

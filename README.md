@@ -369,9 +369,11 @@ update msg model =
 
 See:
 
-* [examples/running-tasks](https://github.com/blaix/prettynice/tree/main/examples/running-tasks)
-* [examples/running-commands](https://github.com/blaix/prettynice/tree/main/examples/running-commands)
-* [examples/server-side-state](https://github.com/blaix/prettynice/tree/main/examples/server-side-state)
+* [examples/running-tasks](/examples/running-tasks)
+* [examples/running-commands](/examples/running-commands)
+* [examples/server-side-state](/examples/server-side-state)
+* [examples/server-side-ports](/examples/server-side-ports)
+* [examples/database-ports](/examples/database-ports)
 
 ## Javascript Interop in Node
 

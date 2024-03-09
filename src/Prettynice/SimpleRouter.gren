@@ -6,6 +6,33 @@ module Prettynice.SimpleRouter exposing
  , startProgram
  )
 
+
+{-| An HTTP server program that routes requests to simple responses.
+
+A router is a function that takes a [`Request`](Prettynice.Request#Request)
+and a [`Response`](Prettynice.Response) and returns a command to
+[send](Prettynice.Response#send) the response.
+
+Typically you will use [`defineProgram`](#defineProgram) in your `main`,
+and [`startProgram`](#startProgram) in your `init`. See below for details.
+
+See [examples/routing](https://github.com/blaix/prettynice/blob/main/examples/routing)
+for a full working example.
+
+**Note:** If you need more control over your program (e.g. you need
+[ports](https://github.com/blaix/prettynice/tree/main/examples/server-side-ports),
+or want to [run a task before responding](https://github.com/blaix/prettynice/tree/main/examples/running-tasks))
+you will want to use the [`Prettynice`](Prettynice) module instead.
+
+## Defining your router
+
+@docs defineProgram, Program
+
+## Starting your router
+
+@docs startProgram, Config, Init
+-}
+
 import FileSystem
 import HttpServer as Http exposing (ServerError(..), Method(..))
 import HttpServer.Response as HttpResponse 
@@ -21,10 +48,21 @@ import Transmutable.Html.Attributes as A
 import Url exposing (Url)
 
 
+{-| The definition of your router program.
+-}
 type alias Program =
     Node.Program Model Msg
 
 
+{-| The task that starts your router program.
+It should be returned from your `init` function.
+
+You will get this from [`startProgram`](#startProgram), which you can wrap in an
+[`await`](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/Init#await)
+if you need to initialize other subsystems (see the 
+[running-tasks example](https://github.com/blaix/prettynice/blob/main/examples/running-tasks/server/src/Main.gren)
+for an example of this).
+-}
 type alias Init =
     Init.Task { model : Model, command : Cmd Msg }
  
@@ -40,6 +78,8 @@ type alias Model =
     }
 
 
+{-| Application config. You will pass this to [`startProgram`](#startProgram).
+-}
 type alias Config =
     { host : String
     , port_ : Int
@@ -47,6 +87,14 @@ type alias Config =
     }
 
 
+{-| Define your router program.
+
+This will give you a [`Program`](#Program) that you can return from your `main`
+function.
+
+If you need a full model/update/view cycle, see the
+[`Prettynice`](Prettynice.SimpleRouter) module instead.
+-}
 defineProgram :
     { init : Environment -> Init
     , router : Request -> Response -> Cmd Msg
@@ -59,6 +107,10 @@ defineProgram app =
         }
 
 
+{-| Start your router program!
+
+This creates the startup task you can return from your `init` function.
+-}
 startProgram : Config -> Init
 startProgram config =
     Init.await Http.initialize <| \serverPermission ->

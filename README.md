@@ -39,6 +39,10 @@ and commands to build and run your site in production.
 5. Install dependencies: `npm install`
 6. Start the dev server! `npm run dev`
 
+If you'd rather set things up yourself, look at
+`package.json`, `server/gren.json`, and `client/gren.json`
+in one of the examples for dependencies and commands you will need.
+
 ## Basic Example
 
 ```elm

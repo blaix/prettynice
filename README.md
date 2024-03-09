@@ -2,15 +2,13 @@
 
 A purely functional, fully type-safe, full-stack web framework for [Gren](https://gren-lang.org/).
 
-**Things are still very early!**
-
-
-All the [examples](https://github.com/blaix/prettynice/tree/main/examples) work in the conext of this repo, but still working on buttoning things up and packaging this into something installable.
-
 Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zulip](https://gren.zulipchat.com/) for updates.
+
+## Table of Contents
 
 <!-- vim-markdown-toc GFM -->
 
+* [Installation](#installation)
 * [Basic Example](#basic-example)
 * [Server-side HTML](#server-side-html)
 * [Client-side Components](#client-side-components)
@@ -21,11 +19,25 @@ Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zul
 * [More Control](#more-control)
 * [Javascript Interop in Node](#javascript-interop-in-node)
 * [Databases](#databases)
+* [Deployment](#deployment)
 * [Goals](#goals)
 * [Inspiration](#inspiration)
 * [Local dev](#local-dev)
 
 <!-- vim-markdown-toc -->
+
+## Installation
+
+The easiest way to get started is by cloning one of the examples.
+This will set you up with a dev server that automatically restarts when files change,
+and commands to build and run your site in production.
+
+1. Install [degit](https://github.com/Rich-Harris/degit).
+2. Choose one of the [examples](https://github.com/blaix/prettynice/tree/main/examples) (let's say you picked `hello-world`).
+3. Clone the example: `degit blaix/prettynice/examples/hello-world mysite`
+4. Move into the cloned directory: `cd mysite`
+5. Install dependencies: `npm install`
+6. Start the dev server! `npm run dev`
 
 ## Basic Example
 
@@ -439,6 +451,20 @@ Gren does not yet have a way to natively connect to a database,
 but you can do it through ports.
 
 See [examples/database-ports](https://github.com/blaix/prettynice/tree/main/examples/database-ports) for a working example of doing this with prisma.
+
+## Deployment
+
+The basic steps for deployment are:
+
+1. Build with optimizations: `npx prettynice build --optimize`
+2. Deploy the `dist` folder.
+3. Run with: `node dist/server/index.js`
+
+If you cloned one of the examples,
+there are scripts for the build and run steps:
+
+* `npm run build`
+* `npm start`
 
 ## Goals
 

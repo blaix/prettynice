@@ -1,0 +1,95 @@
+module Components.Counter exposing (component, Model, Msg, Props)
+
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Events as E
+import Prettynice.Component exposing (Component)
+
+
+component : Component Props Model Msg
+component =
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+
+-- MODEL
+
+
+{-| Your model holds the current state of your component.
+-}
+type alias Model =
+    { count : Int
+    }
+
+
+{-| Props provide the interface for initializing your component.
+
+Prettynice will look for this during the build so it knows how to encode data
+passed in server-side. Only basic primitive types are supported in prop fields.
+The build script will fail and tell you if you use one it doesn't recognize.
+For a list of supported types, visit the API docs at:
+https://packages.gren-lang.org/package/blaix/prettynice
+and navigate to the docs for Prettynice.Internal.Props#FieldType
+-}
+type alias Props =
+    { start : Int
+    }
+
+
+{-| Initialize your component with the given props.
+
+A corresponding init that accepts Props will be generated and available
+server-side at `Gen.Components.Counter.init`. You can see it being used at
+`server/src/Main.gren`
+-}
+init : Props -> { model : Model, command : Cmd Msg }
+init props =
+    { model = { count = props.start }
+    , command = Cmd.none
+    }
+
+
+-- UPDATE
+
+
+type Msg
+    = Increment
+    | Decrement
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        Increment ->
+            { model = { model | count = model.count + 1 }
+            , command = Cmd.none
+            }
+
+        Decrement ->
+            { model = { model | count = model.count - 1 }
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+-- VIEW
+
+
+view : Model -> Html Msg
+view model =
+    H.p []
+        [ H.button
+            [ E.onClick Decrement ]
+            [ H.text "-" ]
+        , H.text <| String.fromInt model.count
+        , H.button
+            [ E.onClick Increment ]
+            [ H.text "+" ]
+        ]
+

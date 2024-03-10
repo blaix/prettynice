@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1 (2024-03-09)
+
+* `init` includes a client-side component in the generated project.
+
 ## 1.1.0 (2024-03-09)
 
 * Fix for new projects that don't have gren on the PATH

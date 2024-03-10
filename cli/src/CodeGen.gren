@@ -4,6 +4,7 @@ module CodeGen exposing
     , errorString
 
     -- Code gen
+    , genProject
     , genDependencies
     , genServerComponents
     , genClientComponents
@@ -156,6 +157,20 @@ generatedComponentPaths fsPermission =
                     |> Task.succeed
             )
         |> Task.mapError mapError
+
+
+{-| Generate a new Prettynice project.
+-}
+genProject : FileSystem.Permission -> Task Error Result
+genProject fsPermission =
+    [ "node_modules", "prettynice", "templates", "init" ]
+        |> Shikensu.Path.directory
+        |> Shikensu.Focus.Relative
+        |> Shikensu.list fsPermission
+        |> Task.andThen Shikensu.read
+        |> Task.andThen (write [ "." ])
+        |> Task.mapError mapError
+        |> Task.map Result
 
 
 -- CODE GEN INTERNALS: SERVER

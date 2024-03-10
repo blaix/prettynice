@@ -17,7 +17,7 @@ main =
     Node.defineProgram 
         { init = init
         , update = update
-        , subscriptions = (\_ -> Sub.none)
+        , subscriptions = subscriptions
         }
 
 
@@ -27,9 +27,11 @@ main =
 type alias Model =
     { fsPermission : FileSystem.Permission
     , procPermission : ChildProcess.Permission
+    , stdin : Stream
     , stdout : Stream
     , stderr : Stream
     , optimize : Bool
+    , readInput : Maybe (Bytes -> Msg)
     }
 
 
@@ -41,43 +43,53 @@ init env =
                 model = 
                     { fsPermission = fsPermission
                     , procPermission = procPermission
+                    , stdin = env.stdin
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , optimize = Array.member "--optimize" env.args
+                    , readInput = Nothing
                     }
             in
-            Node.startProgram
-                { model = model
-                , command = 
-                    env.args
-                        |> Array.dropFirst 2 -- These will always be "node" and the filename
-                        |> Args.parse
-                        |> run model
-                }
+            env.args
+                -- First two arguments are always "node" and the filename
+                |> Array.dropFirst 2
+                |> Args.parse
+                |> run model
+                |> Node.startProgram
 
 
-run : Model -> Args.Result -> Cmd Msg
+-- RUN
+
+
+run : Model -> Args.Result -> { model : Model, command: Cmd Msg }
 run model { args, options } =
     if args == [] then
-        Stream.sendLine model.stdout help
+        { model = model
+        , command = Stream.sendLine model.stdout help
+        }
 
     else if args == [ "build" ] then
-        runBuild model
+        { model = model
+        , command = runBuild model
+        }
+
+    else if args == [ "init" ] then
+        { model = { model | readInput = Just GenProject_Confirmation }
+        , command = 
+            Stream.sendString model.stdout
+                "󱚤 Can I turn the current directory into a new Prettynice project (y|n)? "
+        }
 
     else
-        Cmd.batch
-            [ Stream.sendLine model.stderr "I don't recognize those arguments."
-            , Stream.sendLine model.stderr help
-            , Node.setExitCode 1
-            ]
-
-
-runBuild : Model -> Cmd Msg
-runBuild model =
-    Cmd.batch
-        [ progress model.stdout "Cleaning up previous builds"
-        , clean model.fsPermission |> Task.attempt Cleaned
-        ]
+        { model = model
+        , command =
+            Cmd.batch
+                [ Stream.sendLine 
+                    model.stderr "I don't recognize those arguments."
+                , Stream.sendLine model.stderr help
+                , Node.setExitCode 1
+                ]
+        }
 
 
 help : String
@@ -91,9 +103,17 @@ help =
         prettynice build --optimize
             Compile the web app with optimizations enabled.
 
-        prettynice --help
+        prettynice [--help|-h]
             Show this help text.
     """
+
+
+runBuild : Model -> Cmd Msg
+runBuild model =
+    Cmd.batch
+        [ progress model.stdout "Cleaning up previous builds"
+        , clean model.fsPermission |> Task.attempt Cleaned
+        ]
 
 
 -- UPDATE
@@ -109,6 +129,9 @@ type Msg
     | CopiedPublicAssets (Result CodeGen.Error CodeGen.Result)
     | BuiltClientComponents (Result ComponentBuildError ComponentBuildSuccess)
     | BuiltServer (Result ChildProcess.FailedRun ChildProcess.SuccessfulRun)
+    | GenProject_Confirmation Bytes
+    | GenProject_Created (Result CodeGen.Error CodeGen.Result)
+    | GenProject_NpmInstalled (Result ChildProcess.FailedRun ChildProcess.SuccessfulRun)
 
 
 type ComponentBuildError
@@ -272,6 +295,62 @@ update msg model =
                             |> endWithErrorMessage model.stderr
             }
 
+        GenProject_Confirmation bytes ->
+            let
+                answer =
+                    bytes
+                        |> bytesToString
+                        |> Maybe.withDefault ""
+                        |> String.trim
+            in
+            { model = { model | readInput = Nothing }
+            , command =
+                if answer == "y" || answer == "yes" then
+                    Cmd.batch
+                        [ progress model.stdout "Generating project"
+                        , Task.attempt GenProject_Created <|
+                            CodeGen.genProject model.fsPermission
+                        ]
+                else
+                    Cmd.none
+            }
+
+        GenProject_Created result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Cmd.batch
+                            [ progress model.stdout "Installing dependencies"
+                            , Task.attempt GenProject_NpmInstalled <|
+                                ChildProcess.runWithDefaultOptions
+                                    model.procPermission "npm" [ "install" ]
+                            ]
+
+                    Err e ->
+                        codeGenError model.stderr e
+            }
+
+        GenProject_NpmInstalled result ->
+            { model = model
+            , command =
+                case result of
+                    Ok _ ->
+                        Stream.sendLine model.stdout 
+                            """
+                            ✅ Done
+
+                            You can start the dev server with: npm run dev
+                            You can start making changes at: server/src/Main.gren
+                            """
+
+                    Err error ->
+                        error.stderr
+                            |> bytesToString
+                            |> Maybe.withDefault "Unknown error installing dependencies"
+                            |> endWithErrorMessage model.stderr
+            }
+
 
 clean : FileSystem.Permission -> Task FileSystem.AccessError {}
 clean fsPermission =
@@ -330,8 +409,9 @@ buildClientComponents fsPermission procPermission optimize =
             if components == "" then
                 Task.succeed NoComponents
             else
-                ChildProcess.run procPermission "gren" 
-                    [ "make"
+                ChildProcess.run procPermission "npx" 
+                    [ "gren"
+                    , "make"
                     , components
                     , optimizeFlag
                     , "--output=" ++ outputPath
@@ -367,8 +447,8 @@ buildServer procPermission optimize =
             else
                 ""
     in
-    ChildProcess.run procPermission "gren" 
-        [ "make", inputPath, optimizeFlag, "--output=" ++ outputPath ]
+    ChildProcess.run procPermission "npx"
+        [ "gren", "make", inputPath, optimizeFlag, "--output=" ++ outputPath ]
         { ChildProcess.defaultRunOptions 
             | workingDirectory = 
                 ChildProcess.SetWorkingDirectory workingDirectory
@@ -416,3 +496,16 @@ bytesToString bytes =
         |> Bytes.width
         |> Bytes.Decode.string
         |> (\decoder -> Bytes.Decode.decode decoder bytes)
+
+
+-- SUBS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    case model.readInput of
+        Just msg ->
+            Stream.listen model.stdin msg
+
+        Nothing ->
+            Sub.none

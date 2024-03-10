@@ -13,6 +13,7 @@
     ]
   },
   "dependencies": {
+    "gren-lang": "^0.3.0",
     "prettynice": "^1.0.0"
   },
   "devDependencies": {

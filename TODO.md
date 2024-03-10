@@ -33,6 +33,7 @@
 - [X] API Docs (reminder: use gren-doc-preview):
 - [X] **=== release 1.0 ===**
 - [X] Verify type safety of components in a newly installed project outside of this repo
+- [ ] Test arg parsing when running cli directly vs passing to node
 - [ ] Generators for:
   - [ ] New project: Router
   - [ ] New client-side component

@@ -1,0 +1,32 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+
+
+main : Router.Program
+main =
+    Router.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Router.Init
+init env =
+    Router.startProgram
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        }
+
+
+router : Request -> Response -> Cmd msg
+router request response =
+    -- Respond to every request with the same response:
+    Response.sendText "Hello!" response
+    -- You can also sendHtml, sendJson, and sendBytes.
+    -- For an example of routing requests, see:
+    -- https://github.com/blaix/prettynice/tree/main/examples/routing

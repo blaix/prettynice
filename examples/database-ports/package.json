@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.9.1",
+    "gren-lang": "^0.3.0",
     "prettynice": "^1.0.0",
     "prisma": "^5.9.1"
   },

@@ -33,14 +33,7 @@
 - [X] API Docs (reminder: use gren-doc-preview):
 - [X] **=== release 1.0 ===**
 - [X] Verify type safety of components in a newly installed project outside of this repo
-- [ ] Test arg parsing when running cli directly vs passing to node
-- [ ] Generators for:
-  - [ ] New project: Router
-  - [ ] New client-side component
-  - [ ] New project: Program
-- [ ] Update README with cli instructions:
-  - [ ] Starting a new project with prettynice cli
-  - [ ] Adding prettynice to an existing gren project
+- [X] New project generator
 - [ ] Doc site:
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs
@@ -59,7 +52,10 @@
   - [ ] discord
   - [ ] twitter?
 - [ ] Start migrating pencils.dev
+- [ ] `just publish-cli` that runs `build-cli` and validates similar to `gren package validate`
 - [ ] Unit Tests. Especially Prettynice.Internal.Props
+- [ ] Functional browser tests with playwright or similar
+- [ ] Windows support: Remove POSIX path coupling from CodeGen (Shikensu's `*Posix` functions and hardcoded "/")
 - [ ] Think about CSS post-processing:
   - [ ] tailwind? (meh)
   - [ ] bulma.io looks nice (no js!), maybe worth a UI package? look at https://package.elm-lang.org/packages/surprisetalk/elm-bulma/

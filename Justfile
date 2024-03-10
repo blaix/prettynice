@@ -7,7 +7,7 @@ example NAME:
   cd examples/{{NAME}} && npm install && npm run dev
 
 build-cli:
-  cd cli && npx gren make src/Main.gren --optimize && chmod a+x app && mv app bin/index.js
+  cd cli && npx gren make src/Main.gren --optimize --output=bin/main.js
   # Force a reinstall in examples
   for example in `ls examples`; do rm -rf examples/$example/node_modules; done
 

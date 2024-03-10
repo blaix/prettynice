@@ -1,4 +1,4 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Args
 import Bytes exposing (Bytes)
@@ -32,6 +32,7 @@ type alias Model =
     , stderr : Stream
     , optimize : Bool
     , readInput : Maybe (Bytes -> Msg)
+    , dirname : Maybe String
     }
 
 
@@ -48,6 +49,7 @@ init env =
                     , stderr = env.stderr
                     , optimize = Array.member "--optimize" env.args
                     , readInput = Nothing
+                    , dirname = Nothing
                     }
             in
             env.args
@@ -132,6 +134,7 @@ type Msg
     | GenProject_Confirmation Bytes
     | GenProject_Created (Result CodeGen.Error CodeGen.Result)
     | GenProject_NpmInstalled (Result ChildProcess.FailedRun ChildProcess.SuccessfulRun)
+    | GotDirname String
 
 
 type ComponentBuildError
@@ -147,6 +150,11 @@ type ComponentBuildSuccess
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
+        GotDirname dirname ->
+            { model = { model | dirname = Just dirname }
+            , command = Cmd.none
+            }
+
         Cleaned result ->
             { model = model
             , command =
@@ -308,8 +316,14 @@ update msg model =
                 if answer == "y" || answer == "yes" then
                     Cmd.batch
                         [ progress model.stdout "Generating project"
-                        , Task.attempt GenProject_Created <|
-                            CodeGen.genProject model.fsPermission
+                        , case model.dirname of
+                            Just dir ->
+                                Task.attempt GenProject_Created <|
+                                    CodeGen.genProject model.fsPermission dir
+                            Nothing ->
+                                endWithErrorMessage 
+                                    model.stderr
+                                    "Can't find path to current executable."
                         ]
                 else
                     Cmd.none
@@ -338,10 +352,12 @@ update msg model =
                     Ok _ ->
                         Stream.sendLine model.stdout 
                             """
-                            ✅ Done
-
-                            You can start the dev server with: npm run dev
-                            You can start making changes at: server/src/Main.gren
+                            ✅ Done!
+                            
+                            Now what?
+                            * Start the dev server with: npm run dev
+                            * Make changes to your server at: server/src/Main.gren
+                            * View examples at: https://github.com/blaix/prettynice/tree/main/examples
                             """
 
                     Err error ->
@@ -498,14 +514,22 @@ bytesToString bytes =
         |> (\decoder -> Bytes.Decode.decode decoder bytes)
 
 
+
+
 -- SUBS
+
+
+port getDirname : (String -> msg) -> Sub msg
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    case model.readInput of
-        Just msg ->
-            Stream.listen model.stdin msg
+    Sub.batch
+        [ getDirname GotDirname
+        , case model.readInput of
+            Just msg ->
+                Stream.listen model.stdin msg
 
-        Nothing ->
-            Sub.none
+            Nothing ->
+                Sub.none
+        ]

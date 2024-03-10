@@ -31,20 +31,13 @@ Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zul
 
 ## Installation
 
-The easiest way to get started is by cloning one of the examples.
-This will set you up with a dev server that automatically restarts when files change,
-and commands to build and run your site in production.
+[Nodejs](https://nodejs.org/) 18 or higher is required. Unfortunately, a POSIX system (e.g. linux, mac) is also required for now.
 
-1. Install [degit](https://github.com/Rich-Harris/degit).
-2. Choose one of the [examples](https://github.com/blaix/prettynice/tree/main/examples) (let's say you picked `hello-world`).
-3. Clone the example: `degit blaix/prettynice/examples/hello-world mysite`
-4. Move into the cloned directory: `cd mysite`
-5. Install dependencies: `npm install`
-6. Start the dev server! `npm run dev`
-
-If you'd rather set things up yourself, look at
-`package.json`, `server/gren.json`, and `client/gren.json`
-in one of the examples for dependencies and commands you will need.
+```
+mkdir mysite
+cd mysite
+npx prettynice init
+```
 
 ## Basic Example
 

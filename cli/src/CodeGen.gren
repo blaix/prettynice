@@ -26,6 +26,7 @@ import Shikensu.Definition exposing (Definition)
 import Shikensu.Error
 import Shikensu.Focus exposing (Focus)
 import Shikensu.Path
+import Shikensu.Path.Encapsulated
 import Task exposing (Task)
 
 
@@ -161,16 +162,29 @@ generatedComponentPaths fsPermission =
 
 {-| Generate a new Prettynice project.
 -}
-genProject : FileSystem.Permission -> Task Error Result
-genProject fsPermission =
-    [ "node_modules", "prettynice", "templates", "init" ]
-        |> Shikensu.Path.directory
-        |> Shikensu.Focus.Relative
-        |> Shikensu.list fsPermission
-        |> Task.andThen Shikensu.read
-        |> Task.andThen (write [ "." ])
-        |> Task.mapError mapError
-        |> Task.map Result
+genProject : FileSystem.Permission -> String -> Task Error Result
+genProject fsPermission dirname =
+    let
+        baseDir =
+            dirname ++ "/" -- Shikensu will think it's a file otherwise
+                |> Shikensu.Path.fromPosix 
+                |> Shikensu.Path.Encapsulated.toDirectory
+    in
+    case baseDir of
+        Just dir ->
+            [ "..", "templates", "init" ]
+                |> Shikensu.Path.directory
+                |> Shikensu.Path.combine dir
+                |> Shikensu.Focus.Absolute
+                |> Shikensu.list fsPermission
+                |> Task.andThen Shikensu.read
+                |> Task.andThen (write [ "." ])
+                |> Task.mapError mapError
+                |> Task.map Result
+
+        Nothing ->
+            Task.fail <|
+                PipelineError ("Unknown error building path from: " ++ dirname)
 
 
 -- CODE GEN INTERNALS: SERVER

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2 (2024-03-10)
+
+* Fix `init` when `node_modules` isn't in the current working directory.
+
 ## 1.1.1 (2024-03-09)
 
 * `init` includes a client-side component in the generated project.

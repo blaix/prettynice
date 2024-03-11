@@ -34,6 +34,7 @@
 - [X] **=== release 1.0 ===**
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
+- [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
 - [ ] Doc site:
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs

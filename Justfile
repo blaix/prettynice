@@ -11,6 +11,9 @@ build-cli:
   # Force a reinstall in examples
   for example in `ls examples`; do rm -rf examples/$example/node_modules; done
 
+build-cli-debug:
+  cd cli && npx gren make src/Main.gren --output=bin/main.js
+
 examples:
   for example in `ls examples`; do just example $example; done
 

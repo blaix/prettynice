@@ -34,6 +34,7 @@
 - [X] **=== release 1.0 ===**
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
+- [ ] Consider 'responseKey' as the "response" value name
 - [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
 - [ ] Doc site:
   - [ ] Link on github project settings and README
@@ -46,6 +47,8 @@
 - [ ] Deployment example + docs.
   - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
   - [ ] Fly.io vs Render.com
+  - [ ] docker?
+  - [ ] caddy as reverse proxy (and serving static)?
 - [ ] Offically announce the release:
   - [ ] blog.blaix.com
   - [ ] zulip

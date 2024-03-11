@@ -25,7 +25,7 @@ Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zul
 * [Deployment](#deployment)
 * [Goals](#goals)
 * [Inspiration](#inspiration)
-* [Local dev](#local-dev)
+* [Working on the Framework Locally](#working-on-the-framework-locally)
 
 <!-- vim-markdown-toc -->
 
@@ -302,7 +302,7 @@ See [examples/static-assets](https://github.com/blaix/prettynice/tree/main/examp
 
 ## Javascript Interop in the Browser
 
-You can drop drop a js file with the same base name as a component
+You can drop a js file with the same base name as a component
 in `client/src/Components` and it will be automatically imported.
 If you export an `init` function it will be called with the initialized component, allowing you to connect ports.
 
@@ -514,7 +514,7 @@ Goals and anti-goals are driven by the DX and UX of this project.
 * [Rails](https://rubyonrails.org/): Developer happiness. Batteries included.
 * [Elm Land](https://elm.land/): The good parts of Rails (guides & conventions, beginner-friendliness, batteries included) applied to a type-safe, purely functional language.
 
-## Local dev
+## Working on the Framework Locally
 
 If you're using nix, there's a [`shell.nix`](/shell.nix) to start a nix shell with everything you need.
 
@@ -528,8 +528,6 @@ See directories under [`examples/`](https://github.com/blaix/prettynice/tree/mai
 You can `cd` to a directory and run `npm start`, or use [`just`](https://github.com/casey/just) from the root of the repo:
 
 * Run a single example with `just example [EXAMPLE NAME]` (e.g. `just example hello-world`).
-* Run an example and reload the server on file changes with `just watch [EXAMPLE NAME]`.
-  You'll still need to manually refresh the web page (this is a feature).
 * Iterate through all the examples with `just examples`.
   Ctrl-c to kill the current example and start the next one.
   Great for testing.

@@ -3432,7 +3432,7 @@ var $joeybright$gren_args$Args$parse = A2($joeybright$gren_args$Args$parseHelper
 var $author$project$Main$GenProject_Confirmation = function (a) {
 	return { $: 9, a: a };
 };
-var $author$project$Main$help = 'Usage:\n    \n    prettynice build\n        Compile the web app into javascript under dist/\n\n    prettynice build --optimize\n        Compile the web app with optimizations enabled.\n\n    prettynice [--help|-h]\n        Show this help text.';
+var $author$project$Main$help = 'Usage:\n    \n    prettynice init\n        Create a new prettynice project in the current directory.\n\n    prettynice build\n        Compile the web app into javascript under dist/\n\n    prettynice build --optimize\n        Compile the web app with optimizations enabled.\n\n    prettynice [--help|-h]\n        Show this help text.';
 var $author$project$Main$Cleaned = function (a) {
 	return { $: 0, a: a };
 };

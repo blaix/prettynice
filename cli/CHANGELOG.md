@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+* Add `init` to help/usage output
+
 ## 1.1.2 (2024-03-10)
 
 * Fix `init` when `node_modules` isn't in the current working directory.

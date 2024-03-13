@@ -99,6 +99,9 @@ help =
     """
     Usage:
         
+        prettynice init
+            Create a new prettynice project in the current directory.
+
         prettynice build
             Compile the web app into javascript under dist/
 

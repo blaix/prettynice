@@ -39,10 +39,10 @@ router request response =
                     , body = viewHomePage
                     }
 
-        -- /user/123
-        [ "user", userId ] ->
+        -- /hello/justin
+        [ "hello", name ] ->
             response
-                |> Response.sendText ("Viewing user #" ++ userId)
+                |> Response.sendText ("Hello, " ++ name)
 
         -- all other paths
         _ ->

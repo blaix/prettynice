@@ -1,8 +1,10 @@
 # Changelog
 
-## Next
+## 1.1.3 (2024-03-14)
 
 * Add `init` to help/usage output
+* Replace `/user/123` with `/hello/justin` in new project template. More
+  straightforward and in line with example in the prettynice repo README.
 
 ## 1.1.2 (2024-03-10)
 

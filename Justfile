@@ -6,6 +6,12 @@ example NAME:
   @just header "RUNNING EXAMPLE: {{NAME}}"
   cd examples/{{NAME}} && npm install && npm run dev
 
+cli CMD="" OPT="":
+  rm -rf node_modules/prettynice
+  just build-cli
+  npm install
+  npx prettynice {{CMD}} {{OPT}}
+
 build-cli:
   cd cli && npx gren make src/Main.gren --optimize --output=bin/main.js
   # Force a reinstall in examples

@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.2.0 (2024-03-15)
 
 * Exclude project template's build files from the published package
 * Add `version` subcommand (also available as `-v` or `--version`)

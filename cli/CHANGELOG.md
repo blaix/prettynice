@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.1.4 (2024-03-14)
 
 * Fixed missing .gitignore in project template
 

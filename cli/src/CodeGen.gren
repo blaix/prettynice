@@ -178,6 +178,11 @@ genProject fsPermission dirname =
                 |> Shikensu.Focus.Absolute
                 |> Shikensu.list fsPermission
                 |> Task.andThen Shikensu.read
+                |> Task.map
+                    (Shikensu.rename
+                        (Shikensu.Path.file [ "gitignore" ])
+                        (Shikensu.Path.file [ ".gitignore" ])
+                    )
                 |> Task.andThen (write [ "." ])
                 |> Task.mapError mapError
                 |> Task.map Result

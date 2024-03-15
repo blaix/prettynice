@@ -4895,6 +4895,16 @@ var $author$project$CodeGen$genDependencies = function(fsPermission) {
 var $icidasset$shikensu_gren$Shikensu$Focus$Absolute = function (a) {
 	return { $: 2, a: a };
 };
+var $icidasset$shikensu_gren$Shikensu$Definition$fork = F2(function(relPath, def) {
+		var name = A2($gren_lang$core$Maybe$withDefault, '', $gren_lang$core$Array$last($icidasset$shikensu_gren$Shikensu$Path$unwrap(relPath)));
+		return { D: $icidasset$shikensu_gren$Shikensu$Definition$baseName(name), x: def.x, ap: $icidasset$shikensu_gren$Shikensu$Definition$directoryPath(relPath), bb: $icidasset$shikensu_gren$Shikensu$Definition$extensionName(name), aC: def.aC };
+	});
+var $icidasset$shikensu_gren$Shikensu$Contrib$Definition$rename = F3(function(oldPath, newPath, def) {
+		return _Utils_eq($icidasset$shikensu_gren$Shikensu$Definition$relativePath(def), oldPath) ? A2($icidasset$shikensu_gren$Shikensu$Definition$fork, newPath, def) : def;
+	});
+var $icidasset$shikensu_gren$Shikensu$Contrib$rename = F2(function(oldPath, newPath) {
+		return $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium($gren_lang$core$Array$map(A2($icidasset$shikensu_gren$Shikensu$Contrib$Definition$rename, oldPath, newPath)));
+	});
 var $icidasset$shikensu_gren$Shikensu$Path$kind = function(_v0) {
 	var k = _v0.a;
 	return k;
@@ -4911,7 +4921,7 @@ var $author$project$CodeGen$genProject = F2(function(fsPermission, dirname) {
 		var baseDir = $icidasset$shikensu_gren$Shikensu$Path$Encapsulated$toDirectory($icidasset$shikensu_gren$Shikensu$Path$fromPosix(_Utils_ap(dirname, '/')));
 		if (!baseDir.$) {
 			var dir = baseDir.a;
-			return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ '.' ]), A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, A2($icidasset$shikensu_gren$Shikensu$list, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Absolute(A2($icidasset$shikensu_gren$Shikensu$Path$combine, dir, $icidasset$shikensu_gren$Shikensu$Path$directory([ '..', 'templates', 'init' ]))))))));
+			return A2($gren_lang$core$Task$map, $gren_lang$core$Basics$identity, A2($gren_lang$core$Task$mapError, $author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write([ '.' ]), A2($gren_lang$core$Task$map, A2($icidasset$shikensu_gren$Shikensu$Contrib$rename, $icidasset$shikensu_gren$Shikensu$Path$file([ 'gitignore' ]), $icidasset$shikensu_gren$Shikensu$Path$file([ '.gitignore' ])), A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, A2($icidasset$shikensu_gren$Shikensu$list, fsPermission, $icidasset$shikensu_gren$Shikensu$Focus$Absolute(A2($icidasset$shikensu_gren$Shikensu$Path$combine, dir, $icidasset$shikensu_gren$Shikensu$Path$directory([ '..', 'templates', 'init' ])))))))));
 		} else {
 			return $gren_lang$core$Task$fail($author$project$CodeGen$PipelineError(_Utils_ap('Unknown error building path from: ', dirname)));
 		}

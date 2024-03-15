@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+* Exclude project template's build files from the published package
+
 ## 1.1.4 (2024-03-14)
 
 * Fixed missing .gitignore in project template

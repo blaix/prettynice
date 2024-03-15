@@ -5,6 +5,7 @@ import Bytes exposing (Bytes)
 import Bytes.Decode
 import ChildProcess
 import CodeGen
+import Dict
 import FileSystem
 import Init
 import Node
@@ -65,9 +66,9 @@ init env =
 
 run : Model -> Args.Result -> { model : Model, command: Cmd Msg }
 run model { args, options } =
-    if args == [] then
+    if args == [ "version" ] || Dict.member "v" options || Dict.member "version" options then
         { model = model
-        , command = Stream.sendLine model.stdout help
+        , command = getVersion {}
         }
 
     else if args == [ "build" ] then
@@ -82,6 +83,11 @@ run model { args, options } =
                 "󱚤 Can I turn the current directory into a new Prettynice project (y|n)? "
         }
 
+    else if args == [] then
+        { model = model
+        , command = Stream.sendLine model.stdout help
+        }
+    
     else
         { model = model
         , command =
@@ -107,6 +113,9 @@ help =
 
         prettynice build --optimize
             Compile the web app with optimizations enabled.
+
+        prettynice [version|-v|--version]
+            Print the version number of this prettynice cli.
 
         prettynice [--help|-h]
             Show this help text.
@@ -138,6 +147,7 @@ type Msg
     | GenProject_Created (Result CodeGen.Error CodeGen.Result)
     | GenProject_NpmInstalled (Result ChildProcess.FailedRun ChildProcess.SuccessfulRun)
     | GotDirname String
+    | GotVersion String
 
 
 type ComponentBuildError
@@ -156,6 +166,12 @@ update msg model =
         GotDirname dirname ->
             { model = { model | dirname = Just dirname }
             , command = Cmd.none
+            }
+
+        GotVersion version ->
+            { model = model
+            , command = 
+                Stream.sendLine model.stdout version
             }
 
         Cleaned result ->
@@ -522,13 +538,16 @@ bytesToString bytes =
 -- SUBS
 
 
-port getDirname : (String -> msg) -> Sub msg
+port getVersion : {} -> Cmd msg
+port gotVersion : (String -> msg) -> Sub msg
+port gotDirname : (String -> msg) -> Sub msg
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ getDirname GotDirname
+        [ gotDirname GotDirname
+        , gotVersion GotVersion
         , case model.readInput of
             Just msg ->
                 Stream.listen model.stdin msg

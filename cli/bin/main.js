@@ -3432,7 +3432,25 @@ var $joeybright$gren_args$Args$parse = A2($joeybright$gren_args$Args$parseHelper
 var $author$project$Main$GenProject_Confirmation = function (a) {
 	return { $: 9, a: a };
 };
-var $author$project$Main$help = 'Usage:\n    \n    prettynice init\n        Create a new prettynice project in the current directory.\n\n    prettynice build\n        Compile the web app into javascript under dist/\n\n    prettynice build --optimize\n        Compile the web app with optimizations enabled.\n\n    prettynice [--help|-h]\n        Show this help text.';
+var $gren_lang$core$Json$Encode$object = function(pairs) {
+	return _Json_wrap(A3($gren_lang$core$Array$foldl, F2(function(_v0, obj) {
+					var key = _v0.bt;
+					var value = _v0.aX;
+					return A3(_Json_addField, key, value, obj);
+				}), _Json_emptyObject({  }), pairs));
+};
+var $author$project$Main$getVersion = _Platform_outgoingPort('getVersion', function($) {
+		return $gren_lang$core$Json$Encode$object([  ]);
+	});
+var $author$project$Main$help = 'Usage:\n    \n    prettynice init\n        Create a new prettynice project in the current directory.\n\n    prettynice build\n        Compile the web app into javascript under dist/\n\n    prettynice build --optimize\n        Compile the web app with optimizations enabled.\n\n    prettynice [version|-v|--version]\n        Print the version number of this prettynice cli.\n\n    prettynice [--help|-h]\n        Show this help text.';
+var $gren_lang$core$Dict$member = F2(function(key, dict) {
+		var _v0 = A2($gren_lang$core$Dict$get, key, dict);
+		if (!_v0.$) {
+			return true;
+		} else {
+			return false;
+		}
+	});
 var $author$project$Main$Cleaned = function (a) {
 	return { $: 0, a: a };
 };
@@ -4069,14 +4087,6 @@ var $gren_lang$core$Dict$filter = F2(function(isGood, dict) {
 				}), $gren_lang$core$Dict$empty, dict);
 	});
 var $gren_lang$core$Process$kill = _Scheduler_kill;
-var $gren_lang$core$Dict$member = F2(function(key, dict) {
-		var _v0 = A2($gren_lang$core$Dict$get, key, dict);
-		if (!_v0.$) {
-			return true;
-		} else {
-			return false;
-		}
-	});
 var $gren_lang$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $gren_lang$node$Stream$FromStream = F2(function (a, b) {
 		return { $: 0, a: a, b: b };
@@ -4243,7 +4253,7 @@ var $gren_lang$node$Node$setExitCode = function(code) {
 var $author$project$Main$run = F2(function(model, _v0) {
 		var args = _v0.ag;
 		var options = _v0.k;
-		return _Utils_eq(args, [  ]) ? { g: A2($gren_lang$node$Stream$sendLine, model.e, $author$project$Main$help), h: model } : (_Utils_eq(args, [ 'build' ]) ? { g: $author$project$Main$runBuild(model), h: model } : (_Utils_eq(args, [ 'init' ]) ? { g: A2($gren_lang$node$Stream$sendString, model.e, '󱚤 Can I turn the current directory into a new Prettynice project (y|n)? '), h: _Utils_update(model, { H: $gren_lang$core$Maybe$Just($author$project$Main$GenProject_Confirmation) }) } : { g: $gren_lang$core$Platform$Cmd$batch([ A2($gren_lang$node$Stream$sendLine, model.f, 'I don\'t recognize those arguments.'), A2($gren_lang$node$Stream$sendLine, model.f, $author$project$Main$help), $gren_lang$node$Node$setExitCode(1) ]), h: model }));
+		return (_Utils_eq(args, [ 'version' ]) || (A2($gren_lang$core$Dict$member, 'v', options) || A2($gren_lang$core$Dict$member, 'version', options))) ? { g: $author$project$Main$getVersion({  }), h: model } : (_Utils_eq(args, [ 'build' ]) ? { g: $author$project$Main$runBuild(model), h: model } : (_Utils_eq(args, [ 'init' ]) ? { g: A2($gren_lang$node$Stream$sendString, model.e, '󱚤 Can I turn the current directory into a new Prettynice project (y|n)? '), h: _Utils_update(model, { H: $gren_lang$core$Maybe$Just($author$project$Main$GenProject_Confirmation) }) } : (_Utils_eq(args, [  ]) ? { g: A2($gren_lang$node$Stream$sendLine, model.e, $author$project$Main$help), h: model } : { g: $gren_lang$core$Platform$Cmd$batch([ A2($gren_lang$node$Stream$sendLine, model.f, 'I don\'t recognize those arguments.'), A2($gren_lang$node$Stream$sendLine, model.f, $author$project$Main$help), $gren_lang$node$Node$setExitCode(1) ]), h: model })));
 	});
 var $gren_lang$node$Node$startProgram = function(initResult) {
 	return $gren_lang$core$Task$succeed(initResult);
@@ -4259,13 +4269,17 @@ var $author$project$Main$init = function(env) {
 var $author$project$Main$GotDirname = function (a) {
 	return { $: 12, a: a };
 };
+var $author$project$Main$GotVersion = function (a) {
+	return { $: 13, a: a };
+};
 var $gren_lang$core$Json$Decode$string = _Json_decodeString;
-var $author$project$Main$getDirname = _Platform_incomingPort('getDirname', $gren_lang$core$Json$Decode$string);
+var $author$project$Main$gotDirname = _Platform_incomingPort('gotDirname', $gren_lang$core$Json$Decode$string);
+var $author$project$Main$gotVersion = _Platform_incomingPort('gotVersion', $gren_lang$core$Json$Decode$string);
 var $gren_lang$node$Stream$listen = F2(function(stream, msgMap) {
 		return $gren_lang$node$Stream$subscription(A2($gren_lang$node$Stream$Listen, stream, msgMap));
 	});
 var $author$project$Main$subscriptions = function(model) {
-	return $gren_lang$core$Platform$Sub$batch([ $author$project$Main$getDirname($author$project$Main$GotDirname), function () {
+	return $gren_lang$core$Platform$Sub$batch([ $author$project$Main$gotDirname($author$project$Main$GotDirname), $author$project$Main$gotVersion($author$project$Main$GotVersion), function () {
 			var _v0 = model.H;
 			if (!_v0.$) {
 				var msg = _v0.a;
@@ -5343,6 +5357,9 @@ var $author$project$Main$update = F2(function(msg, model) {
 			case 12:
 				var dirname = msg.a;
 				return { g: $gren_lang$core$Platform$Cmd$none, h: _Utils_update(model, { N: $gren_lang$core$Maybe$Just(dirname) }) };
+			case 13:
+				var version = msg.a;
+				return { g: A2($gren_lang$node$Stream$sendLine, model.e, version), h: model };
 			case 0:
 				var result = msg.a;
 				return { g: function () {

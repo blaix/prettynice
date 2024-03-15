@@ -3,6 +3,7 @@
 ## Next
 
 * Exclude project template's build files from the published package
+* Add `version` subcommand (also available as `-v` or `--version`)
 
 ## 1.1.4 (2024-03-14)
 

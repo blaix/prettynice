@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+* Fixed missing .gitignore in project template
+
 ## 1.1.3 (2024-03-14)
 
 * Add `init` to help/usage output

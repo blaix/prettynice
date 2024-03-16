@@ -34,8 +34,7 @@
 - [X] **=== release 1.0 ===**
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
-- [ ] Consider 'responseKey' as the "response" value name
-- [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
+- [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [ ] Doc site:
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs
@@ -44,6 +43,7 @@
     - [ ] Arrays missing from pattern matching section, but I'm linking to this from my basic router example
     - [ ] Nothing about creating full applications (in browser or in node)
   - [ ] Consider an interactive language tour ala tour.gleam.run
+  - [ ] https://github.com/HiDeoo/starlight-blog ?
 - [ ] Deployment example + docs.
   - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
   - [ ] Fly.io vs Render.com
@@ -56,6 +56,7 @@
   - [ ] discord
   - [ ] twitter?
 - [ ] Start migrating pencils.dev
+- [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
 - [ ] `just publish-cli` that runs `build-cli` and validates similar to `gren package validate`
 - [ ] Unit Tests. Especially Prettynice.Internal.Props
 - [ ] Functional browser tests with playwright or similar

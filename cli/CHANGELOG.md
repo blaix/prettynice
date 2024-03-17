@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 (2024-03-17)
+
+* Use `127.0.0.1` as the host in `init` project template (was `0.0.0.0`)
+
 ## 1.2.0 (2024-03-15)
 
 * Exclude project template's build files from the published package

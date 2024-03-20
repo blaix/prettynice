@@ -29,6 +29,7 @@ init env =
         , port_ = 3000
         , env = env
         , model = { response = Nothing }
+        , command = Cmd.none
         }
 
 

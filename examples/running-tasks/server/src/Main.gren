@@ -32,6 +32,7 @@ init env =
             { host = "127.0.0.1"
             , port_ = 3000
             , env = env
+            , command = Cmd.none
             , model = 
                 { fsPermission = fsPermission }
             }

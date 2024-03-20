@@ -35,6 +35,7 @@ init env =
         , port_ = 3000
         , env = env
         , model = { users = [] }
+        , command = Cmd.none
         }
 
 

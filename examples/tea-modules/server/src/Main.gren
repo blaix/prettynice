@@ -40,6 +40,7 @@ init env =
         , port_ = 3000
         , env = env
         , model = { handler = Nothing }
+        , command = Cmd.none
         }
 
 

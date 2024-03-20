@@ -85,6 +85,7 @@
 
 ## Open questions and future ideas
 
+- [ ] No good way to get port and host from env vars for `Prettynice.startProgram`. Currently must be hard-coded or passed in via argv[].
 - [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/tea-modules`
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Should there be a prettynice cli "serve" command?

@@ -69,6 +69,7 @@
   - [ ] vite? support importing .gren files?
   - [ ] swc?
 - [ ] Cookies & Sessions
+- [ ] Consider: what if I want traditional Flags from js? (right now prettynice controls this to do Props)
 - [ ] Experiment with HTM[X|Z] integration / progressive enhancement:
   - [ ] Form submissions? See https://remix.run/docs/en/main/components/form
   - [ ] Server-side components?

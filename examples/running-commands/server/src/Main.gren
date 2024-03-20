@@ -7,7 +7,7 @@ import Prettynice.Response as Response exposing (Response)
 import Random
 
 
-main : Prettynice.Program {} Msg
+main : Prettynice.Program Model Msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -17,35 +17,49 @@ main =
         }
 
 
-init : Environment -> Prettynice.Init {} Msg
+type alias Model =
+    { value : Int
+    }
+
+
+getNextValue : Cmd Msg
+getNextValue =
+    Random.int 1 9999999
+        |> Random.generate GotNextValue
+
+
+init : Environment -> Prettynice.Init Model Msg
 init env =
     Prettynice.startProgram
         { host = "127.0.0.1"
         , port_ = 3000
         , env = env
-        , model = {}
+        , model = { value = 0 }
+        , command = getNextValue
         }
 
 
 type Msg
     = GotRequest Request Response
-    | GotRandomNumber Response Int
+    | GotNextValue Int
 
 
-update : Msg -> {} -> { model : {}, command : Cmd Msg }
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         GotRequest request response ->
             { model = model
-            , command =
-                Random.int 1 9999999
-                    |> Random.generate (GotRandomNumber response)
+            , command = 
+                Cmd.batch
+                    [ getNextValue
+                    , Response.sendText
+                        (String.fromInt model.value)
+                        response
+                    ]
             }
 
-        GotRandomNumber response num ->
-            { model = model
-            , command = 
-                Response.sendText
-                    (String.fromInt num)
-                    response
+        GotNextValue value ->
+            { model = { model | value = value }
+            , command = Cmd.none
             }
+

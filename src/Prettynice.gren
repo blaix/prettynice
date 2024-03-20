@@ -80,11 +80,12 @@ type alias Model appModel =
 
 {-| Application config. You will pass this to [`startProgram`](#startProgram).
 -}
-type alias Config appModel =
+type alias Config appModel appMsg =
     { host : String
     , port_ : Int
     , env : Environment
     , model : appModel
+    , command : Cmd appMsg
     }
 
 
@@ -118,7 +119,7 @@ defineProgram app =
 
 This creates the startup task you can return from your `init` function.
 -}
-startProgram : Config appModel -> Init appModel appMsg
+startProgram : Config appModel appMsg -> Init appModel appMsg
 startProgram config =
     Init.await Http.initialize <| \serverPermission ->
         Init.await FileSystem.initialize <| \fsPermission ->
@@ -134,11 +135,14 @@ startProgram config =
                     , fsPermission = fsPermission
                     }
                 , command =
-                    Task.attempt CreateServerResult <|
-                        Http.createServer serverPermission
-                            { host = config.host
-                            , port_ = config.port_
-                            }
+                    Cmd.batch
+                        [ Cmd.map MsgToApp config.command
+                        , Task.attempt CreateServerResult <|
+                            Http.createServer serverPermission
+                                { host = config.host
+                                , port_ = config.port_
+                                }
+                        ]
                 }
 
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 (2024-03-20)
+## 2.0.0 (pending)
 
 * `Prettynice.startProgram` accepts a `command` field, to match the API of `Node.startProgram`.
 

@@ -44,6 +44,7 @@
     - [ ] Nothing about creating full applications (in browser or in node)
   - [ ] Consider an interactive language tour ala tour.gleam.run
   - [ ] https://github.com/HiDeoo/starlight-blog ?
+- [ ] Add a Dockerfile to the project template?
 - [ ] Deployment example + docs.
   - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
   - [ ] Fly.io vs Render.com

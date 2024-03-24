@@ -35,7 +35,7 @@
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
-- [ ] Doc site:
+- [o] Doc site:
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs
   - [ ] Link in the error message for failed props parsing
@@ -56,7 +56,7 @@
   - [ ] mastodon
   - [ ] discord
   - [ ] twitter?
-- [ ] Start migrating pencils.dev
+- [o] Start migrating pencils.dev
 - [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
 - [ ] `just publish-cli` that runs `build-cli` and validates similar to `gren package validate`
 - [ ] Unit Tests. Especially Prettynice.Internal.Props

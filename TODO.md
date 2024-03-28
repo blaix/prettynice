@@ -42,6 +42,7 @@
   - [ ] Flesh out gren guide if needed:
     - [ ] Arrays missing from pattern matching section, but I'm linking to this from my basic router example
     - [ ] Nothing about creating full applications (in browser or in node)
+    - [ ] Good examples from lustre! https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
   - [ ] Consider an interactive language tour ala tour.gleam.run
   - [ ] https://github.com/HiDeoo/starlight-blog ?
 - [ ] Add a Dockerfile to the project template?
@@ -87,7 +88,8 @@
 ## Open questions and future ideas
 
 - [ ] No good way to get port and host from env vars for `Prettynice.startProgram`. Currently must be hard-coded or passed in via argv[].
-- [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/tea-modules`
+- [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/tea-modules`.
+      Also see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Should there be a prettynice cli "serve" command?
     - [ ] Originally tried to do this but having trouble getting server's stdout to pass through the parent process

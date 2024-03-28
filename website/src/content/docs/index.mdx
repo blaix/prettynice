@@ -3,7 +3,7 @@ title: Pretty Nice
 description: A full stack web framework for the gren programming language.
 template: doc
 hero:
-  tagline: A framework for websites that just work.
+  tagline: A purely functional, fully type-safe, full-stack framework for websites that just work.
   image:
     file: ../../assets/cherry-blossom.svg
   actions:
@@ -18,19 +18,22 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## Features
 
 <CardGrid>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Truly Full Stack" icon="seti:html">
+        Static HTML rendered on the server.
+        Client-side components for islands of interactivity in the browser.
+        Both served in the same response.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Send, Don't Fetch" icon="rocket">
+        Initialize components with data on the server that is automatically encoded and type-checked at compile time.
+        No loading spinners. No runtime error checks.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Safety & Guarantees" icon="approve-check-circle">
+        Strong static types and carefully managed side-effects thanks to the <a href="https://gren-lang.org/">gren programming language</a>.
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Interop with Javascript" icon="seti:javascript">
+        Easy access to the entire javascript ecosystem in the browser <em>and</em> in node!
 	</Card>
 </CardGrid>

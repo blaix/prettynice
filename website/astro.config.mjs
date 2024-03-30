@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import rehypeExternalLinks from 'rehype-external-links';
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,17 +16,40 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: 'Guides',
+					label: 'The Basics',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', link: '/guides/example/' },
+						{ label: 'Getting Started', link: '/basics/start/' },
+						{ label: 'Server-side Responses', link: '/basics/server/' },
+						{ label: 'Client-side Components', link: '/basics/client/' },
+						{ label: 'Images and Styling', link: '/basics/assets/' },
+						{ label: 'Forms', link: '/basics/forms/' },
 					],
 				},
-				{
-					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+			  {
+					label: 'Next Steps',
+					items: [
+						{ label: 'The Elm Architecture', link: '/next/tea/' },
+						{ label: 'Server-side Javascript', link: '/next/server-js/' },
+						{ label: 'Client-side Javascript', link: '/next/client-js/' },
+						{ label: 'Examples', link: '/next/examples/' },
+					],
+				},
+			  {
+					label: 'Guides',
+					items: [
+						{ label: 'Databases', link: '/guides/databases/' },
+						{ label: 'Authentication', link: '/guides/authentication/' },
+						{ label: 'Cookies', link: '/guides/cookies/' },
+						{ label: 'JSON APIs', link: '/guides/json/' },
+					],
 				},
 			],
 		}),
 	],
+  markdown: {
+    rehypePlugins: [
+      [ rehypeExternalLinks, {content: { type: 'text', value: ' ↗'}},
+      ],
+    ]
+  },
 });

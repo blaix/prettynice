@@ -3,12 +3,12 @@ title: Pretty Nice
 description: A full stack web framework for the gren programming language.
 template: doc
 hero:
-  tagline: A purely functional, fully type-safe, full-stack framework for websites that just work.
+  tagline: A purely functional full-stack web framework.
   image:
     file: ../../assets/cherry-blossom.svg
   actions:
-    - text: Guide
-      link: /guide/
+    - text: Get Started
+      link: /basics/getting-started/
       icon: right-arrow
       variant: primary
     - text: API Docs
@@ -18,22 +18,21 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Features
+## What makes it pretty nice?
 
 <CardGrid>
-	<Card title="Truly Full Stack" icon="seti:html">
-        Static HTML rendered on the server.
-        Client-side components for islands of interactivity in the browser.
-        Both served in the same response.
+	<Card title="Fully Full Stack" icon="seti:html">
+        Static HTML rendered on the [server](/basics/server/) alongside
+        interactive [components](/basics/client/) that run in the browser.
 	</Card>
-	<Card title="Send, Don't Fetch" icon="rocket">
-        Initialize components with data on the server that is automatically encoded and type-checked at compile time.
-        No loading spinners. No runtime error checks.
+	<Card title="Purely Functional" icon="star">
+        Immutability, strong static types, and carefully managed side-effects thanks to [gren](https://gren-lang.org/)
 	</Card>
-	<Card title="Safety & Guarantees" icon="approve-check-circle">
-        Strong static types and carefully managed side-effects thanks to the <a href="https://gren-lang.org/">gren programming language</a>.
+	<Card title="Compile-time Guarantees" icon="seti:todo">
+        Initialize your [components](/basics/client/) on the server with auto-encoded data, type-checked at compile time.
 	</Card>
-	<Card title="Interop with Javascript" icon="seti:javascript">
-        Easy access to the entire javascript ecosystem in the browser <em>and</em> in node!
+	<Card title="Javascript<br>if you need it" icon="seti:javascript">
+        Want to color outside the lines? Easy access to the full js ecosystem
+        in the [browser](/next/client-js/) _and_ in [node](/next/server-js/).
 	</Card>
 </CardGrid>

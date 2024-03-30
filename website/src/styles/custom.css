@@ -1,6 +1,6 @@
 /* Custom styles to override default starlight theme */
 
 .hero {
-  padding-top: 3rem;
-  padding-bottom: 4rem;
+  padding-top: 0;
+  padding-bottom: 3rem;
 }

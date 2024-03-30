@@ -78,7 +78,6 @@
   - [ ] toBackend/toFrontend messages?
   - [ ] If I just need to replace elements on the page: https://leanrada.com/htmz/
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
-- [ ] Can/Should Prettynice help with breaking up routes into standoline TEA-style modules (see examples/tea-modules)
 - [ ] Support records in component Props field types
 - [ ] Redirect helpers?
 - [ ] Handle multipart/form-data and file uploads

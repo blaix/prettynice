@@ -522,10 +522,17 @@ Otherwise, you'll need to manually [install gren](https://gren-lang.org/install)
 and then look at the `buildInputs` list in `shell.nix` for other things you'll need
 (you can ignore `bashInteractive`),
 
+### Important Directories
+
+* `src/`: Source files for the gren package.
+* `cli/`: The CLI. Gren source files are under `cli/src/` and are built to `cli/bin/`.
+* `website/`: The prettynice website.
+* `examples/`: Several working examples of prettynice sites exercising various features.
+
 ### Running examples
 
-See directories under [`examples/`](https://github.com/blaix/prettynice/tree/main/examples).
-You can `cd` to a directory and run `npm start`, or use [`just`](https://github.com/casey/just) from the root of the repo:
+You can `cd` to a directory under [`examples/`](https://github.com/blaix/prettynice/tree/main/examples) and run `npm start`,
+or use [`just`](https://github.com/casey/just) from the root of the repo:
 
 * Run a single example with `just example [EXAMPLE NAME]` (e.g. `just example hello-world`).
 * Iterate through all the examples with `just examples`.

@@ -4,6 +4,7 @@ mkShell {
     bashInteractive
     entr
     fd
+    fly
     just
     nodejs_18
   ];

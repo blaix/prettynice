@@ -1,0 +1,7 @@
+{
+	auto_https off
+}
+
+* {
+	redir https://v1.prettynice.dev permanent
+}

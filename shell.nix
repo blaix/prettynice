@@ -2,6 +2,7 @@ with import <nixpkgs> {};
 mkShell {
   buildInputs = [
     bashInteractive
+    caddy
     entr
     fd
     fly

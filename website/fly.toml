@@ -1,15 +1,13 @@
-# fly.toml app configuration file generated for prettynice-v1 on 2024-04-01T13:38:50-04:00
+# fly.toml app configuration file generated for prettynice on 2024-04-01T13:36:28-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "prettynice-v1"
+app = "prettynice"
 primary_region = "mia"
 
-[build]
-
 [http_service]
-  internal_port = 80
+  internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true

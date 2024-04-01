@@ -35,7 +35,8 @@
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
-- [o] Doc site:
+- [ ] Doc site:
+  - [ ] Think about versioning...
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs
   - [ ] Link in the error message for failed props parsing

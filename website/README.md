@@ -1,7 +1,6 @@
 # Prettynice Website
 
-This is the root instance of the versioned doc site. It will redirect to the current version subdomain. See [`Caddyfile`](./Caddyfile).
+Each major version of the framework has its own `v*` subdirectory, which is its own fly.io app with its own `v*.prettynice.dev` subdomain.
+The root domain will redirect to the latest major version, via dnsimple.
 
-Each website is its own fly.io application. See the `fly.toml` config in this directory and all the `v*` subdirectories.
-
-It's set up this way so that URLs won't rot.
+It's set up this way to avoid URL rot.

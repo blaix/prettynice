@@ -36,12 +36,7 @@ export default defineConfig({
 				},
 			  {
 					label: 'Guides',
-					items: [
-						{ label: 'Databases', link: '/guides/databases/' },
-						{ label: 'Authentication', link: '/guides/authentication/' },
-						{ label: 'Cookies', link: '/guides/cookies/' },
-						{ label: 'JSON APIs', link: '/guides/json/' },
-					],
+          autogenerate: { directory: 'guides' },
 				},
 			],
 		}),

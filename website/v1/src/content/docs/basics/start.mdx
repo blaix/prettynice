@@ -1,0 +1,51 @@
+---
+title: Getting Started
+description: Getting started with the prettynice framework.
+---
+
+import { Code, FileTree, Steps } from '@astrojs/starlight/components';
+
+<Steps>
+
+1. You'll need [node.js](https://nodejs.org/) 18 or higher.
+2. Create a directory for your site:
+
+   <Code code="mkdir mysite && cd mysite" frame="none" lang="bash" />
+
+3. Set up the starter project template:
+
+   <Code code="npx prettynice init" frame="none" lang="bash" />
+
+4. Start the dev server:
+
+   <Code code="npm run dev" frame="none" lang="bash" />
+
+   and open [http://localhost:3000/](http://localhost:3000/).
+
+   The dev server will watch for changes and rebuild/restart automatically.
+
+</Steps>
+
+## Directory Structure
+
+The important directories are:
+
+<FileTree>
+- client
+  - src
+    - Components
+        - Counter.gren
+- public
+    - ...
+- server
+  - src
+    - Main.gren
+</FileTree>
+
+* `Main.gren` is your [server](/basics/server/).
+* `Counter.gren` is an example [client-side component](/basics/client/).
+* `public` is where you can put your [static assets](/basics/assets/).
+
+## Gren
+
+TODO

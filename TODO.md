@@ -75,6 +75,7 @@
   - [ ] discord
   - [ ] twitter?
 - [o] Start migrating pencils.dev
+- [ ] Add tests to the template app
 - [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
 - [ ] `just publish-cli` that runs `build-cli` and validates similar to `gren package validate`
 - [ ] Unit Tests. Especially Prettynice.Internal.Props

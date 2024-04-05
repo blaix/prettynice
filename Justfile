@@ -6,6 +6,9 @@ example NAME:
   @just header "RUNNING EXAMPLE: {{NAME}}"
   cd examples/{{NAME}} && npm install && npm run dev
 
+examples:
+  for example in `ls examples`; do just example $example; done
+
 cli CMD="" OPT="":
   rm -rf node_modules/prettynice
   just build-cli
@@ -20,8 +23,8 @@ build-cli:
 build-cli-debug:
   cd cli && npx gren make src/Main.gren --output=bin/main.js
 
-examples:
-  for example in `ls examples`; do just example $example; done
+deploy-web:
+  cd website/v1 && flyctl deploy
 
 header MSG:
   @echo -e "\n{{green}}{{MSG}}{{nc}}"

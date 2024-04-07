@@ -35,6 +35,22 @@
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
+- [ ] Future idea / Experiment: component events that can trigger server-side messages.
+      Example:
+        ```elm
+        -- server:
+        import Gen.Components.Counter as Counter
+        type Msg
+          = SaveCount { count : Int }
+        -- in html:
+        Counter.init { start = 0 }
+          |> Counter.onStateChange SaveCount
+        ```
+      ...probably don't want to fire on every state change though.
+      Is there a way for the component to specify Event types for the server to subscribe to?
+      Or have the component explicitly send messages to the backend ala Lamdera?
+- [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
+- [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Doc site:
   - [ ] Think about versioning...
   - [ ] Link on github project settings and README

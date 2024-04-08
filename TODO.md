@@ -68,6 +68,7 @@
   - [ ] Fly.io vs Render.com
   - [ ] docker?
   - [ ] caddy as reverse proxy (and serving static)?
+- [ ] Try devenv: https://devenv.sh/
 - [ ] Offically announce the release:
   - [ ] blog.blaix.com
   - [ ] zulip
@@ -95,6 +96,7 @@
   - [ ] Server-side components?
   - [ ] toBackend/toFrontend messages?
   - [ ] If I just need to replace elements on the page: https://leanrada.com/htmz/
+  - [ ] What about slow connections / failed js loading? See https://www.youtube.com/watch?v=EzLGleT1yrY
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
 - [ ] Support records in component Props field types
 - [ ] Redirect helpers?

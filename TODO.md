@@ -35,9 +35,9 @@
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
-- [ ] Future idea / Experiment: component events that can trigger server-side messages: https://gist.github.com/blaix/5184b52b28f53c8019eca4a91e2fa868
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
+- [ ] Other security considerations? csrf?
 - [ ] Doc site:
   - [ ] Think about versioning...
   - [ ] Link on github project settings and README
@@ -78,18 +78,20 @@
   - [ ] swc?
 - [ ] Cookies & Sessions
 - [ ] Consider: what if I want traditional Flags from js? (right now prettynice controls this to do Props)
-- [ ] Experiment with HTM[X|Z] integration / progressive enhancement:
-  - [ ] Form submissions? See https://remix.run/docs/en/main/components/form
-  - [ ] Server-side components?
-  - [ ] toBackend/toFrontend messages?
-  - [ ] If I just need to replace elements on the page: https://leanrada.com/htmz/
-  - [ ] What about slow connections / failed js loading? See https://www.youtube.com/watch?v=EzLGleT1yrY
 - [ ] [RealWorld](https://github.com/gothinkster/realworld) example app
-- [ ] Support records in component Props field types
 - [ ] Redirect helpers?
 - [ ] Handle multipart/form-data and file uploads
-- [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
 - [ ] Responses that align with the request content-type (e.g. 404 that returns html, string, or json depending on the request)
+- [ ] Support records in component Props field types
+- [ ] Future ideas / Experiments:
+  - [ ] component events that can trigger server-side messages: https://gist.github.com/blaix/5184b52b28f53c8019eca4a91e2fa868
+  - [ ] HTM[X|Z] integration:
+    - [ ] Form submissions? See https://remix.run/docs/en/main/components/form
+    - [ ] Server-side components?
+    - [ ] toBackend/toFrontend messages?
+    - [ ] If I just need to replace elements on the page: https://leanrada.com/htmz/
+    - [ ] What about slow connections / failed js loading? See https://www.youtube.com/watch?v=EzLGleT1yrY
+- [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
 
 ## Open questions and future ideas
 

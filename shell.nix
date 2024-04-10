@@ -2,9 +2,6 @@ with import <nixpkgs> {};
 mkShell {
   buildInputs = [
     bashInteractive
-    caddy
-    entr
-    fd
     fly
     just
     nodejs_18

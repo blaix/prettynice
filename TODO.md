@@ -109,8 +109,10 @@
     - [ ] sqlite-over-http? https://github.com/proofrock/ws4sqlite
   - [ ] expand on ports/prisma example?
   - [ ] direct connection over tcp?:
-    - [ ] kernel bindings for node's 'net' api (and maybe 'crypto')
+    - [ ] kernel bindings for node's 'net' api
+    - [ ] webcrypto for [passwords](https://www.postgresql.org/docs/current/auth-password.html)? (joeybright working on this?)
     - [ ] example here: https://github.com/Asaye/PgDriverDemo (explanation here: https://info.deal-corner.com/post/311c1057-f94b-4b48-aadc-02de4ee5f0e0)
+    - [ ] see this old package for a simpler reference than the current node pg package: https://github.com/creationix/postgres-js
   - [ ] See https://github.com/pghttp and elm-pghttp channel in incremental elm discord
 - [ ] SSE? Websockets?
 - [ ] SSR + hydration for components? Is there value?

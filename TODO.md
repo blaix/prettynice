@@ -53,6 +53,7 @@
     - [ ] Good examples from lustre! https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
   - [ ] Consider an interactive language tour ala tour.gleam.run
   - [ ] https://github.com/HiDeoo/starlight-blog ?
+  - [ ] https://www.youtube.com/watch?v=jIPZlrCpwiE should probably be in the docs somewhere...
 - [ ] Add a Dockerfile to the project template?
 - [ ] Deployment example + docs.
   - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)

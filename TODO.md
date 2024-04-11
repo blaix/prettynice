@@ -36,9 +36,9 @@
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [ ] Vite support:
-  - [ ] allow importing .js or .ts in things like ports.js, MyComponent.js, etc.
-  - [ ] an app.ts/js entry point?
-  - [ ] .(s)css entry point? (for setting up tailwind, bulma, importing other things...)
+  - [ ] `{client,server}/src/app.{js,ts}` entry points?
+  - [ ] `client/assets` entry point for images, css, etc? how to reference in gren code?
+  - [ ] use this for tailwind, bulma, scss, etc. with examples
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Other security considerations? csrf?

@@ -87,7 +87,7 @@
 - [ ] Redirect helpers?
 - [ ] Handle multipart/form-data and file uploads
 - [ ] Responses that align with the request content-type (e.g. 404 that returns html, string, or json depending on the request)
-- [ ] Support records in component Props field types
+- [ ] Support records and custom types in component Props field types? See https://github.com/stil4m/elm-syntax for possible reference/example. Or worth waiting for gren-in-gren?
 - [ ] Future ideas / Experiments:
   - [ ] component events that can trigger server-side messages: https://gist.github.com/blaix/5184b52b28f53c8019eca4a91e2fa868
   - [ ] HTM[X|Z] integration:

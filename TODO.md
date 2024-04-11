@@ -35,6 +35,10 @@
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
+- [ ] Vite support:
+  - [ ] allow importing .js or .ts in things like ports.js, MyComponent.js, etc.
+  - [ ] an app.ts/js entry point?
+  - [ ] .(s)css entry point? (for setting up tailwind, bulma, importing other things...)
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Other security considerations? csrf?

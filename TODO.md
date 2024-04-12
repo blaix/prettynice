@@ -35,39 +35,38 @@
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
-- [ ] Vite support:
-  - [ ] `{client,server}/src/app.{js,ts}` entry points?
-  - [ ] `client/assets` entry point for images, css, etc? how to reference in gren code?
-  - [ ] use this for tailwind, bulma, scss, etc. with examples
+- [X] Start migrating pencils.dev
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Other security considerations? csrf?
-- [ ] Doc site:
-  - [ ] Think about versioning...
+- [.] Doc site:
+  - [X] Think about versioning...
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs
   - [ ] Link in the error message for failed props parsing
-  - [ ] Flesh out gren guide if needed:
+  - [ ] Flesh out gren guide as needed:
+    - [ ] Migrate to starlight (see convo with Robin)
     - [ ] Arrays missing from pattern matching section, but I'm linking to this from my basic router example
     - [ ] Nothing about creating full applications (in browser or in node)
     - [ ] Good examples from lustre! https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
-  - [ ] Consider an interactive language tour ala tour.gleam.run
-  - [ ] https://github.com/HiDeoo/starlight-blog ?
   - [ ] https://www.youtube.com/watch?v=jIPZlrCpwiE should probably be in the docs somewhere...
-- [ ] Add a Dockerfile to the project template?
-- [ ] Deployment example + docs.
-  - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
-  - [ ] Fly.io vs Render.com
-  - [ ] docker?
-  - [ ] caddy as reverse proxy (and serving static)?
-- [ ] Try devenv: https://devenv.sh/
+  - [ ] Deployment example + docs.
+    - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)
+    - [ ] Fly.io vs Render.com
+    - [ ] docker?
+    - [ ] caddy as reverse proxy (and serving static)?
 - [ ] Offically announce the release:
   - [ ] blog.blaix.com
   - [ ] zulip
   - [ ] mastodon
   - [ ] discord
   - [ ] twitter?
-- [o] Start migrating pencils.dev
+- [ ] Vite support (required for pencils):
+  - [ ] `{client,server}/src/app.{js,ts}` entry points?
+  - [ ] `client/assets` entry point for images, css, etc? how to reference in gren code?
+  - [ ] use this for tailwind, bulma, scss, etc. with examples
+- [ ] **=== return to pencils migration / release 2.0? ===**
+- [ ] Add a Dockerfile to the project template?
 - [ ] Add tests to the template app
 - [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
 - [ ] `just publish-cli` that runs `build-cli` and validates similar to `gren package validate`

@@ -255,6 +255,7 @@ update msg model =
                 case result of
                     Ok _ ->
                         Cmd.batch
+                            -- TODO: replace with vite / bundler / something...
                             [ progress model.stdout "Copying public assets"
                             , Task.attempt CopiedPublicAssets <|
                                 CodeGen.copyPublicAssets model.fsPermission

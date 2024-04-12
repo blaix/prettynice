@@ -62,9 +62,18 @@
   - [ ] discord
   - [ ] twitter?
 - [ ] Vite support (required for pencils):
-  - [ ] `{client,server}/src/app.{js,ts}` entry points?
-  - [ ] `client/assets` entry point for images, css, etc? how to reference in gren code?
-  - [ ] use this for tailwind, bulma, scss, etc. with examples
+  - [ ] Replace `CodeGen.copyPublicDir` with vite:
+    - [ ] Configure the [public dir](https://vitejs.dev/guide/assets.html#the-public-directory)?
+    - [ ] An assets dir? Lets you have a tailwind.css that's transformed.
+    - [ ] Confusing to have both assets and public?
+    - [ ] How to make it not suck to reference assets from gren code in a way vite will recognize?
+  - [ ] Handle imports in ComponentName.js for (codemirror for pencils, etc.)
+  - [ ] `client/src/app.{js,ts}` entry point?
+  - [ ] tailwind, bulma, scss, etc. with examples
+  - [ ] On the node side:
+    - [ ] Handle imports - wait how is prisma working now...?
+    - [ ] `server/src/app.{js,ts}` entry point?
+    - [ ] what does this mean for `ports.js`?
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Add a Dockerfile to the project template?
 - [ ] Add tests to the template app

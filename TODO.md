@@ -36,7 +36,11 @@
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [X] Start migrating pencils.dev
-- [ ] Server-side ports will only work in very limited situations. See TODOs in examples/server-side-ports
+- [ ] Server-side ports will only work in very limited situations.
+  - [ ] Encourage db-over-http over db-over-ports for the reasons described in notes/js-task.md
+  - [ ] Update, replace, or remove all examples that use server-side ports.
+  - [ ] Explain the problems and alternatives in docs.
+  - Note: Will add some kind of "backend task" alternative in a future todo (as part of v2)
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Other security considerations? csrf?
@@ -75,6 +79,7 @@
     - [ ] Handle imports - wait how is prisma working now...?
     - [ ] `server/src/app.{js,ts}` entry point?
     - [ ] what does this mean for `ports.js`?
+- [ ] Create a "javascript task" for calling js in a way that returns a result and is composable. See notes/js-task.md
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Add a Dockerfile to the project template?
 - [ ] Add tests to the template app

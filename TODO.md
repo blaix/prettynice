@@ -68,6 +68,9 @@
   - [ ] discord
   - [ ] twitter?
 - [ ] Vite support (required for pencils):
+  - [ ] Use one of the gren vite plugins?:
+    - [ ] https://github.com/gabriela-sartori/vite-plugin-gren (original?)
+    - [ ] https://github.com/laurentpayot/vite-plugin-gren (links to gabriella's as "original". why was this created?)
   - [ ] Replace `CodeGen.copyPublicDir` with vite:
     - [ ] Configure the [public dir](https://vitejs.dev/guide/assets.html#the-public-directory)?
     - [ ] An assets dir? Lets you have a tailwind.css that's transformed.
@@ -139,3 +142,4 @@
 - [ ] SSR + hydration for components? Is there value?
 - [ ] Emails? (Mario from Lamdera recommends https://postmarkapp.com/)
 - [ ] Metrics? Prometheus (integrates with Caddy https://caddyserver.com/docs/metrics)?
+- [ ] New Temporal API coming for dates/times? https://github.com/tc39/proposal-temporal

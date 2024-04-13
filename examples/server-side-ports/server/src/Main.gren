@@ -42,14 +42,28 @@ update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         GotRequest request response ->
+            -- TODO: what about simultaneous requests? (see below)
             { model = { model | response = Just response }
             , command = getUuid {}
             }
 
         GotUuid response uuid ->
             { model = { model | response = Nothing }
+            -- TODO: is there any gaurantee this is YOUR response?
             , command = Response.sendText uuid response
             }
+
+        -- See database-ports example where this problem is even worse.
+        -- Imagine you want to get a user by id on each request.
+        -- How do you tie the request/response that triggers the outgoing query port
+        -- to a response when you get a message later from the incoming port?
+
+        -- TODO: ports are not the way!
+        -- We need _sequencable_ js FFI.
+        -- See https://package.elm-lang.org/packages/andrewMacmurray/elm-concurrent-task/latest/
+
+        -- or we need a Task-like interface to ports or FFI added to gren itself
+        -- (see zulip and discord conversations about this)
 
 
 port getUuid : {} -> Cmd msg

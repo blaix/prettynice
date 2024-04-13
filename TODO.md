@@ -77,6 +77,7 @@
   - [ ] `client/src/app.{js,ts}` entry point?
   - [ ] tailwind, bulma, scss, etc. with examples
   - [ ] On the node side:
+    - [ ] how does vite normally integration with node? https://www.npmjs.com/package/vite-node ?
     - [ ] Handle imports - wait how is prisma working now...?
     - [ ] `server/src/app.{js,ts}` entry point?
     - [ ] what does this mean for `ports.js`?

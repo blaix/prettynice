@@ -36,11 +36,12 @@
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [X] Start migrating pencils.dev
-- [ ] Server-side ports will only work in very limited situations.
-  - [ ] Encourage db-over-http over db-over-ports for the reasons described in notes/js-task.md
-  - [ ] Update, replace, or remove all examples that use server-side ports.
+- [.] Server-side ports will only work in very limited situations.
+  - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
+  - [ ] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
+  - [ ] Update, replace, or remove other examples that use server-side ports.
+  - [ ] Version the examples (e.g. examples/v1, examples/next) (not related but became an issue while discovering and looking into this)
   - [ ] Explain the problems and alternatives in docs.
-  - Note: Will add some kind of "backend task" alternative in a future todo (as part of v2)
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Other security considerations? csrf?

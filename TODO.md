@@ -122,7 +122,8 @@
 
 - [ ] No good way to get port and host from env vars for `Prettynice.startProgram`. Currently must be hard-coded or passed in via argv[].
 - [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/tea-modules`.
-      Also see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
+  - [ ] see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
+  - [ ] see https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Should there be a prettynice cli "serve" command?
     - [ ] Originally tried to do this but having trouble getting server's stdout to pass through the parent process
@@ -145,3 +146,4 @@
 - [ ] Metrics? Prometheus (integrates with Caddy https://caddyserver.com/docs/metrics)?
 - [ ] New Temporal API coming for dates/times? https://github.com/tc39/proposal-temporal
 - [ ] Anything to do with webcomponents? and/or https://shoelace.style/ ?
+- [ ] Any ideas to steal from Lustre server components?

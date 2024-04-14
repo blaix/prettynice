@@ -1,0 +1,42 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+
+
+main : Router.Program
+main =
+    Router.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Router.Init
+init env =
+    Router.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        }
+
+
+router : Request -> Response -> Cmd msg
+router request response =
+    case request.path of
+        [ name ] ->
+            Response.sendText ("Hello, " ++ name) response
+
+        _ ->
+            Response.sendText "Hello!" response
+
+{- Or you could match on the whole request record and do things like:
+    
+    import HttpServer exposing (Method(..))
+
+    case request of
+        { method = POST, path = [ "login" ] } ->
+            ...
+-}

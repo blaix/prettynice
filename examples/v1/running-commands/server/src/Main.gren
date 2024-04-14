@@ -1,0 +1,64 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Random
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        , onRequest = GotRequest
+        }
+
+
+type alias Model =
+    { value : Int
+    }
+
+
+getNextValue : Cmd Msg
+getNextValue =
+    Random.int 1 9999999
+        |> Random.generate GotNextValue
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        , model = { value = 0 }
+        }
+
+
+type Msg
+    = GotRequest Request Response
+    | GotNextValue Int
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            { model = model
+            , command = 
+                Cmd.batch
+                    [ getNextValue
+                    , Response.sendText
+                        (String.fromInt model.value)
+                        response
+                    ]
+            }
+
+        GotNextValue value ->
+            { model = { model | value = value }
+            , command = Cmd.none
+            }
+

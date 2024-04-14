@@ -4,10 +4,10 @@ nc := '\033[0m' # No Color
 
 example NAME:
   @just header "RUNNING EXAMPLE: {{NAME}}"
-  cd examples/{{NAME}} && npm install && npm run dev
+  cd examples/next/{{NAME}} && npm install && npm run dev
 
 examples:
-  for example in `ls examples`; do just example $example; done
+  for example in `ls examples/next`; do just example $example; done
 
 cli CMD="" OPT="":
   rm -rf node_modules/prettynice

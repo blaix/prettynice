@@ -36,11 +36,12 @@
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [X] Start migrating pencils.dev
-- [o] Server-side ports will only work in very limited situations.
+- [.] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [X] Version the examples (e.g. examples/v1, examples/next) (not related but became an issue while discovering and looking into this)
   - [ ] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
   - [ ] Update, replace, or remove other examples that use server-side ports.
+  - [ ]   See coworker's idea about a context object with an iterated int id passed through the port...
   - [ ] Explain the problems and alternatives in docs.
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
@@ -79,7 +80,20 @@
     - [ ] How to make it not suck to reference assets from gren code in a way vite will recognize?
   - [ ] Handle imports in ComponentName.js for (codemirror for pencils, etc.)
   - [ ] `client/src/app.{js,ts}` entry point?
-  - [ ] tailwind, bulma, scss, etc. with examples
+  - [ ] Styling?
+    - [ ] Leaning towards pico.css:
+      - [ ] Nice semantic defaults, with light/dark, in pure css!
+      - [ ] Nice color theme options: https://picocss.com/docs/version-picker
+      - [ ] Build custom version from sass (support in prettynice/vite build): https://picocss.com/docs/sass
+      - [ ] No grid/layout/etc. but the basics aren't that hard: https://gist.github.com/blaix/0076e3563004829db67570c4e702e555
+      - [ ] Consider creating and integration something like Ryan's css-in-elm (leans on csstree in npm)
+      - [ ] Worth it to create a `gren-ui`-like abstraction? adding layout primitives?
+    - [ ] also consider tailwind
+      - [ ] using postcss plugin or v4-alpha vite plugin
+      - [ ] add `src/*.gren` files and ship minimal css
+    - [ ] and maybe bulma?
+    - [ ] and look at lustre-ui :)
+    - [ ] and add examples for whatever comes out of this
   - [ ] On the node side:
     - [ ] how does vite normally integration with node? https://www.npmjs.com/package/vite-node ?
     - [ ] Handle imports - wait how is prisma working now...?

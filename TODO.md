@@ -145,5 +145,7 @@
 - [ ] Emails? (Mario from Lamdera recommends https://postmarkapp.com/)
 - [ ] Metrics? Prometheus (integrates with Caddy https://caddyserver.com/docs/metrics)?
 - [ ] New Temporal API coming for dates/times? https://github.com/tc39/proposal-temporal
-- [ ] Anything to do with webcomponents? and/or https://shoelace.style/ ?
+- [ ] Anything to do with webcomponents?:
+  - [ ] [shoelace](https://shoelace.style/)?
+  - [ ] [portals](https://wolfgangschuster.wordpress.com/2023/06/21/bring-your-own-dom-part-1-portals/)?
 - [ ] Any ideas to steal from Lustre server components?

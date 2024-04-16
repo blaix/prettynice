@@ -99,6 +99,8 @@
     - [ ] Handle imports - wait how is prisma working now...?
     - [ ] `server/src/app.{js,ts}` entry point?
     - [ ] what does this mean for `ports.js`?
+  - [ ] Nice to haves:
+    - [ ] Full-color errors and jump to editor support? https://twitter.com/rhg_dev/status/1779998936578605493
 - [ ] Create a "javascript task" for calling js in a way that returns a result and is composable. See notes/js-task.md
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Add a Dockerfile to the project template?

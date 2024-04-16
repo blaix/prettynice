@@ -2,8 +2,9 @@
   "private": true,
   "scripts": {
     "postinstall": "npx prisma migrate dev",
-    "dev": "npx nodemon",
-    "build": "npx prettynice build --optimize",
+    "dev": "npx concurrently npm:dev:*",
+    "dev:node": "npx nodemon",
+    "dev:db": "docker run --rm --name=ws4sqlite -p 8080:12321 -v ./prisma:/data --user 1000:1001 germanorizzo/ws4sqlite:latest --db /data/dev.db",
     "start": "node dist/server/index.js"
   },
   "prisma": {
@@ -11,9 +12,10 @@
   },
   "nodemonConfig": {
     "exec": "npx prettynice build && npm start",
-    "ext": "js,gren",
+    "ext": "js,json,gren",
     "watch": [
-      "{client,server}/src/**/*"
+      "{client,server}/src/**/*",
+      "{client,server}/{gren,package}.json"
     ]
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "prisma": "^5.9.1"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "nodemon": "^3.1.0"
   }
 }

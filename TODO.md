@@ -40,8 +40,12 @@
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [X] Version the examples (e.g. examples/v1, examples/next) (not related but became an issue while discovering and looking into this)
   - [ ] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
+    - [o] next
+    - [ ] v1
   - [ ] Update, replace, or remove other examples that use server-side ports.
-  - [ ]   See coworker's idea about a context object with an iterated int id passed through the port...
+    - [o] next
+    - [ ] v1
+  - [ ] See coworker's idea about a context object with an iterated int id passed through the port...
   - [ ] Explain the problems and alternatives in docs.
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
@@ -93,6 +97,16 @@
       - [ ] add `src/*.gren` files and ship minimal css
     - [ ] and maybe bulma?
     - [ ] and look at lustre-ui :)
+    - [ ] Look at mdgriffith's elm-prefab assets plugin: https://github.com/mdgriffith/elm-prefab/blob/main/guides/plugins/app/resources.md
+            From #elm-prefab channel in Incremental Elm discord:
+            > Just added radix icons to my dnd app.  All I had to do was add this to the config
+            >    "assets": {
+            >       "Icons": {
+            >         "src": "./src/assets/public/radix-icons",
+            >         "onServer": "radix-icons"
+            >       }
+            >     },
+            > And now I can do Assets.Icons.heart 
     - [ ] and add examples for whatever comes out of this
   - [ ] On the node side:
     - [ ] how does vite normally integration with node? https://www.npmjs.com/package/vite-node ?
@@ -102,6 +116,9 @@
   - [ ] Nice to haves:
     - [ ] Full-color errors and jump to editor support? https://twitter.com/rhg_dev/status/1779998936578605493
 - [ ] Create a "javascript task" for calling js in a way that returns a result and is composable. See notes/js-task.md
+- [ ] Look at mdgriffith's elm-prefab:
+  - [ ] https://github.com/mdgriffith/elm-prefab/tree/main/guides
+  - [ ] See elm-prefab channel in Incremental Elm discord
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Add a Dockerfile to the project template?
 - [ ] Add tests to the template app

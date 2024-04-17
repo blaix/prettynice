@@ -4,5 +4,5 @@ See [`server/src/Main.gren`](https://github.com/blaix/prettynice/blob/main/examp
 
 ```
 npm install
-npm start
+npm run dev
 ```

@@ -36,7 +36,7 @@
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [X] Start migrating pencils.dev
-- [ ] Fix examples that say "npm start" when it should be "npm run dev"
+- [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [.] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [o] Version the examples (not related but became an issue while discovering and looking into this):

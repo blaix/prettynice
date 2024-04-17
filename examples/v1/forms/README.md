@@ -9,5 +9,5 @@ or `getAll` to get an `Array String` of all values associated with the field nam
 
 See [`server/src/Main.gren`](server/src/Main.gren) for the full working example.
 
-Run it from this directory with `npm start`
+Run it from this directory with `npm install && npm run dev`
 or from the root of this repo with `just example forms`.

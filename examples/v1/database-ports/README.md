@@ -19,5 +19,5 @@ Run the project from this directory with:
 
 ```
 npm install
-npm start
+npm run dev
 ```

@@ -9,5 +9,5 @@ See [`server/src/ports.js`](server/src/ports.js) and [`server/src/Main.gren`](se
 
 ```
 npm install
-npm start
+npm run dev
 ```

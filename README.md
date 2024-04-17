@@ -534,12 +534,17 @@ and then look at the `buildInputs` list in `shell.nix` for other things you'll n
 
 ### Running examples
 
-You can `cd` to a directory under [`examples/`](https://github.com/blaix/prettynice/tree/main/examples) and run `npm start`,
-or use [`just`](https://github.com/casey/just) from the root of the repo:
+From the root of the repo with [`just`](https://github.com/casey/just):
 
 * Run a single example with `just example [EXAMPLE NAME]` (e.g. `just example hello-world`).
 * Iterate through all the examples with `just examples`.
   Ctrl-c to kill the current example and start the next one.
   Great for testing.
+* See [`Justfile`](/Justfile) for details.
 
-See [`Justfile`](/Justfile) for details.
+Or `cd` to a directory under [`examples/`](https://github.com/blaix/prettynice/tree/main/examples) and run:
+
+```
+npm install
+npm run dev
+```

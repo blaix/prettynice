@@ -19,7 +19,7 @@ Run this example with:
 
 ```
 npm install
-npm start
+npm run dev
 ```
 
 **Note:** Prettynice has a parser that looks for your Props to generate the corresponding server-side types and encoders,

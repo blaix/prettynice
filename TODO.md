@@ -48,6 +48,8 @@
     - [o] next
     - [ ] v1
   - [ ] See coworker's idea about a context object with an iterated int id passed through the port...
+  - [ ] Decide on db approach for pencils?
+  - [ ] ^ Docs (and package(s)?) for whatever I decide on
   - [ ] Explain the problems and alternatives in docs.
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities

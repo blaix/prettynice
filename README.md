@@ -74,7 +74,7 @@ router request response =
         [] ->
             Response.sendText "Hello!" response
             -- You can also sendHtml, sendJson, and sendBytes
-            -- see examples/content-types
+            -- see examples/[version]/content-types
             
         [ "hello", name ] ->
             Response.sendText ("Hello, " ++ name) response
@@ -85,7 +85,7 @@ router request response =
                 |> Response.sendText "Oops!"
 ```
 
-See [examples/routing/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/routing/server/src/Main.gren).
+See [examples/v1/routing/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/routing/server/src/Main.gren).
 
 ## Server-side HTML
 
@@ -104,7 +104,7 @@ Response.sendHtml
     }
 ```
 
-See [examples/content-types/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/content-types/server/src/Main.gren).
+See [examples/v1/content-types/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/content-types/server/src/Main.gren).
 
 ## Client-side Components
 
@@ -178,7 +178,7 @@ subscriptions _ =
     Sub.none
 ```
 
-See [examples/client-side-components/client/src/Components/Counter.gren](https://github.com/blaix/prettynice/tree/main/examples/client-side-components/client/src/Components/Counter.gren).
+See [examples/v1/client-side-components/client/src/Components/Counter.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-components/client/src/Components/Counter.gren).
 
 Dropping a component in `client/src/Components/` makes it available to embed in
 your server-side HTML:
@@ -206,14 +206,14 @@ myResponse =
     }
 ```
 
-See [examples/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/client-side-components/server/src/Main.gren).
+See [examples/v1/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-components/server/src/Main.gren).
 
 Because you can initialize your client-side components with data from the
 server, **you don't need loading states or encoders, and the data will be
 type-checked at compile time.**
 
 Note: This is still a work-in-progress, and only works with certain types. See
-[examples/client-side-components/README.md](https://github.com/blaix/prettynice/tree/main/examples/client-side-components/README.md)
+[examples/v1/client-side-components/README.md](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-components/README.md)
 for details.
 
 ## Forms
@@ -270,14 +270,14 @@ viewResult request =
         name ++ " likes: " ++ hobbies
 ``` 
 
-See [examples/forms](https://github.com/blaix/prettynice/tree/main/examples/forms) for a full working example.
+See [examples/v1/forms](https://github.com/blaix/prettynice/tree/main/examples/v1/forms) for a full working example.
 
 ## Static assets
 
 Any files in `public/` will be copied to `dist/client` and available at the
 root url path.
 
-See [examples/static-assets](https://github.com/blaix/prettynice/tree/main/examples/static-assets) for a full working example.
+See [examples/v1/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v1/static-assets) for a full working example.
 
 ## Customizing `<head>`
 
@@ -298,7 +298,7 @@ Response.sendHtml
     }
 ```
 
-See [examples/static-assets](https://github.com/blaix/prettynice/tree/main/examples/static-assets) for a full working example.
+See [examples/v1/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v1/static-assets) for a full working example.
 
 ## Javascript Interop in the Browser
 
@@ -331,7 +331,7 @@ update msg model =
             }
 ```
 
-See [examples/client-side-ports](https://github.com/blaix/prettynice/tree/main/examples/client-side-ports) for a full working example.
+See [examples/v1/client-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-ports) for a full working example.
 
 ## More Control
 
@@ -381,11 +381,11 @@ update msg model =
 
 See:
 
-* [examples/running-tasks](/examples/running-tasks)
-* [examples/running-commands](/examples/running-commands)
-* [examples/server-side-state](/examples/server-side-state)
-* [examples/server-side-ports](/examples/server-side-ports)
-* [examples/database-ports](/examples/database-ports)
+* [examples/v1/running-tasks](/examples/v1/running-tasks)
+* [examples/v1/running-commands](/examples/v1/running-commands)
+* [examples/v1/server-side-state](/examples/v1/server-side-state)
+* [examples/v1/server-side-ports](/examples/v1/server-side-ports)
+* [examples/v1/database-ports](/examples/v1/database-ports)
 
 ## Javascript Interop in Node
 
@@ -442,18 +442,18 @@ subscriptions model =
 
 See:
 
-* [examples/server-side-ports](https://github.com/blaix/prettynice/tree/main/examples/server-side-ports).
-* [examples/database-ports](https://github.com/blaix/prettynice/tree/main/examples/database-ports).
+* [examples/v1/server-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/server-side-ports).
+* [examples/v1/database-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/database-ports).
 
 ## Databases
 
 Gren does not yet have a way to natively connect to a database.
 Currently I recommend using some form of db-over-http.
 
-See [examples/next/database](https://github.com/blaix/prettynice/tree/main/examples/next/database) for a working example of doing this with sqlite.
+See [examples/v1/next/database](https://github.com/blaix/prettynice/tree/main/examples/v1/next/database) for a working example of doing this with sqlite.
 
 You could do this with ports as well, but there are caveats.
-See [Why not ports?](https://github.com/blaix/prettynice/tree/main/examples/next/database/README.md#why-not-ports) in the example README.
+See [Why not ports?](https://github.com/blaix/prettynice/tree/main/examples/v1/next/database/README.md#why-not-ports) in the example README.
 
 ## Deployment
 

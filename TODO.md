@@ -36,11 +36,13 @@
 - [X] New project generator
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [X] Start migrating pencils.dev
+- [ ] Fix examples that say "npm start" when it should be "npm run dev"
 - [.] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [o] Version the examples (not related but became an issue while discovering and looking into this):
     - [X] split into examples/v1 and examples/next
-    - [ ] update links in README (and elsewhere?)
+    - [X] update links in README
+    - [ ] ...and elsewhere?
   - [ ] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
     - [o] next
     - [ ] v1

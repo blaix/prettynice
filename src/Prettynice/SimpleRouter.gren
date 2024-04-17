@@ -16,12 +16,12 @@ and a [`Response`](Prettynice.Response) and returns a command to
 Typically you will use [`defineProgram`](#defineProgram) in your `main`,
 and [`startProgram`](#startProgram) in your `init`. See below for details.
 
-See [examples/routing](https://github.com/blaix/prettynice/blob/main/examples/routing)
+See [examples/next/routing](https://github.com/blaix/prettynice/blob/main/examples/next/routing)
 for a full working example.
 
 **Note:** If you need more control over your program (e.g. you need
-[ports](https://github.com/blaix/prettynice/tree/main/examples/server-side-ports),
-or want to [run a task before responding](https://github.com/blaix/prettynice/tree/main/examples/running-tasks))
+[ports](https://github.com/blaix/prettynice/tree/main/examples/next/server-side-ports),
+or want to [run a task before responding](https://github.com/blaix/prettynice/tree/main/next/examples/next/running-tasks))
 you will want to use the [`Prettynice`](Prettynice) module instead.
 
 ## Defining your router
@@ -60,7 +60,7 @@ It should be returned from your `init` function.
 You will get this from [`startProgram`](#startProgram), which you can wrap in an
 [`await`](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/Init#await)
 if you need to initialize other subsystems (see the 
-[running-tasks example](https://github.com/blaix/prettynice/blob/main/examples/running-tasks/server/src/Main.gren)
+[running-tasks example](https://github.com/blaix/prettynice/blob/main/examples/next/running-tasks/server/src/Main.gren)
 for an example of this).
 -}
 type alias Init =

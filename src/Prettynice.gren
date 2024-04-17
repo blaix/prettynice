@@ -18,9 +18,9 @@ Typically you will use [`defineProgram`](#defineProgram) in your `main`,
 and [`startProgram`](#startProgram) in your `init`. See below for details.
 Or check out some complete example programs that use this module:
 
-* [examples/server-side-state](/examples/server-side-state)
-* [examples/running-tasks](/examples/running-tasks)
-* [examples/running-commands](/examples/running-commands)
+* [examples/next/server-side-state](/examples/next/server-side-state)
+* [examples/next/running-tasks](/examples/next/running-tasks)
+* [examples/next/running-commands](/examples/next/running-commands)
 
 ## Defining your program
 
@@ -59,7 +59,7 @@ It should be returned from your `init` function.
 You will get this from [`startProgram`](#startProgram), which you can wrap in an
 [`await`](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/Init#await)
 if you need to initialize other subsystems (see the 
-[running-tasks example](https://github.com/blaix/prettynice/blob/main/examples/running-tasks/server/src/Main.gren)
+[running-tasks example](https://github.com/blaix/prettynice/blob/main/examples/next/running-tasks/server/src/Main.gren)
 for an example of this).
 -}
 type alias Init appModel appMsg =

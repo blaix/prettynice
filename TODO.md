@@ -39,16 +39,15 @@
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [.] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
-  - [o] Version the examples (not related but became an issue while discovering and looking into this):
-    - [X] split into examples/v1 and examples/next
-    - [X] update links in README
-    - [ ] ...and elsewhere?
-  - [ ] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
-    - [o] next
+  - [X] Version the examples (not related but became an issue while discovering and looking into this)
+  - [.] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
+    - [ ] Consider keeping it with a context-on-the-model workaround (have a database-http, and a database-ports)
+    - [X] next
     - [ ] v1
   - [ ] Update, replace, or remove other examples that use server-side ports.
     - [o] next
     - [ ] v1
+  - [ ] Remove/replace links to any removed examples
   - [ ] See coworker's idea about a context object with an iterated int id passed through the port...
   - [ ] Decide on db approach for pencils?
   - [ ] ^ Docs (and package(s)?) for whatever I decide on
@@ -160,7 +159,7 @@
 ## Open questions and future ideas
 
 - [ ] No good way to get port and host from env vars for `Prettynice.startProgram`. Currently must be hard-coded or passed in via argv[].
-- [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/tea-modules`.
+- [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/next/tea-modules`.
   - [ ] see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
   - [ ] see https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?

@@ -450,7 +450,7 @@ See:
 Gren does not yet have a way to natively connect to a database.
 Currently I recommend using some form of db-over-http.
 
-See [examples/v1/next/database](https://github.com/blaix/prettynice/tree/main/examples/v1/next/database) for a working example of doing this with sqlite.
+See [examples/next/database](https://github.com/blaix/prettynice/tree/main/examples/next/database) for a working example of doing this with sqlite.
 
 You could do this with ports as well, but there are caveats.
 See [Why not ports?](https://github.com/blaix/prettynice/tree/main/examples/v1/next/database/README.md#why-not-ports) in the example README.

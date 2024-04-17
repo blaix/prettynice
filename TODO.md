@@ -38,7 +38,8 @@
 - [X] Start migrating pencils.dev
 - [.] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
-  - [ ] Version the examples (e.g. examples/v1, examples/next) (not related but became an issue while discovering and looking into this):
+  - [o] Version the examples (not related but became an issue while discovering and looking into this):
+    - [X] split into examples/v1 and examples/next
     - [ ] update links in README (and elsewhere?)
   - [ ] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
     - [o] next

@@ -4,7 +4,7 @@ Gren does not have native database support (yet).
 For now it is recommended to use some form of db-over-http.
 In this example I am using [ws4sqlite](https://github.com/proofrock/ws4sqlite) (via [docker](https://germ.gitbook.io/ws4sqlite/documentation/installation/docker)) to query sqlite over HTTP on the backend,
 and [prisma](https://www.prisma.io/) for database migrations and seeding
-(using the [getting started](https://www.prisma.io/docs/getting-started) guide).
+(via the [getting started](https://www.prisma.io/docs/getting-started) guide).
 
 * See [`server/src/Main.gren`](server/src/Main.gren) for querying the db over ws4sqlite.
 * See [`package.json`](package.json) for the prisma and ws4sqlite integration.

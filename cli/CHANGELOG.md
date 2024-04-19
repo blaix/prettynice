@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2 (2024-04-19)
+
+* Update link in the error output when the cli fails to parse component props.
+  It now links to the package docs instead of github source code.
+  
 ## 1.2.1 (2024-03-17)
 
 * Use `127.0.0.1` as the host in `init` project template (was `0.0.0.0`)

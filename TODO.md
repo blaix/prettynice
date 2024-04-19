@@ -37,17 +37,15 @@
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [X] Start migrating pencils.dev
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
-- [.] Server-side ports will only work in very limited situations.
+- [o] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [X] Version the examples (not related but became an issue while discovering and looking into this)
-  - [o] Add database-http example (ws4sqlite):
-    - [X] next
-    - [ ] v1
-  - [ ] Update database-ports example:
+  - [X] Add database-http example (ws4sqlite)
+  - [ ] Update database-ports examples:
     - [ ] Add X-PN-Request-ID header
     - [ ] Make db call per-request, matching request/response by X-PN-Request-ID:
-      - [ ] next
       - [ ] v1
+      - [ ] next (copy over from v1 - removed earlier)
   - [ ] Update server-side-ports example to match request/response by X-PN-Request-ID
     - [ ] next
     - [ ] v1

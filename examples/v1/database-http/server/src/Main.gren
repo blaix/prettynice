@@ -1,0 +1,218 @@
+module Main exposing (main)
+
+import HttpClient
+import Init
+import Json.Encode as Encode
+import Json.Decode as Decode
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+type alias Model =
+    { httpPerm : HttpClient.Permission
+    }
+
+
+type alias User =
+    { id : Int
+    , name : String
+    }
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        , onRequest = GotRequest
+        }
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Init.await HttpClient.initialize <| \httpPerm -> 
+        Prettynice.startProgram
+            { host = "127.0.0.1"
+            , port_ = 3000
+            , env = env
+            , model = { httpPerm = httpPerm }
+            }
+
+
+type Msg
+    = GotRequest Request Response
+    | GotUserResult Response 
+        (Result 
+            (HttpClient.Error (Array User))
+            (HttpClient.Response (Array User))
+        )
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            case request.path of
+                [] ->
+                    { model = model
+                    , command =
+                        Response.sendHtml viewHome response
+                    }
+
+                [ "users", userId ] ->
+                    { model = model
+                    , command =
+                        userId
+                            |> String.toInt
+                            |> Maybe.withDefault 0
+                            |> getUser model.httpPerm
+                            |> Task.attempt (GotUserResult response)
+                    }
+
+                _ ->
+                    { model = model
+                    , command = notFound response
+                    }
+
+        GotUserResult response (Ok userResult) ->
+            { model = model
+            , command = 
+                case userResult.data of
+                    [ user ] ->
+                        Response.sendHtml (viewUser user) response
+
+                    _ ->
+                        notFound response
+            }
+
+        GotUserResult response (Err e) ->
+            { model = model
+            -- In a real app you will want to handle this properly
+            , command = Response.sendText (Debug.toString e) response
+            }
+
+
+getUser : 
+    HttpClient.Permission 
+    -> Int 
+    -> Task 
+        (HttpClient.Error (Array User))
+        (HttpClient.Response (Array User))
+getUser httpPerm userId =
+    HttpClient.post "http://localhost:8080/dev"
+        |> HttpClient.withJsonBody (userQuery userId)
+        |> HttpClient.expectJson decodeUserResult
+        |> HttpClient.send httpPerm
+
+
+userQuery : Int -> Encode.Value
+userQuery userId =
+    -- See https://germ.gitbook.io/ws4sqlite/documentation/requests
+    -- We want a request that looks like this:
+    --     { 
+    --         "transaction": [
+    --             {
+    --                 "query": "select * from User where id = ?",
+    --                 "values": [ userId ]
+    --             }
+    --         ]
+    --     }
+    Encode.object
+        [ { key = "transaction"
+          , value = Encode.array Encode.object
+            [ [ { key = "query"
+                , value = Encode.string "select * from User where id = ?"
+                }
+              , { key = "values"
+                , value = Encode.array Encode.int [ userId ]
+                }
+              ]
+            ]
+          }
+        ]
+
+
+decodeUserResult : Decode.Decoder (Array User)
+decodeUserResult =
+    -- See https://germ.gitbook.io/ws4sqlite/documentation/responses
+    -- We will get a response that looks like this:
+    --     {
+    --         "results": [
+    --             {
+    --                 ...
+    --                 "resultSet": [
+    --                     { "id": 1, "name": "Justin" }
+    --                 ]
+    --             }
+    --          ]
+    --     }
+    Decode.map Array.flatten <|
+        Decode.field "results" <|
+            Decode.array <|
+                Decode.field "resultSet" <|
+                    Decode.array <|
+                        Decode.map2 makeUser
+                            (Decode.field "id" Decode.int)
+                            (Decode.field "name" Decode.string)
+
+
+makeUser : Int -> String -> User
+makeUser id name =
+    { id = id, name = name }
+
+
+viewUser : User -> { title : String, head : Array (Html Msg), body : Array (Html Msg) }
+viewUser user =
+    { title = "User Details"
+    , head = []
+    , body = 
+        [ H.p []
+            [ H.text (String.fromInt user.id)
+            , H.text ": "
+            , H.text user.name
+            ]
+        , H.p []
+            [ H.a [ A.href "/" ]
+                [ H.text "Home" ]
+            ]
+        ]
+    }
+
+
+viewHome : { title : String, head : Array (Html Msg), body : Array (Html Msg) }
+viewHome =
+    { title = "Home"
+    , head = []
+    , body =
+        [ H.ul []
+            [ H.li []
+                [ H.a
+                    [ A.href "/users/1" ]
+                    [ H.text "user 1" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/2" ]
+                    [ H.text "user 2" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/3" ]
+                    [ H.text "user 3" ]
+                ]
+            ]
+        ]
+    }
+
+
+notFound : Response -> Cmd Msg
+notFound response =
+    response
+        |> Response.setStatus 404
+        |> Response.sendText "not found"

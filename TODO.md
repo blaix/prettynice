@@ -90,6 +90,7 @@
   - [ ] Handle imports in ComponentName.js for (codemirror for pencils, etc.)
   - [ ] `client/src/app.{js,ts}` entry point?
   - [ ] Styling?
+    - [ ] See `pencils/notes/UI.md`
     - [ ] Leaning towards pico.css:
       - [ ] Nice semantic defaults, with light/dark, in pure css!
       - [ ] Nice color theme options: https://picocss.com/docs/version-picker
@@ -102,7 +103,7 @@
       - [ ] add `src/*.gren` files and ship minimal css
     - [ ] and maybe bulma?
     - [ ] and look at lustre-ui :)
-    - [ ] Look at mdgriffith's elm-prefab assets plugin: https://github.com/mdgriffith/elm-prefab/blob/main/guides/plugins/app/resources.md
+    - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/blob/main/guides/plugins/app/resources.md
             From #elm-prefab channel in Incremental Elm discord:
             > Just added radix icons to my dnd app.  All I had to do was add this to the config
             >    "assets": {
@@ -187,3 +188,4 @@
   - [ ] [shoelace](https://shoelace.style/)?
   - [ ] [portals](https://wolfgangschuster.wordpress.com/2023/06/21/bring-your-own-dom-part-1-portals/)?
 - [ ] Any ideas to steal from Lustre server components?
+- [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/blob/main/guides/

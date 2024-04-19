@@ -40,18 +40,18 @@
 - [.] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [X] Version the examples (not related but became an issue while discovering and looking into this)
-  - [.] Replace database-ports example with https://germ.gitbook.io/ws4sqlite (or similar) and gren-lang/node's HttpClient
-    - [ ] Consider keeping it with a context-on-the-model workaround (have a database-http, and a database-ports)
+  - [o] Add database-http example (ws4sqlite):
     - [X] next
     - [ ] v1
-  - [ ] Update, replace, or remove other examples that use server-side ports.
-    - [o] next
+  - [ ] Update database-ports example:
+    - [ ] Add X-PN-Request-ID header
+    - [ ] Make db call per-request, matching request/response by X-PN-Request-ID:
+      - [ ] next
+      - [ ] v1
+  - [ ] Update server-side-ports example to match request/response by X-PN-Request-ID
+    - [ ] next
     - [ ] v1
-  - [ ] Remove/replace links to any removed examples
-  - [ ] See coworker's idea about a context object with an iterated int id passed through the port...
-  - [ ] Decide on db approach for pencils?
-  - [ ] ^ Docs (and package(s)?) for whatever I decide on
-  - [ ] Explain the problems and alternatives in docs.
+  - [ ] Document issues with outgoing/incoming port pairs per-request (see notes/js-tasks.md)
 - [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Other security considerations? csrf?

@@ -16,10 +16,9 @@ GotRequest request response ->
 ```
 
 but now how do you respond to _that_ request after the query port triggers a corresponding port with the result?
-You could jump through hoops to save the response in the model and pass some identifier through both ports to tie them together.
-No thanks!
+You have to jump through hoops to keep track of request ids and tie those to the matching response...
 
-For now, will encourage db-over-http and discourage server-side ports.
+For now I will update the examples to do that, but also and an example (done) and encourage db-over-http.
 For v2, I will try to create a way to call javascript as a task. See below...
 
 ## Possible Solutions

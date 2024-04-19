@@ -43,7 +43,7 @@
   - [X] Version the examples (not related but became an issue while discovering and looking into this)
   - [X] Add database-http example (ws4sqlite)
   - [ ] Update database-ports examples:
-    - [ ] Add X-PN-Request-ID header (might have to wait for Webcrypto)
+    - [ ] Add X-PN-Request-ID header (iterate an int on the model per-request, maybe switch to UUI when we have Webcrypto)
     - [ ] Make db call per-request, matching request/response by X-PN-Request-ID:
       - [ ] v1
       - [ ] next (copy over from v1 - removed earlier)

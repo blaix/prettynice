@@ -47,6 +47,9 @@
     - [ ] Make db call per-request, matching request/response by X-PN-Request-ID:
       - [ ] v1
       - [ ] next (copy over from v1 - removed earlier)
+    - [ ] Update database-http example README to mention and link to the -ports version and vice versa:
+      - [ ] v1
+      - [ ] next
   - [ ] Update server-side-ports example to match request/response by X-PN-Request-ID
     - [ ] next
     - [ ] v1

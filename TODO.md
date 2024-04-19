@@ -37,12 +37,13 @@
 - [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
 - [X] Start migrating pencils.dev
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
+- [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [o] Server-side ports will only work in very limited situations.
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [X] Version the examples (not related but became an issue while discovering and looking into this)
   - [X] Add database-http example (ws4sqlite)
   - [ ] Update database-ports examples:
-    - [ ] Add X-PN-Request-ID header
+    - [ ] Add X-PN-Request-ID header (might have to wait for Webcrypto)
     - [ ] Make db call per-request, matching request/response by X-PN-Request-ID:
       - [ ] v1
       - [ ] next (copy over from v1 - removed earlier)
@@ -50,7 +51,6 @@
     - [ ] next
     - [ ] v1
   - [ ] Document issues with outgoing/incoming port pairs per-request (see notes/js-tasks.md)
-- [ ] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [ ] Audit dynamic component loading for XSS vulnerabilities
 - [ ] Other security considerations? csrf?
 - [.] Doc site:

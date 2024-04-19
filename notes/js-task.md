@@ -44,6 +44,9 @@ GotRequest request response ->
 Not crazy about the name `ServerTask`.
 Also not sure about using generated module vs something like `ServerTask "getArticle" ...`.
 
+The idea is to use a single outgoing and a single incoming port managed by prettynice.
+The `X-PN-Request-ID` header I'm adding should help for tying task chain to a single request.
+
 For reference, look at:
 
 * elm-pages' [`BackendTask.Custom.run`](https://package.elm-lang.org/packages/dillonkearns/elm-pages/latest/BackendTask-Custom#run)

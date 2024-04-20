@@ -42,15 +42,18 @@
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [X] Version the examples (not related but became an issue while discovering and looking into this)
   - [X] Add database-http example (ws4sqlite)
-  - [ ] Update database-ports examples:
-    - [ ] Add X-PN-Request-ID header (iterate an int on the model per-request, maybe switch to UUI when we have Webcrypto)
-    - [ ] Make db call per-request, matching request/response by X-PN-Request-ID:
-      - [ ] v1
+  - [o] Update database-ports examples:
+    - [o] Make db call per-request, matching request/response with an iterating request id on the model:
+      - [X] v1
       - [ ] next (copy over from v1 - removed earlier)
-    - [ ] Update database-http example README to mention and link to the -ports version and vice versa:
-      - [ ] v1
-      - [ ] next
-  - [ ] Update server-side-ports example to match request/response by X-PN-Request-ID
+  - [ ] Turns out the per-request version of database ports wasn't too bad. Update READMEs accordingly:
+    - [ ] v1 example database-http README
+    - [ ] next example database-http README
+    - [ ] main project README database section
+  - [ ] Update database-http example README to mention and link to the -ports version and vice versa:
+    - [ ] v1
+    - [ ] next
+  - [ ] Update server-side-ports example to match request/response by a request id like the db ports example
     - [ ] next
     - [ ] v1
   - [ ] Document issues with outgoing/incoming port pairs per-request (see notes/js-tasks.md)

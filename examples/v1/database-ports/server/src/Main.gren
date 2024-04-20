@@ -123,7 +123,7 @@ update msg model =
                                 notFound response
                     }
 
-                _ ->
+                Nothing ->
                     -- How did we get here?
                     { model = model
                     , command = Cmd.none

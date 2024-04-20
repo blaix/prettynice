@@ -125,10 +125,9 @@
     - [ ] what does this mean for `ports.js`?
   - [ ] Nice to haves:
     - [ ] Full-color errors and jump to editor support? https://twitter.com/rhg_dev/status/1779998936578605493
-- [ ] Create a "server/javascript task" for calling server-side js in a way that returns a result and is composable. See `notes/js-task.md`
-- [ ] Look at mdgriffith's elm-prefab:
-  - [ ] https://github.com/mdgriffith/elm-prefab/tree/main/guides
-  - [ ] See elm-prefab channel in Incremental Elm discord
+- [ ] See `notes/js-task.md`. Do I need some kind of composable, Task-like interface for js functions yet?
+- [ ] See https://github.com/MaeBrooks/gren-webserver - there's some cool ideas in here.
+- [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/tree/main/guides - cool ideas here too
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Add a Dockerfile to the project template?
 - [ ] Add tests to the template app

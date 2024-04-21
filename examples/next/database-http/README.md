@@ -24,19 +24,24 @@ and a docker container running ws4sqlite pointed at `prisma/dev.db` that will be
 (running in prod TBD, but the short version is `npx prettynice build --optimize && npm start` for the app,
 and a more resiliant and [secure](https://germ.gitbook.io/ws4sqlite/security) ws4sqlite setup for the db)
 
-## Why not ports?
+## What about ports?
 
 _If you aren't familiar with ports, see [this elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren._
 
-You could interface directly with prisma using server-side ports, but it would introduce a lot of complexity and make things brittle.
+You could interface directly with prisma using server-side ports, but it
+introduces some extra complexity due to the decoupled nature of ports.
 
-This is because there is no way to treat an outgoing and incoming port as a single synchronous pair.
-That means in your request handler you'd have to trigger the port for the query,
-  passing some identifier to tie it to this request,
-  save the response object on your model with that same identifier,
-  send the correct response when you receive the results through anohter port message,
-  making extra sure your js error handling is tight to not leave a dangling request.
+To query a database over ports, you'll need both an outgoing port for the
+query, and an incoming port for the result. But because ports are Cmds, you
+can't have both in the same update cycle. So you need a way to save the
+response to send later when you receive the results. This means you need to
+give each request a unique ID, map that to a response on your model, pass it
+through the ports, and make extra-sure you are handling errors properly in your
+js so you don't end up with dangling requests.
 
-A future version of prettynice should have a way to do this through a
-Task-like interface that will let you run the query as a task, map the result,
-andThen send the response as a single pipeline in your request handler.
+Future versions of prettynice and/or gren will have a better way to call js
+with a Task-like interface that is composable, but until then, **I recommend
+sticking with this or another form of db-over-http** so you can keep all your
+db interaction in gren.
+
+For a database-over-ports example, see [examples/next/database-ports](/examples/next/database-ports).

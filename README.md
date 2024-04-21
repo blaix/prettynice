@@ -447,13 +447,13 @@ See:
 
 ## Databases
 
-Gren does not yet have a way to natively connect to a database.
-Currently I recommend using some form of db-over-http.
+Gren does not (yet) have a way to natively connect to a database.
+So you need to use ports or some form of db-over-http.
 
-See [examples/next/database](https://github.com/blaix/prettynice/tree/main/examples/next/database) for a working example of doing this with sqlite.
+See:
 
-You could do this with ports as well, but there are caveats.
-See [Why not ports?](https://github.com/blaix/prettynice/tree/main/examples/next/database/README.md#why-not-ports) in the example README.
+* [examples/v1/database-http](/examples/v1/database-http) (recommended)
+* [examples/v1/database-ports](/examples/v1/database-ports)
 
 ## Deployment
 

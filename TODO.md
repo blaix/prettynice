@@ -38,18 +38,13 @@
 - [X] Start migrating pencils.dev
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
-- [o] Server-side ports drawbacks:
+- [O] Server-side ports drawbacks:
   - [X] Create notes/js-task.md to describe the problem and possible solutions (will address solutions in later todos)
   - [X] Version the examples (not related but became an issue while discovering and looking into this)
   - [X] Add database-http example (ws4sqlite)
   - [X] Update database-ports examples to make db call per-request, matching request/response with an iterating request id on the model
-  - [ ] Turns out the per-request version of database ports wasn't too bad. Update READMEs accordingly:
-    - [ ] v1 example database-http README
-    - [ ] next example database-http README
-    - [ ] main project README database section
-  - [ ] Update database-http example README to mention and link to the -ports version and vice versa:
-    - [ ] v1
-    - [ ] next
+  - [X] Turns out the per-request version of database ports wasn't too bad. Update READMEs accordingly
+  - [X] Update database-http example README to mention and link to the -ports version and vice versa
   - [ ] Update server-side-ports example to match request/response by a request id like the db ports example
     - [ ] next
     - [ ] v1

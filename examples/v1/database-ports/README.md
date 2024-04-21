@@ -21,3 +21,19 @@ Run the project from this directory with:
 npm install
 npm run dev
 ```
+
+## Server-side Port Caveats
+
+Using ports when your response depends on the result of that port introduces a
+lot of exta complexity. You need both an outgoing port for the call to js, and
+an incoming port for the result. But because ports are Cmds, you can't have
+both in the same update cycle. So you need a way to save the response to send
+later when you receive the results. This means you need to give each request a
+unique ID, map that to a response on your model, pass it through the ports, and
+make extra-sure you are handling errors properly in your js so you don't end up
+with dangling requests.
+
+Future versions of prettynice and/or gren will have a better way to call js
+with a Task-like interface that is composable, but until then, **I recommend
+using some form of [db-over-http](/examples/v1/database-http)** so you can keep
+all your db-interaction logic in gren.

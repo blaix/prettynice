@@ -34,5 +34,5 @@ with dangling requests.
 
 Future versions of prettynice and/or gren will have a better way to call js
 with a Task-like interface that is composable, but until then, **I recommend
-using some form of [db-over-http](/examples/v1/database-http)** so you can keep
-all your db interaction logic in gren.
+using some form of [db-over-http](/examples/next/database-http)** so you can
+keep all your db interaction logic in gren.

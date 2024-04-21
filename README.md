@@ -395,55 +395,19 @@ giving you a type-safe interface to the entire node ecosystem.
 
 If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
 
-```js
-// server/src/ports.js
-
-const crypto = require("crypto");
-
-exports.init = async function(app) {
-    app.ports.getUuid.subscribe(function() {
-        app.ports.receiveUuid.send(
-            crypto.randomUUID()
-        );
-    });
-};
-```
-
-```elm
--- server/src/Main.gren
-
-type alias Model =
-    { response : Maybe Response }
-
-update msg model =
-    case msg of
-        GotRequest request response ->
-            { model = { model | response = Just response }
-            , command = getUuid {}
-            }
-
-        GotUuid response uuid ->
-            { model = { model | response = Nothing }
-            , command = Response.sendText uuid response
-            }
-
-port getUuid : {} -> Cmd msg
-port receiveUuid : (String -> msg) -> Sub msg
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    case model.response of
-        Just response ->
-            receiveUuid <| GotUuid response
-
-        Nothing ->
-            Sub.none
-```
-
 See:
 
 * [examples/v1/server-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/server-side-ports).
 * [examples/v1/database-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/database-ports).
+
+**Note:** due to the async and decoupled nature of ports, if you are triggering
+a port on a request, and your response depends on the result of that port,
+you'll need to map requests to responses on your model so you can respond in a
+separate update cycle when you get the result through a separate port, making
+extra-sure to handle errors in your js so you dno't leave dangling requests.
+The examples above show how to do that. Future versions of prettynice and/or
+gren will have a way to call js and act on the results in a Task-like,
+composable way, but until then you'll have to live with this extra complexity.
 
 ## Databases
 

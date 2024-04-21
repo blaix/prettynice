@@ -1,14 +1,32 @@
 port module Main exposing (main)
 
+import Dict exposing (Dict)
+import Init
 import Node exposing (Environment)
 import Prettynice
 import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
-import Random
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+-- MODEL
+
+
+-- Because our outgoing and incoming ports are commands (isolated and async),
+-- we need to track the request/response pairs on our model so we can respond
+-- to the correct request when we get the results.
 
 
 type alias Model =
-    { response : Maybe Response
+    { requestId : Int
+    , responses : Dict Int Response
+    }
+
+
+type alias UuidPortResponse =
+    { requestId : Int
+    , uuid : String
     }
 
 
@@ -28,53 +46,62 @@ init env =
         { host = "127.0.0.1"
         , port_ = 3000
         , env = env
-        , model = { response = Nothing }
         , command = Cmd.none
+        , model =
+            { requestId = 1
+            , responses = Dict.empty
+            }
         }
+
+
+-- UPDATE
 
 
 type Msg
     = GotRequest Request Response
-    | GotUuid Response String
+    | GotUuid UuidPortResponse
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         GotRequest request response ->
-            -- TODO: what about simultaneous requests? (see below)
-            { model = { model | response = Just response }
-            , command = getUuid {}
+            { model = 
+                { model 
+                    | requestId = model.requestId + 1
+                    , responses = 
+                        model.responses 
+                            |> Dict.insert model.requestId response
+                }
+            , command =
+                getUuid model.requestId
             }
 
-        GotUuid response uuid ->
-            { model = { model | response = Nothing }
-            -- TODO: is there any gaurantee this is YOUR response?
-            , command = Response.sendText uuid response
-            }
 
-        -- See database-ports example where this problem is even worse.
-        -- Imagine you want to get a user by id on each request.
-        -- How do you tie the request/response that triggers the outgoing query port
-        -- to a response when you get a message later from the incoming port?
+        GotUuid uuidPortResponse ->
+            case Dict.get uuidPortResponse.requestId model.responses of
+                Just response ->
+                    { model = 
+                        { model
+                            | responses = 
+                                model.responses 
+                                    |> Dict.remove uuidPortResponse.requestId
+                        }
+                    , command =
+                        Response.sendText uuidPortResponse.uuid response
+                    }
 
-        -- TODO: ports are not the way!
-        -- We need _sequencable_ js FFI.
-        -- See https://package.elm-lang.org/packages/andrewMacmurray/elm-concurrent-task/latest/
+                Nothing ->
+                    -- How did we get here?
+                    { model = model
+                    , command = Cmd.none
+                    }
 
-        -- or we need a Task-like interface to ports or FFI added to gren itself
-        -- (see zulip and discord conversations about this)
 
-
-port getUuid : {} -> Cmd msg
-port receiveUuid : (String -> msg) -> Sub msg
+port getUuid : Int -> Cmd msg
+port gotUuid : (UuidPortResponse -> msg) -> Sub msg
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    case model.response of
-        Just response ->
-            receiveUuid <| GotUuid response
-
-        Nothing ->
-            Sub.none
+subscriptions _ =
+    gotUuid GotUuid

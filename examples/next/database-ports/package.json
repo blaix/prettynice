@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "scripts": {
+    "postinstall": "npx prisma migrate dev",
+    "dev": "npx nodemon",
+    "build": "npx prettynice build --optimize",
+    "start": "node dist/server/index.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "nodemonConfig": {
+    "exec": "npx prettynice build && npm start",
+    "ext": "js,gren",
+    "watch": [
+      "{client,server}/src/**/*"
+    ]
+  },
+  "dependencies": {
+    "@prisma/client": "^5.9.1",
+    "gren-lang": "^0.3.0",
+    "prettynice": "^1.0.0",
+    "prisma": "^5.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

@@ -41,14 +41,15 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [.] Doc site:
   - [X] Think about versioning...
-  - [ ] Link on github project settings and README
-  - [ ] Link to relevant sections from the example READMEs
-  - [ ] Link in the error message for failed props parsing
+  - [.] Finish pages
   - [ ] Flesh out gren guide as needed:
     - [ ] Migrate to starlight (see convo with Robin)
     - [ ] Arrays missing from pattern matching section, but I'm linking to this from my basic router example
     - [ ] Nothing about creating full applications (in browser or in node)
     - [ ] Good examples from lustre! https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
+  - [ ] Link on github project settings and README
+  - [ ] Link to relevant sections from the example READMEs
+  - [ ] Link in the error message for failed props parsing
   - [ ] https://www.youtube.com/watch?v=jIPZlrCpwiE should probably be in the docs somewhere...
   - [ ] Deployment example + docs.
     - [ ] sqlite vs postgresql (easy local dev vs easy management deployment?)

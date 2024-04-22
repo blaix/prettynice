@@ -46,6 +46,9 @@
     - [ ] Migrate to starlight (see convo with Robin)
     - [ ] Arrays missing from pattern matching section, but I'm linking to this from my basic router example
     - [ ] Nothing about creating full applications (in browser or in node)
+    - [ ] Elaborate on the FAQ section about differences from elm:
+      - [ ] Expanded record desctructing:
+        - [ ] e.g. I had no idea about `{ a = newA, b } = { a = 1, b = 2 }` for renaming destructured fields...
     - [ ] Good examples from lustre! https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs

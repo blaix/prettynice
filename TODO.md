@@ -66,6 +66,9 @@
   - [ ] discord
   - [ ] twitter?
 - [ ] Vite support (required for pencils):
+  - [ ] FIRST: consider esbuild instead of vite:
+    - [ ] Worried vite is overkill, changes too rapidly, and has too much happening implicitly / under the hood
+    - [ ] Stuff like this is very troubling (prod vs dev inconsistencies): https://twitter.com/ryanflorence/status/1782409358057603439
   - [ ] Use one of the gren vite plugins?:
     - [ ] https://github.com/gabriela-sartori/vite-plugin-gren (original?)
     - [ ] https://github.com/laurentpayot/vite-plugin-gren (links to gabriella's as "original". why was this created?)

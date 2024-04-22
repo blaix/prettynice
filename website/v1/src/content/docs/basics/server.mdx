@@ -142,7 +142,7 @@ router request response =
 ```
 
 `request.path` is an array of strings. It holds the path portion of the URL split on `/`.
-For example, requesting `127.0.0.1:3000/bowties/are/cool` would have a `request.path` of `['bowties', 'are', 'cool']`.
+For example, requesting `127.0.0.1:3000/bowties/are/cool` would have a `request.path` of `["bowties", "are", "cool"]`.
 Requesting the root path would have an empty array (`[]`).
 
 This makes it useful for pattern matching.

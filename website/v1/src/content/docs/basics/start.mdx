@@ -28,24 +28,25 @@ import { Code, FileTree, Steps } from '@astrojs/starlight/components';
 
 ## Directory Structure
 
-The important directories are:
+The important files and directories in a prettynice site are:
 
 <FileTree>
 - client
   - src
-    - Components
-        - Counter.gren
-- public
+    - Components # Your client-side components will live here.
+        - Counter.gren # An example client-side component.
+- public # Public assets (images, css, etc) live here.
     - ...
 - server
   - src
-    - Main.gren
+    - Main.gren # The server. Entry point for all requests.
 </FileTree>
 
-* `Main.gren` is your [server](/basics/server/).
-* `Counter.gren` is an example [client-side component](/basics/client/).
-* `public` is where you can put your [static assets](/basics/assets/).
+All of your client-side code lives under `client/` and will be compiled into a bundle that targets the browser.
 
-All of your server-side code lives under `server/` and will be compiled into a node application.
+All of your server-side code lives under `server/` and will be compiled into a bundle that targets node.
 
-All of your client-side code lives under `client/` and will be compiled into a separate browser application, and will be served by the node application.
+When you start your app, it runs the server bundle.
+The browser bundle and anything under `public/` will be served from that server as static files.
+
+Read on for a detailed explanation of all those files.

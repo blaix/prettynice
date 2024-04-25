@@ -19,7 +19,7 @@ export default defineConfig({
 					label: 'The Basics',
 					items: [
 						{ label: 'Getting Started', link: '/basics/start/' },
-						{ label: 'Server-side Responses', link: '/basics/server/' },
+						{ label: 'Routing Requests', link: '/basics/router/' },
 						{ label: 'Client-side Components', link: '/basics/client/' },
 						{ label: 'Images and Styling', link: '/basics/assets/' },
 						{ label: 'Forms', link: '/basics/forms/' },

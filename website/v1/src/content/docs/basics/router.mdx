@@ -1,0 +1,142 @@
+---
+title: Routing Requests
+description: Responding to HTTP requests in Pretty Nice
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Every request to your site begins on the server, which is defined in `server/src/Main.gren`.
+If you generated your project with `prettynice init`, you'll have a basic router set up in that file.
+Here I'll create one from scratch to help you understand what it's doing.
+
+<Aside>
+    If you aren't familiar with gren, it would be a good idea to read through [the book](https://gren-lang.org/book/) first.
+    The rest of this guide will assume basic familiarity with gren and focus on the parts specific to prettynice.
+</Aside>
+
+Start with the module definition and necessary imports, exposing the required `main` function:
+
+```elm
+// server/src/Main.gren
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as Html exposing (Html)
+import Transmutable.Html.Attributes as Attr
+```
+
+I'm also exposing some types and creating some aliases for the long module names.
+
+For details on modules, imports, exposing, and aliasing, check out [the modules section](https://gren-lang.org/book/syntax/modules/) of the gren book.
+
+Next, let's add the router. This is where you will handle all incoming HTTP requests:
+
+```diff lang="elm"
+// server/src/Main.gren
+  module Main exposing (main)
+  
+  import Node exposing (Environment)
+  import Prettynice.SimpleRouter as Router
+  import Prettynice.Request exposing (Request)
+  import Prettynice.Response as Response exposing (Response)
+  import Transmutable.Html as Html exposing (Html)
+  import Transmutable.Html.Attributes as Attr
+ 
+ 
++ router : Request -> Response -> Cmd msg
++ router request response =
++     case request.path of
++         [] -> 
++             response
++                 |> Response.sendHtml
++                     { title = "My Website"
++                     , head = []
++                     , body = 
++                         [ Html.h1 [] [ Html.text "Welcome!" ]
++                         , Html.p [] [ Html.text "Cool page, huh?" ]
++                         ]
++                     }
++
++         _ ->
++             response
++                 |> Response.setStatus 404
++                 |> Response.sendText "Not found"
+```
+
+Prettynice will call this function every time someone makes a request to your site,
+passing in a [request](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Request#Request)
+that holds information about the request, and a
+[response](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Response)
+that you can use to respond to the request.
+
+Here I'm pattern-matching on `request.path`, which is an array of strings representing each section of the URL path between `/`.
+For example, if I wanted to match a path like `/admin/users`, I'd add a pattern like this:
+
+```diff lang="elm"
+  case request.path of
+      [] -> 
+          -- Handle root path: /
+          ...
+  
++     [ "admin", "users" ] ->
++         -- Handle /admin/users
++         ...
+  
+      _ ->
+          -- Handle all other paths
+          ...
+```
+
+The `_` pattern matches anything that was caught in a previous pattern.
+I'm using that to respond with a 404 Not Found response.
+
+I could also match on other parts of the [request](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Request).
+For example:
+
+
+```diff lang="elm"
+case request.method of
+    GET -> 
+        -- Handle GET requests
+        ...
+
+    POST ->
+        -- Handle POST requests
+        ...
+
+    _ ->
+        -- Handle all other requests
+        ...
+```
+
+or a combination:
+
+```diff lang="elm"
+case request of
+    { path = [] } -> 
+        -- Handle root path for any method
+        ...
+
+    { path = [ "users" ], method = POST } ->
+        -- Handle POST to /users
+        ...
+
+    ...
+```
+
+I can also capture dynamic parts of the url:
+
+```diff lang="elm"
+    [ "users", userId ] ->
+        -- Handle paths like /users/123
+        ...
+```
+
+See [the pattern matching section](https://gren-lang.org/book/syntax/pattern_matching/) of the gren book for more information on gren's pattern matching capabilities.
+
+TODO: Add arrays to the pattern matching section of the gren book.
+
+TODO: then finish this section.

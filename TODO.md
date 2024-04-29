@@ -42,9 +42,8 @@
 - [.] Doc site:
   - [X] Think about versioning...
   - [.] Finish pages
-  - [ ] Flesh out gren guide as needed:
-    - [ ] Migrate to starlight (see convo with Robin)
-    - [ ] Arrays missing from pattern matching section, but I'm linking to this from my basic router example
+  - [.] Flesh out gren guide as needed:
+    - [X] Migrate to starlight (see convo with Robin)
     - [ ] Nothing about creating full applications (in browser or in node)
     - [ ] Elaborate on the FAQ section about differences from elm:
       - [ ] Expanded record desctructing:
@@ -112,10 +111,10 @@
     - [ ] what does this mean for `ports.js`?
   - [ ] Nice to haves:
     - [ ] Full-color errors and jump to editor support? https://twitter.com/rhg_dev/status/1779998936578605493
-- [ ] See `notes/js-task.md`. Do I need some kind of composable, Task-like interface for js functions yet?
+- [ ] See `notes/js-task.md`. Do I need some kind of composable, Task-like interface for js functions yet (will pencils need this for db calls?)?
+- [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] See https://github.com/MaeBrooks/gren-webserver - there's some cool ideas in here.
 - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/tree/main/guides - cool ideas here too
-- [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Add a Dockerfile to the project template?
 - [ ] Add tests to the template app
 - [ ] Add `__filename` to Node env, `splitPath` to FileSystem, and replace cli's `dirname` port call: https://gren.zulipchat.com/#narrow/stream/376306-ideas/topic/Node.20bindings.20to.20__dirname.3F/near/425878041
@@ -143,6 +142,7 @@
     - [ ] Form submissions? See https://remix.run/docs/en/main/components/form
     - [ ] Server-side components?
     - [ ] toBackend/toFrontend messages?
+    - [ ]   replacing the generated script tag with an hx-trigger? https://twitter.com/RustyVermeer/status/1784972656749768739
     - [ ] If I just need to replace elements on the page: https://leanrada.com/htmz/
     - [ ] What about slow connections / failed js loading? See https://www.youtube.com/watch?v=EzLGleT1yrY
 - [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)

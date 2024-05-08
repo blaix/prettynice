@@ -30,6 +30,9 @@ build-cli:
 build-cli-debug:
   cd cli && npx gren make src/Main.gren --output=bin/main.js
 
+web:
+  cd website/v1 && npm install && npm run dev
+
 deploy-web:
   cd website/v1 && flyctl deploy
 

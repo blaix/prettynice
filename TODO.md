@@ -101,6 +101,9 @@
     - [ ] what does this mean for `ports.js`?
   - [ ] Nice to haves:
     - [ ] Full-color errors and jump to editor support? https://twitter.com/rhg_dev/status/1779998936578605493
+- [ ] Experiment with nested TEA again e.g. standalone modules per route. See `examples/next/tea-modules`.
+  - [ ] LOTS of potential here! => see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
+  - [ ] see https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
 - [ ] See `notes/js-task.md`. Do I need some kind of composable, Task-like interface for js functions yet (will pencils need this for db calls?)?
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] See https://github.com/MaeBrooks/gren-webserver - there's some cool ideas in here.
@@ -136,13 +139,13 @@
     - [ ] If I just need to replace elements on the page: https://leanrada.com/htmz/
     - [ ] What about slow connections / failed js loading? See https://www.youtube.com/watch?v=EzLGleT1yrY
 - [ ] Speed up build step. Parallelize build tasks? (codegen has to happen before client/server builds)
+- [ ] Experiment with portals. Would this help with components at all?
+  - [ ] https://react.dev/reference/react-dom/createPortal
+  - [ ] https://wolfgangschuster.wordpress.com/2023/06/21/bring-your-own-dom-part-1-portals/)?
 
 ## Open questions and future ideas
 
 - [ ] No good way to get port and host from env vars for `Prettynice.startProgram`. Currently must be hard-coded or passed in via argv[].
-- [ ] Is there any way to help with nested TEA? e.g. standalone TEA modules per route. See `examples/next/tea-modules`.
-  - [ ] see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
-  - [ ] see https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
 - [ ] Is there anything that can be done about the duplication between Prettynice.gren and Prettynice.SimpleRouter.gren?
 - [ ] Should there be a prettynice cli "serve" command?
     - [ ] Originally tried to do this but having trouble getting server's stdout to pass through the parent process
@@ -164,8 +167,6 @@
 - [ ] Emails? (Mario from Lamdera recommends https://postmarkapp.com/)
 - [ ] Metrics? Prometheus (integrates with Caddy https://caddyserver.com/docs/metrics)?
 - [ ] New Temporal API coming for dates/times? https://github.com/tc39/proposal-temporal
-- [ ] Anything to do with webcomponents?:
-  - [ ] [shoelace](https://shoelace.style/)?
-  - [ ] [portals](https://wolfgangschuster.wordpress.com/2023/06/21/bring-your-own-dom-part-1-portals/)?
+- [ ] Anything to do with webcomponents?: [shoelace](https://shoelace.style/)?
 - [ ] Any ideas to steal from Lustre server components?
 - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/blob/main/guides/

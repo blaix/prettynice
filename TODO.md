@@ -44,7 +44,21 @@
   - [.] Finish pages
   - [.] Flesh out gren guide as needed:
     - [X] Migrate to starlight (see convo with Robin)
-    - [ ] Nothing about creating full applications (in browser or in node)
+    - [ ] let/in:
+      - [ ] local scope constants
+      - [ ] local scope functions
+    - [ ] Update pattern matching page:
+      - [ ] capturing contained values in case expressions
+      - [ ] capturing contained values in let expressions
+      - [ ] records (inc. renaming fields)
+    - [ ] Add functions page to appendix:
+      - [ ] partial application (currying) and pipelines (|>): see https://guide.elm-lang.org/appendix/function_types
+      - [ ] link to this from the syntax/functions page
+    - [ ] Add applications section:
+      - [ ] The Elm Architecture
+      - [ ] Browser Applications
+      - [ ] Node Applications
+    - [ ] Add "gren for elm programmers" to appendix?
     - [ ] Elaborate on the FAQ section about differences from elm:
       - [ ] Expanded record desctructing:
         - [ ] e.g. I had no idea about `{ a = newA, b } = { a = 1, b = 2 }` for renaming destructured fields...

@@ -44,9 +44,7 @@
   - [.] Finish pages
   - [.] Flesh out gren guide as needed:
     - [X] Migrate to starlight (see convo with Robin)
-    - [ ] let/in:
-      - [ ] local scope constants
-      - [ ] local scope functions
+    - [X] let expressions
     - [ ] Update pattern matching page:
       - [ ] capturing contained values in case expressions
       - [ ] capturing contained values in let expressions

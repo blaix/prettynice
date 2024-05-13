@@ -105,6 +105,8 @@
 - [ ] Experiment with htmx:
   - [ ] Server-side only dynamic interactions. All logic in one place. [Grug like](https://grugbrain.dev/#grug-on-soc).
   - [ ] Use case: add/edit/delete items from todo list.
+  - [ ] Also look at liveview
+  - [ ] ...and SSE
 - [ ] See `notes/js-task.md`. Do I need some kind of composable, Task-like interface for js functions yet (will pencils need this for db calls?)?
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] See https://github.com/MaeBrooks/gren-webserver - there's some cool ideas in here.

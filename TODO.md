@@ -103,6 +103,7 @@
   - [ ] LOTS of potential here! => see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
   - [ ] see https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
 - [ ] Experiment with htmx:
+  - [ ] See this experiment / write-up by Mario: https://github.com/supermario/elm-htmx
   - [ ] Server-side only dynamic interactions. All logic in one place. [Grug like](https://grugbrain.dev/#grug-on-soc).
   - [ ] Use case: add/edit/delete items from todo list.
   - [ ] Also look at liveview

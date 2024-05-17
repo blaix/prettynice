@@ -165,7 +165,9 @@
 - [ ] SSE? Websockets?
 - [ ] SSR + hydration for components? Is there value?
 - [ ] Emails? (Mario from Lamdera recommends https://postmarkapp.com/)
-- [ ] Metrics? Prometheus (integrates with Caddy https://caddyserver.com/docs/metrics)?
+- [ ] Metrics and observability?
+  - [ ] Prometheus (integrates with Caddy https://caddyserver.com/docs/metrics)?
+  - [ ] https://opentelemetry.io/ ?
 - [ ] New Temporal API coming for dates/times? https://github.com/tc39/proposal-temporal
 - [ ] Anything to do with webcomponents?: [shoelace](https://shoelace.style/)?
 - [ ] Any ideas to steal from Lustre server components?

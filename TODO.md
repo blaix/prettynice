@@ -51,11 +51,12 @@
       - [ ] link to this from the syntax/functions page
     - [ ] Add applications section:
       - [ ] The Elm Architecture
+        - [ ] See evan's original tutorial on this: https://github.com/evancz/elm-architecture-tutorial/tree/2ce0f550cb6331cd5659e6a39095ce8ebfef34c0
+        - [ ] Good stuff in the lustre docs too: https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
       - [ ] Browser Applications
       - [ ] Node Applications
     - [ ] Add "gren for elm programmers" to appendix?
     - [ ] Elaborate on the FAQ section about differences from elm
-    - [ ] Good examples from lustre! https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs
   - [ ] Link in the error message for failed props parsing

@@ -41,14 +41,11 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [.] Doc site:
   - [X] Think about versioning...
-  - [.] Finish pages
-  - [.] Flesh out gren guide as needed:
+  - [o] Finish pages
+  - [o] Flesh out gren guide as needed:
     - [X] Migrate to starlight (see convo with Robin)
     - [X] let expressions
-    - [ ] Update pattern matching page:
-      - [ ] capturing contained values in case expressions
-      - [ ] capturing contained values in let expressions
-      - [ ] records (inc. renaming fields)
+    - [X] Update pattern matching page:
     - [ ] Add functions page to appendix:
       - [ ] partial application (currying) and pipelines (|>): see https://guide.elm-lang.org/appendix/function_types
       - [ ] link to this from the syntax/functions page
@@ -57,9 +54,7 @@
       - [ ] Browser Applications
       - [ ] Node Applications
     - [ ] Add "gren for elm programmers" to appendix?
-    - [ ] Elaborate on the FAQ section about differences from elm:
-      - [ ] Expanded record desctructing:
-        - [ ] e.g. I had no idea about `{ a = newA, b } = { a = 1, b = 2 }` for renaming destructured fields...
+    - [ ] Elaborate on the FAQ section about differences from elm
     - [ ] Good examples from lustre! https://github.com/lustre-labs/lustre/blob/main/pages/guide/02-state-management.md
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs

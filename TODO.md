@@ -39,6 +39,7 @@
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [X] Update examples and READMEs with server-side ports drawbacks
+- [ ] Gren compiler errors losing colors in "npm run dev" output?
 - [.] Doc site:
   - [X] Think about versioning...
   - [o] Finish pages

@@ -42,6 +42,7 @@
 - [ ] Gren compiler errors losing colors in "npm run dev" output?
 - [.] Doc site:
   - [X] Think about versioning...
+  - [ ] Move to render
   - [o] Finish pages
   - [o] Flesh out gren guide as needed:
     - [X] Migrate to starlight (see convo with Robin)

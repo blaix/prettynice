@@ -74,6 +74,10 @@
   - [ ] mastodon
   - [ ] discord
   - [ ] twitter?
+- [ ] Update to `next` branches of core and node
+  - [ ] Remove dependence on shikensu-gren?
+  - [ ] Update gren-static-serve
+  - [ ] Update html-gren
 - [ ] Vite support (required for pencils):
   - [ ] FIRST: consider esbuild instead of vite:
     - [ ] Worried vite is overkill, changes too rapidly, and has too much happening implicitly / under the hood

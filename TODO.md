@@ -115,6 +115,7 @@
   - [ ] Would [JTD](https://jsontypedef.com/) be any help here? See https://github.com/BrianHicks/elm-duet
 - [ ] Consider the list of sveltekit features which mirror a lot of what I want out of a framework: https://kit.svelte.dev/ (see "features? we got em.")
 - [ ] **=== return to pencils migration / release 2.0? ===**
+- [ ] Post video(s) showing off full-stack type safety
 - [ ] See https://github.com/MaeBrooks/gren-webserver - there's some cool ideas in here.
 - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/tree/main/guides - cool ideas here too
 - [ ] Add a Dockerfile to the project template?

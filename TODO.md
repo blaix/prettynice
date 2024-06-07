@@ -39,7 +39,6 @@
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [X] Update examples and READMEs with server-side ports drawbacks
-- [ ] Gren compiler errors losing colors in "npm run dev" output?
 - [.] Doc site:
   - [X] Think about versioning...
   - [ ] Move to render
@@ -115,6 +114,7 @@
   - [ ] Would [JTD](https://jsontypedef.com/) be any help here? See https://github.com/BrianHicks/elm-duet
 - [ ] Consider the list of sveltekit features which mirror a lot of what I want out of a framework: https://kit.svelte.dev/ (see "features? we got em.")
 - [ ] **=== return to pencils migration / release 2.0? ===**
+- [ ] Gren compiler errors losing colors in "npm run dev" output?
 - [ ] Post video(s) showing off full-stack type safety
 - [ ] See https://github.com/MaeBrooks/gren-webserver - there's some cool ideas in here.
 - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/tree/main/guides - cool ideas here too

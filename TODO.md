@@ -78,7 +78,8 @@
   - [ ] Update gren-static-serve
   - [ ] Update html-gren
 - [ ] Vite support (required for pencils):
-  - [ ] FIRST: consider esbuild instead of vite:
+  - [ ] FIRST: consider web components to clean up the "isolate element" js
+  - [ ] ALSO FIRST: consider esbuild instead of vite:
     - [ ] Worried vite is overkill, changes too rapidly, and has too much happening implicitly / under the hood
     - [ ] Stuff like this is very troubling (prod vs dev inconsistencies): https://twitter.com/ryanflorence/status/1782409358057603439
   - [ ] Use one of the gren vite plugins?:

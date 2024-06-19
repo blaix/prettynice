@@ -103,7 +103,8 @@
     - [ ] Full-color errors and jump to editor support? https://twitter.com/rhg_dev/status/1779998936578605493
 - [ ] Experiment with nested TEA again e.g. standalone modules per route. See `examples/next/tea-modules`.
   - [ ] LOTS of potential here! => see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
-  - [ ] see https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
+  - [ ] and https://dark.elm.dmy.fr/packages/lue-bird/elm-state-interface/latest/
+  - [ ] and https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
 - [ ] Experiment with htmx:
   - [ ] https://htmx.org/essays/when-to-use-hypermedia/
   - [ ] See this experiment / write-up by Mario: https://github.com/supermario/elm-htmx

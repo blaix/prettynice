@@ -2,7 +2,7 @@ with import <nixpkgs> {};
 mkShell {
   buildInputs = [
     bashInteractive
-    fly
+    flyctl
     just
     nodejs_18
   ];

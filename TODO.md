@@ -41,7 +41,6 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [.] Doc site:
   - [X] Think about versioning...
-  - [ ] Move to render: see similar section from pencils todo
   - [o] Finish pages
   - [o] Flesh out gren guide as needed:
     - [X] Migrate to starlight (see convo with Robin)

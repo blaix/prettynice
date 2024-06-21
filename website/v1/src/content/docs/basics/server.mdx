@@ -1,0 +1,170 @@
+---
+title: The Server
+description: Responding to HTTP requests in Pretty Nice
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Every request to your site begins in `server/src/Main.gren`.
+If you generated your project with `prettynice init`, it will look something like this:
+
+```elm
+module Main exposing (main)
+
+import Gen.Components.Counter
+import Node exposing (Environment)
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+main : Router.Program
+main =
+    Router.defineProgram
+        { init = init
+        , router = router
+        }
+
+init : Environment -> Router.Init
+init env =
+    Router.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        }
+
+router : Request -> Response -> Cmd msg
+router request response =
+    case request.path of
+        [] -> 
+            response
+                |> Response.sendHtml
+                    { title = "My Website"
+                    , head = [ linkStylesheet ]
+                    , body = viewHomePage
+                    }
+
+        [ "hello", name ] ->
+            response
+                |> Response.sendText ("Hello, " ++ name)
+
+        _ ->
+            response
+                |> Response.setStatus 404
+                |> Response.sendText "Not found"
+
+viewHomePage : Array (Html msg)
+viewHomePage =
+    [ H.h1 [] [ H.text "Welcome to my website!" ]
+    , H.p [] [ H.text "I made this counter just for you." ]
+    , Gen.Components.Counter.init { start = 0 }
+    ]
+
+linkStylesheet : Html msg
+linkStylesheet =
+    H.link [ A.rel "stylesheet", A.href "/styles.css" ]
+```
+
+If you aren't familiar with gren, it would be a good idea to read through [the book](https://gren-lang.org/book/) first.
+The rest of this guide will assume basic familiarity with gren and focus on the parts specific to prettynice.
+
+## Defining your Program
+
+We start with a `main` function that defines a [`SimpleRouter`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter)
+using [`defineProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter#defineProgram):
+
+```elm
+main : Router.Program
+main =
+    Router.defineProgram
+        { init = init
+        , router = router
+        }
+```
+
+It takes your `init` and `router` functions, which we will go over next.
+
+<Aside>
+    [`Prettynice.SimpleRouter`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter).
+    is good enough for many things, even complicated client-side interactivity.
+    But if you need more server-side control - to read or write files, talk to
+    a database, use custom javascript, or do other things that can affect the
+    state of the world outside of your HTTP response - you can [define a full program](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice#defineProgram)
+    instead. If you want more information on full programs, you can jump ahead
+    to [The Elm Architecture](/next/tea/).
+</Aside>
+
+## Starting your Program
+
+Your `init` function should call [`startProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter#startProgram).
+This is where you define the host and port the server will listen on:
+
+```elm
+init : Environment -> Router.Init
+init env =
+    Router.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        }
+```
+
+## Routing Requests
+
+The heart of your server is the router function.
+Every request to your site will call this function,
+with a [request](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Request#Request)
+holding information about the request, and a
+[response](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Response)
+that you can use to respond to the request:
+
+```elm
+router : Request -> Response -> Cmd msg
+router request response =
+    case request.path of
+        [] -> 
+            response
+                |> Response.sendHtml
+                    { title = "My Website"
+                    , head = [ linkStylesheet ]
+                    , body = viewHomePage
+                    }
+
+        [ "hello", name ] ->
+            response
+                |> Response.sendText ("Hello, " ++ name)
+
+        _ ->
+            response
+                |> Response.setStatus 404
+                |> Response.sendText "Not found"
+```
+
+`request.path` is an array of strings. It holds the path portion of the URL split on `/`.
+For example, requesting `127.0.0.1:3000/bowties/are/cool` would have a `request.path` of `["bowties", "are", "cool"]`.
+Requesting the root path would have an empty array (`[]`).
+
+You can also match on other things, like the [HTTP method](https://packages.gren-lang.org/package/gren-lang/node/version/3.2.1/module/HttpServer#Method):
+
+```elm
+    case request of
+        { method = POST, path = "/login" } -> 
+```
+
+Take a look at the [Request](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Request#Request)
+record and see the pages on [pattern matching](https://gren-lang.org/book/syntax/pattern_matching/)
+and [destructuring](https://gren-lang.org/book/syntax/destructuring/) in the gren book for help here.
+
+## Send HTML
+
+TODO
+
+## Initialize Components
+
+TODO
+
+## Assets and Styling
+
+TODO
+

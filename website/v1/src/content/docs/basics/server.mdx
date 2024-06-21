@@ -158,13 +158,75 @@ and [destructuring](https://gren-lang.org/book/syntax/destructuring/) in the gre
 
 ## Send HTML
 
-TODO
+For the homepage, we're using [Response.sendHtml](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Response#sendHtml)
+to render HTML:
 
-## Initialize Components
+```elm
+router : Request -> Response -> Cmd msg
+router request response =
+    case request.path of
+        [] -> 
+            response
+                |> Response.sendHtml
+                    { title = "My Website"
+                    , head = [ linkStylesheet ]
+                    , body = viewHomePage
+                    }
 
-TODO
+        ...
+```
+
+Because prettynice needs some control over the `<head>` and `<body>` tags, you have some fields to inject what you need into the page:
+
+* `title`: Sets the `<title>` tag. Here we're rendering `<title>My Website</title>`
+* `head`: An array of HTML that will be injected into the `<head>` tag. Here we're deferring to a `linkStylesheet` function to link to a stylesheet. That will be covered in the next section.
+* `body`: An array of HTML to make up the `<body>` of your page. Here we're deferring to a `viewHomePage` function for this.
+
+<Aside>
+    Prettynice expects [Transmutable.Html](https://packages.gren-lang.org/package/icidasset/html-gren/version/4.1.0/module/Transmutable.Html),
+    which has the same API as the normal [Html from the browser package](https://packages.gren-lang.org/package/gren-lang/browser/version/3.2.0/module/Html),
+    except that it can be rendered server-side.
+</Aside>
+
+<Aside>
+    We're aliasing the `Html` module as `H` and the `Html.Attributes` module as `A` to save typing without exposing every function from those modules.
+    The below docs will be using those aliases, but you can call them whatever you want in your own code, expose everything (`exposing (..)`),
+    or use the fully qualified import without an alias.
+</Aside>
 
 ## Assets and Styling
 
-TODO
+In the `linkStylesheet` function we're linking to `/styles.css`:
 
+```elm
+linkStylesheet : Html msg
+linkStylesheet =
+    H.link [ A.rel "stylesheet", A.href "/styles.css" ]
+```
+
+`styles.css` was created by `prettynice init` and placed in the `public/` directory.
+Any files in `public/` will be accessible at the root url path.
+So you can put other things there like images, fonts, etc. and reference them in your HTML anywhere you need them.
+
+## Initialize Components
+
+The `viewHomePage` function returns the HTML for our home page:
+
+```elm
+viewHomePage : Array (Html msg)
+viewHomePage =
+    [ H.h1 [] [ H.text "Welcome to my website!" ]
+    , H.p [] [ H.text "I made this counter just for you." ]
+    , Gen.Components.Counter.init { start = 0 }
+    ]
+```
+
+We're referencing a `Gen.Components.Counter` in this Html.
+Where did this come from?
+
+`prettynice init` created a component at `client/src/Components/Counter.gren`.
+When you run `prettynice build`, prettynice looks at all the components in the `Components` directory and generates a corresponding module at `Gen.Components.[ComponentName]` that lets you initialize the component server-side.
+This lets you initialize your client-side components with data from the server.
+Here we're hard-coding that data, but it could just as easily have come from a database, server-side HTTP call, etc.
+
+Learn more about prettynice components in the next section.

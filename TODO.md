@@ -41,6 +41,7 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [.] Doc site:
   - [X] Think about versioning...
+  - [ ] Add n.x link support to package site? https://discord.com/channels/1250584603085766677/1250590753806356571/1254445895810809967
   - [o] Finish pages
   - [o] Flesh out gren guide as needed:
     - [X] Migrate to starlight (see convo with Robin)

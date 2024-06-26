@@ -12,7 +12,7 @@ This will define the interface for `init`.
 It's similar to [Flags in elm](https://guide.elm-lang.org/interop/flags),
 but the data is passed in when you init the component on the server.
 
-See [`client/src/Components/Counter.gren`](client/src/Components.Counter.gren) for an example component,
+See [`client/src/Components/Counter.gren`](client/src/Components/Counter.gren) for an example component,
 and [`server/src/Main.gren`](server/src/Main.gren) for how it's used on a page.
 
 Run this example with:

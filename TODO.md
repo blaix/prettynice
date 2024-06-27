@@ -41,7 +41,7 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [.] Doc site:
   - [X] Think about versioning...
-  - [ ] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39
+  - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39
   - [o] Finish pages
   - [o] Flesh out gren guide as needed:
     - [X] Migrate to starlight (see convo with Robin)

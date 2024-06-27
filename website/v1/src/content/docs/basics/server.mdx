@@ -71,8 +71,8 @@ The rest of this guide will assume basic familiarity with gren and focus on the 
 
 ## Defining your Program
 
-We start with a `main` function that defines a [`SimpleRouter`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter)
-using [`defineProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter#defineProgram):
+We start with a `main` function that defines a [`SimpleRouter`](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.SimpleRouter)
+using [`defineProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.SimpleRouter#defineProgram):
 
 ```elm
 main : Router.Program
@@ -86,18 +86,18 @@ main =
 It takes your `init` and `router` functions, which we will go over next.
 
 <Aside>
-    [`Prettynice.SimpleRouter`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter).
+    [`Prettynice.SimpleRouter`](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.SimpleRouter).
     is good enough for many things, even complicated client-side interactivity.
     But if you need more server-side control - to read or write files, talk to
     a database, use custom javascript, or do other things that can affect the
-    state of the world outside of your HTTP response - you can [define a full program](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice#defineProgram)
+    state of the world outside of your HTTP response - you can [define a full program](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice#defineProgram)
     instead. If you want more information on full programs, you can jump ahead
     to [The Elm Architecture](/next/tea/).
 </Aside>
 
 ## Starting your Program
 
-Your `init` function should call [`startProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.SimpleRouter#startProgram).
+Your `init` function should call [`startProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.SimpleRouter#startProgram).
 This is where you define the host and port the server will listen on:
 
 ```elm
@@ -114,9 +114,9 @@ init env =
 
 The heart of your server is the router function.
 Every request to your site will call this function,
-with a [request](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Request#Request)
+with a [request](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.Request#Request)
 holding information about the request, and a
-[response](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Response)
+[response](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.Response)
 that you can use to respond to the request:
 
 ```elm
@@ -145,20 +145,20 @@ router request response =
 For example, requesting `127.0.0.1:3000/bowties/are/cool` would have a `request.path` of `["bowties", "are", "cool"]`.
 Requesting the root path would have an empty array (`[]`).
 
-You can also match on other things, like the [HTTP method](https://packages.gren-lang.org/package/gren-lang/node/version/3.2.1/module/HttpServer#Method):
+You can also match on other things, like the [HTTP method](https://packages.gren-lang.org/package/gren-lang/node/version/3/module/HttpServer#Method):
 
 ```elm
     case request of
         { method = POST, path = "/login" } -> 
 ```
 
-Take a look at the [Request](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Request#Request)
+Take a look at the [Request](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.Request#Request)
 record and see the pages on [pattern matching](https://gren-lang.org/book/syntax/pattern_matching/)
 and [destructuring](https://gren-lang.org/book/syntax/destructuring/) in the gren book for help here.
 
 ## Send HTML
 
-For the homepage, we're using [Response.sendHtml](https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Response#sendHtml)
+For the homepage, we're using [Response.sendHtml](https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.Response#sendHtml)
 to render HTML:
 
 ```elm
@@ -183,8 +183,8 @@ Because prettynice needs some control over the `<head>` and `<body>` tags, you h
 * `body`: An array of HTML to make up the `<body>` of your page. Here we're deferring to a `viewHomePage` function for this.
 
 <Aside>
-    Prettynice expects [Transmutable.Html](https://packages.gren-lang.org/package/icidasset/html-gren/version/4.1.0/module/Transmutable.Html),
-    which has the same API as the normal [Html from the browser package](https://packages.gren-lang.org/package/gren-lang/browser/version/3.2.0/module/Html),
+    Prettynice expects [Transmutable.Html](https://packages.gren-lang.org/package/icidasset/html-gren/version/4/module/Transmutable.Html),
+    which has the same API as the normal [Html from the browser package](https://packages.gren-lang.org/package/gren-lang/browser/version/3/module/Html),
     except that it can be rendered server-side.
 </Aside>
 

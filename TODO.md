@@ -73,8 +73,8 @@
   - [ ] mastodon
   - [ ] discord
   - [ ] twitter?
-- [ ] Update to `next` branches of core and node
-  - [ ] Remove dependence on shikensu-gren?
+- [ ] Update to gren 0.4 and the new node and core packages
+  - [ ] update shikensu-gren: https://github.com/icidasset/shikensu-gren/blob/6.0.0/CHANGELOG.md#600
   - [ ] Update gren-static-serve
   - [ ] Update html-gren
 - [ ] Vite support (required for pencils):

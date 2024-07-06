@@ -47,9 +47,6 @@
     - [X] Migrate to starlight (see convo with Robin)
     - [X] let expressions
     - [X] Update pattern matching page:
-    - [ ] Add functions page to appendix:
-      - [ ] partial application (currying) and pipelines (|>): see https://guide.elm-lang.org/appendix/function_types
-      - [ ] link to this from the syntax/functions page
     - [ ] Add applications section:
       - [ ] The Elm Architecture
         - [ ] See evan's original tutorial on this: https://github.com/evancz/elm-architecture-tutorial/tree/2ce0f550cb6331cd5659e6a39095ce8ebfef34c0

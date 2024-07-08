@@ -39,6 +39,10 @@
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [X] Update examples and READMEs with server-side ports drawbacks
+- [ ] **== Update TODO with new 2.0 plans ==**
+  - [ ] Publish the 1.0 docsite as-is
+  - [ ] Focus on a 0.4 upgrade for prettynice 2.0
+  - [ ] Move js bundling to a 3.0 roadmap
 - [.] Doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39

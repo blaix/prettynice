@@ -427,10 +427,12 @@ See:
 
 ## Deployment
 
+Prettynice should work on any host that supports nodejs.
+
 The basic steps for deployment are:
 
 1. Build with optimizations: `npx prettynice build --optimize`
-2. Deploy the `dist` folder.
+2. Deploy the `dist` folder. `dist/server` holds your node server. `dist/client` holds your static assets.
 3. Run with: `node dist/server/index.js`
 
 If you cloned one of the examples,

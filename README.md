@@ -41,7 +41,7 @@ cd mysite
 npx prettynice init
 ```
 
-Then you can the dev server with: `npm run dev`
+Then you can run the dev server with: `npm run dev`
 
 See [Deployment](#deployment) for deployment information.
 

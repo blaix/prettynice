@@ -11,7 +11,7 @@ Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zul
 
 <!-- vim-markdown-toc GFM -->
 
-* [Installation](#installation)
+* [Installation and Usage](#installation-and-usage)
 * [Basic Example](#basic-example)
 * [Server-side HTML](#server-side-html)
 * [Client-side Components](#client-side-components)
@@ -29,15 +29,21 @@ Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [gren zul
 
 <!-- vim-markdown-toc -->
 
-## Installation
+## Installation and Usage
 
-[Nodejs](https://nodejs.org/) 18 or higher is required. Unfortunately, a POSIX system (e.g. linux, mac) is also required for now.
+[Nodejs](https://nodejs.org/) 20 or higher is the only requirement.
+
+Create a starter project with:
 
 ```
 mkdir mysite
 cd mysite
 npx prettynice init
 ```
+
+Then you can the dev server with: `npm run dev`
+
+See [Deployment](#deployment) for deployment information.
 
 ## Basic Example
 

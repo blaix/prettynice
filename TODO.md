@@ -42,7 +42,8 @@
 - [ ] **== Update TODO with new 2.0 plans ==**
   - [ ] Publish the 1.0 docsite as-is
   - [ ] Focus on a 0.4 upgrade for prettynice 2.0
-  - [ ] Move js bundling to a 3.0 roadmap
+  - [ ] Move js bundling to a 3.0 roadmap (try caddy reverse proxy for pencils)
+- [ ] Don't expose Internal modules
 - [.] Doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39

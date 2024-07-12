@@ -11,4 +11,4 @@ Usage:
 
 Build cli from the root of [the repo](https://github.com/blaix/prettynice) with: `just build-cli`
 
-Then you can install your in-development locally with: `npm install /path/to/prettynice/cli`
+Then you can install your in-development build locally with: `npm install /path/to/prettynice/cli`

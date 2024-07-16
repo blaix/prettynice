@@ -118,6 +118,7 @@
 - [ ] See `notes/js-task.md`. Do I need some kind of composable, Task-like interface for js functions yet (will pencils need this for db calls?)?
   - [ ] Would [JTD](https://jsontypedef.com/) be any help here? See https://github.com/BrianHicks/elm-duet
 - [ ] Consider the list of sveltekit features which mirror a lot of what I want out of a framework: https://kit.svelte.dev/ (see "features? we got em.")
+- [ ] Test Sourcemaps
 - [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Gren compiler errors losing colors in "npm run dev" output?
 - [ ] Post video(s) showing off full-stack type safety

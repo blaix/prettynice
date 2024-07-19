@@ -39,19 +39,15 @@
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [X] Update examples and READMEs with server-side ports drawbacks
-- [ ] **== Update TODO with new 2.0 plans ==**
-  - [ ] Publish the 1.0 docsite as-is
-  - [ ] Focus on a 0.4 upgrade for prettynice 2.0
-  - [ ] Move js bundling to a 3.0 roadmap (try caddy reverse proxy for pencils)
+- [ ] Call the 1.0 docsite done. Remove links to missing pages.
+- [ ] Upgrade to gren 0.4
 - [ ] Don't expose Internal modules
-- [.] Doc site:
+- [ ] **=== release 2.0 ===**
+- [ ] Reconsider js bundling (try caddy reverse proxy for pencils)
+- [.] 2.0 doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39
-  - [o] Finish pages
   - [o] Flesh out gren guide as needed:
-    - [X] Migrate to starlight (see convo with Robin)
-    - [X] let expressions
-    - [X] Update pattern matching page:
     - [ ] Add applications section:
       - [ ] The Elm Architecture
         - [ ] See evan's original tutorial on this: https://github.com/evancz/elm-architecture-tutorial/tree/2ce0f550cb6331cd5659e6a39095ce8ebfef34c0

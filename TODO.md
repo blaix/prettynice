@@ -39,7 +39,12 @@
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [X] Update examples and READMEs with server-side ports drawbacks
-- [ ] Call the 1.0 docsite done. Remove links to missing pages.
+- [o] Call the 1.0 docsite done.
+  - [X] Stub missing pages in Basics section
+  - [X] Stub missing pages in Next section
+  - [ ] Stub missing pages in Guides section
+    - [ ] Create basic auth example?
+    - [ ] Create cookies example?
 - [ ] Upgrade to gren 0.4
 - [ ] Don't expose Internal modules
 - [ ] **=== release 2.0 ===**

@@ -189,3 +189,4 @@
 - [ ] Anything to do with webcomponents?: [shoelace](https://shoelace.style/)?
 - [ ] Any ideas to steal from Lustre server components?
 - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/blob/main/guides/
+- [ ] Look at [elm-duet](https://github.com/BrianHicks/elm-duet) and [json type definitions](https://jsontypedef.com/)

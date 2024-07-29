@@ -48,7 +48,7 @@
 - [ ] Upgrade to gren 0.4
 - [ ] Don't expose Internal modules
 - [ ] Audit error messages
-- [ ] **=== release 2.0 ===**
+- [ ] **=== release 2.0 and return to pencils ===**
 - [ ] Reconsider js bundling (try caddy reverse proxy for pencils)
 - [.] 2.0 doc site:
   - [X] Think about versioning...

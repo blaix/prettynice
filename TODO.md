@@ -47,6 +47,7 @@
     - [ ] Create cookies example?
 - [ ] Upgrade to gren 0.4
 - [ ] Don't expose Internal modules
+- [ ] Audit error messages
 - [ ] **=== release 2.0 ===**
 - [ ] Reconsider js bundling (try caddy reverse proxy for pencils)
 - [.] 2.0 doc site:
@@ -120,7 +121,6 @@
   - [ ] Would [JTD](https://jsontypedef.com/) be any help here? See https://github.com/BrianHicks/elm-duet
 - [ ] Consider the list of sveltekit features which mirror a lot of what I want out of a framework: https://kit.svelte.dev/ (see "features? we got em.")
 - [ ] Test Sourcemaps
-- [ ] **=== return to pencils migration / release 2.0? ===**
 - [ ] Gren compiler errors losing colors in "npm run dev" output?
 - [ ] Post video(s) showing off full-stack type safety
 - [ ] See https://github.com/MaeBrooks/gren-webserver - there's some cool ideas in here.
@@ -159,6 +159,7 @@
 - [ ] Experiment with portals. Would this help with components at all?
   - [ ] https://react.dev/reference/react-dom/createPortal
   - [ ] https://wolfgangschuster.wordpress.com/2023/06/21/bring-your-own-dom-part-1-portals/)?
+- [ ] Audit error messages
 
 ## Open questions and future ideas
 

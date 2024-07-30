@@ -49,7 +49,7 @@
 - [ ] Don't expose Internal modules
 - [ ] Audit error messages
 - [ ] **=== release 2.0 and return to pencils ===**
-- [ ] Reconsider js bundling (try caddy reverse proxy for pencils)
+- [ ] HTMX example?
 - [.] 2.0 doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39

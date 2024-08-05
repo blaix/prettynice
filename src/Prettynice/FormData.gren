@@ -64,7 +64,7 @@ fromString body =
                             |> Maybe.withDefault []
                             |> Array.pushLast field.value
                 in
-                Dict.insert field.name values formData
+                Dict.set field.name values formData
             )
             Dict.empty
 

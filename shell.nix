@@ -4,7 +4,7 @@ mkShell {
     bashInteractive
     flyctl
     just
-    nodejs_18
+    nodejs_20
   ];
   shellHook = ''
     export PATH="$PWD/node_modules/.bin:$PATH"

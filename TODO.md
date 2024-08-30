@@ -44,6 +44,7 @@
   - [o] Upgrade next/ examples
     - [o] Start with static-assets to drive dependency upgrades
     - [ ] Remaining next/ examples
+- [ ] Update `cli/CodeGen.gren#genProject` to handle base dir names that came from windows
 - [o] Call the 1.0 docsite done.
   - [X] Stub missing pages in Basics section
   - [X] Stub missing pages in Next section
@@ -52,6 +53,8 @@
     - [ ] Create cookies example?
 - [ ] Don't expose Internal modules
 - [ ] Audit error messages
+- [ ] Test windows and linux support - add to Changelog
+- [ ] Update CHANGELOG
 - [ ] **=== release 2.0 and return to pencils ===**
 - [ ] HTMX example?
 - [.] 2.0 doc site:

@@ -44,6 +44,7 @@
   - [o] Upgrade next/ examples
     - [o] Start with static-assets to drive dependency upgrades
     - [ ] Remaining next/ examples
+  - [ ] Upgrade project generator template
 - [ ] Update `cli/CodeGen.gren#genProject` to handle base dir names that came from windows
 - [o] Call the 1.0 docsite done.
   - [X] Stub missing pages in Basics section

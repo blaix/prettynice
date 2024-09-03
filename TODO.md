@@ -58,6 +58,7 @@
 - [ ] Test windows and linux support - add to Changelog
 - [ ] Update CHANGELOG
 - [ ] **=== release 2.0 and return to pencils ===**
+- [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
 - [ ] HTMX example?
 - [.] 2.0 doc site:
   - [X] Think about versioning...

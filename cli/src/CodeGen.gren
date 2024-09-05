@@ -18,21 +18,18 @@ import Bytes exposing (Bytes)
 import Bytes.Encode
 import Bytes.Decode
 import FileSystem
+import FileSystem.Path as Path
 import Prettynice.Internal.Props as Props exposing (Props)
 import Shikensu
 import Shikensu.Bundle exposing (Bundle)
 import Shikensu.Contrib as Shikensu
 import Shikensu.Definition exposing (Definition)
 import Shikensu.Error
-import Shikensu.Focus exposing (Focus)
-import Shikensu.Path
-import Shikensu.Path.Encapsulated
 import Task exposing (Task)
 
 
 type Error
     = PipelineError String
-    | FileSystemError String
 
 
 type Result
@@ -48,7 +45,7 @@ genServerComponents : FileSystem.Permission -> Task Error Result
 genServerComponents fsPermission =
     readComponents fsPermission
         |> Task.andThen serverComponentsFromBundle
-        |> Task.andThen (write [ "server", ".prettynice", "Gen", "Components" ])
+        |> Task.andThen (write "server/.prettynice/Gen/Components")
         |> Task.mapError mapError
         |> Task.map Result
 
@@ -59,7 +56,7 @@ genClientComponents : FileSystem.Permission -> Task Error Result
 genClientComponents fsPermission =
     readComponents fsPermission
         |> Task.map (Shikensu.renderContent clientComponentFromDef)
-        |> Task.andThen (write [ "client", ".prettynice", "Gen", "Components" ])
+        |> Task.andThen (write "client/.prettynice/Gen/Components")
         |> Task.mapError mapError
         |> Task.map Result
 
@@ -68,14 +65,12 @@ genClientComponents fsPermission =
 -}
 genServerPorts : FileSystem.Permission -> Task Error Result
 genServerPorts fsPermission =
-    [ "server", "src" ]
-        |> Shikensu.Path.directory
-        |> Shikensu.Focus.Relative
+    "server/src"
         |> tryList fsPermission
         |> Task.map (Shikensu.withExtension "js")
         |> Task.map (Shikensu.withBaseName "ports")
         |> tryRead -- if there's no js, just write empty file
-        |> Task.andThen (write [ "dist", "server" ])
+        |> Task.andThen (write "dist/server")
         |> Task.mapError mapError
         |> Task.map Result
 
@@ -87,7 +82,7 @@ genClientPorts fsPermission =
     listComponents fsPermission
         |> Task.map (Shikensu.renameExtension "gren" "js")
         |> tryRead -- if there's no js, just write empty file
-        |> Task.andThen (write [ "dist", "client", "Components" ])
+        |> Task.andThen (write "dist/client/Components")
         |> Task.mapError mapError
         |> Task.map Result
 
@@ -98,22 +93,22 @@ genDependencies : FileSystem.Permission -> Task Error Result
 genDependencies fsPermission =
     -- HTML responses assume a main.js exists.
     -- Stub one out in case there is not client build for this app.
-    [ createDef "" [ "dist", "client", "main.js" ]
+    [ createDef "" "dist/client/main.js"
 
     -- The Component type for client-side components.
     -- Generating this instead of having a separate browser package.
     , createDef 
         prettyniceComponentModule 
-        [ "client", ".prettynice", "Prettynice", "Component.gren" ]
+        "client/.prettynice/Prettynice/Component.gren"
 
     -- Wrapper for the app's compiled server.
     -- Need this for things like connecting ports.
     , createDef 
         serverWrapper
-        [ "dist", "server", "index.js" ]
+        "dist/server/index.js"
     ]
         |> Shikensu.bundle fsPermission
-        |> Task.andThen (write [])
+        |> write "."
         |> Task.mapError mapError
         |> Task.map Result
 
@@ -122,12 +117,10 @@ genDependencies fsPermission =
 -}
 copyPublicAssets : FileSystem.Permission -> Task Error Result
 copyPublicAssets fsPermission =
-    [ "public" ]
-        |> Shikensu.Path.directory
-        |> Shikensu.Focus.Relative
+    "public"
         |> tryList fsPermission
         |> Task.andThen Shikensu.read
-        |> Task.andThen (write [ "dist", "client" ])
+        |> Task.andThen (write "dist/client")
         |> Task.mapError mapError
         |> Task.map Result
 
@@ -140,23 +133,12 @@ generatedComponentPaths fsPermission =
                 bundle.compendium
                     |> Array.map
                         (\d ->
-                            let
-                                dir =
-                                    Shikensu.Path.unwrap d.directoryPath
-
-                                parent =
-                                    [ ".prettynice"
-                                    , "Gen"
-                                    , "Components"
-                                    ] ++ dir
-
-                                filename =
-                                    d.baseName ++ ".gren"
-                            in
-                            FileSystem.buildPath (parent ++ [ filename ])
+                            Path.fromPosixString ".prettynice/Gen/Components"
+                                |> Path.append d.path
                         )
                     |> Task.succeed
             )
+        |> Task.map (Array.map Path.toPosixString)
         |> Task.mapError mapError
 
 
@@ -165,31 +147,25 @@ generatedComponentPaths fsPermission =
 genProject : FileSystem.Permission -> String -> Task Error Result
 genProject fsPermission dirname =
     let
-        baseDir =
-            dirname ++ "/" -- Shikensu will think it's a file otherwise
-                |> Shikensu.Path.fromPosix 
-                |> Shikensu.Path.Encapsulated.toDirectory
-    in
-    case baseDir of
-        Just dir ->
-            [ "..", "templates", "init" ]
-                |> Shikensu.Path.directory
-                |> Shikensu.Path.combine dir
-                |> Shikensu.Focus.Absolute
-                |> Shikensu.list fsPermission
-                |> Task.andThen Shikensu.read
-                |> Task.map
-                    (Shikensu.rename
-                        (Shikensu.Path.file [ "gitignore" ])
-                        (Shikensu.Path.file [ ".gitignore" ])
-                    )
-                |> Task.andThen (write [ "." ])
-                |> Task.mapError mapError
-                |> Task.map Result
+        templateDir =
+            -- TODO: check if windows and parse incoming dirname appropriately
+            Path.fromPosixString dirname
+                |> Path.append (Path.fromPosixString "../templates/init")
 
-        Nothing ->
-            Task.fail <|
-                PipelineError ("Unknown error building path from: " ++ dirname)
+        ignoreFileFrom =
+            Path.fromPosixString "gitignore"
+                |> Path.prepend templateDir
+
+        ignoreFileTo =
+            Path.fromPosixString ".gitignore"
+                |> Path.prepend templateDir
+    in
+    Shikensu.list fsPermission templateDir
+        |> Task.andThen Shikensu.read
+        |> Task.map (Shikensu.rename ignoreFileFrom ignoreFileTo)
+        |> Task.andThen (write ".")
+        |> Task.mapError mapError
+        |> Task.map Result
 
 
 -- CODE GEN INTERNALS: SERVER
@@ -208,7 +184,7 @@ serverComponentsFromBundle bundle =
                             let
                                 content =
                                     def.content
-                                        |> Maybe.andThen toString
+                                        |> Maybe.andThen Bytes.toString
                                         |> Maybe.withDefault ""
 
                                 propsResult =
@@ -219,7 +195,7 @@ serverComponentsFromBundle bundle =
                                     case propsResult of
                                         Ok props ->
                                             toServerComponent def props
-                                                |> toBytes
+                                                |> Bytes.fromString
                                                 |> Just
 
                                         e ->
@@ -240,7 +216,7 @@ serverComponentsFromBundle bundle =
         Just def ->
             Task.fail
                 ( Shikensu.Error.ErrorMessage <|
-                    String.replace "{{COMPONENT}}" def.baseName
+                    String.replace "{{COMPONENT}}" (baseName def)
                         """
                         Oops! I can't parse props for the {{COMPONENT}} component.
                            I'm looking for a type alias that looks like this:
@@ -291,7 +267,9 @@ toServerComponent def props =
                     $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];
                     $__components["{{MODULE_NAME}}"].push(
                         Gren.Gen.{{MODULE_NAME}}.init({\n
-                            flags: \""" ++ propJson ++ \""",
+                            flags: 
+                                \""" ++ propJson ++ \"""
+                            ,
                             node: document.currentScript.parentNode.getElementsByClassName(
                                 "prettynice-component-{{MODULE_NAME}}"
                             )[0],
@@ -314,9 +292,9 @@ toServerComponent def props =
 clientComponentFromDef : Definition -> Maybe Bytes
 clientComponentFromDef def =
     def.content
-        |> Maybe.andThen toString
+        |> Maybe.andThen Bytes.toString
         |> Maybe.map (toClientComponent def)
-        |> Maybe.map toBytes
+        |> Maybe.map Bytes.fromString
 
 
 {-| Convert string contents of component to a module with a Browser.element main.
@@ -342,7 +320,7 @@ toClientComponent def contents =
             , view = e.view >> toVirtualDom
             }
     """
-        |> String.replace "{{NAME}}" def.baseName
+        |> String.replace "{{NAME}}" (baseName def)
         |> String.replace "{{MODULE_NAME}}" (moduleName def)
 
 
@@ -385,14 +363,14 @@ serverWrapper =
 
 {-| Create a Shikensu Definition for the given content at the given path.
 -}
-createDef : String -> Array String -> Definition
+createDef : String -> String -> Definition
 createDef content path =
     let
         def =
             Shikensu.Definition.create <|
-                Shikensu.Path.file path
+                Path.fromPosixString path
     in
-    { def | content = Just (toBytes content) }
+    { def | content = Just (Bytes.fromString content) }
 
 
 {-| Get a Task that reads the contents of all client component source files.
@@ -407,27 +385,9 @@ readComponents fsPermission =
 -}
 listComponents : FileSystem.Permission -> Shikensu.Task
 listComponents fsPermission =
-    [ "client", "src", "Components" ]
-        |> Shikensu.Path.directory
-        |> Shikensu.Focus.Relative
+    "client/src/Components"
         |> tryList fsPermission
         |> Task.map (Shikensu.withExtension "gren")
-
-
-
-toString : Bytes -> Maybe String
-toString bytes =
-    bytes
-        |> Bytes.width
-        |> Bytes.Decode.string
-        |> (\decoder -> Bytes.Decode.decode decoder bytes)
-
-
-toBytes : String -> Bytes
-toBytes string =
-    string
-        |> Bytes.Encode.string
-        |> Bytes.Encode.encode
 
 
 emptyBundle : FileSystem.Permission -> Bundle
@@ -435,7 +395,6 @@ emptyBundle permission =
     { compendium = []
     , fsPermission = permission
     , readingDirectory = Nothing
-    , workingDirectory = Shikensu.Path.directory ["."]
     }
 
 
@@ -445,18 +404,22 @@ Returns a Task containing a Shikensu Bundle with all the files,
 or an empty Bundle if the path is empty (e.g. no files in public/)
 or doesn't exist (e.g. site is 100% server-side so no client/ dir).
 -}
-tryList : FileSystem.Permission -> Focus -> Shikensu.Task
-tryList fsPermission focus =
-    focus
+tryList : FileSystem.Permission -> String -> Shikensu.Task
+tryList fsPermission dirs =
+    dirs
+        |> Path.fromPosixString
         |> Shikensu.list fsPermission
         |> Task.onError
             (\error -> 
                 case error of
-                    Shikensu.Error.PlatformAccessError _ FileSystem.AccessErrorNotFound ->
-                        -- Nothing to process. Ignore.
-                        -- (e.g. no components or nothing at public/)
-                        Task.succeed 
-                            (emptyBundle fsPermission)
+                    Shikensu.Error.PlatformError _ e ->
+                        if FileSystem.errorIsNoSuchFileOrDirectory e then
+                            -- Nothing to process. Ignore.
+                            -- (e.g. no components or nothing at public/)
+                            Task.succeed 
+                                (emptyBundle fsPermission)
+                        else
+                            Task.fail error
 
                     e ->
                         Task.fail e
@@ -480,20 +443,8 @@ tryRead =
 
 mapError : Shikensu.Error.Error -> Error
 mapError error =
-    case error of
-        Shikensu.Error.ErrorMessage str ->
-            PipelineError str
-
-        -- Need more detail in these error messages
-
-        Shikensu.Error.PlatformAccessError path _ ->
-            path
-                |> Shikensu.Path.toPosix { absolute = False }
-                |> String.append "Error accessing "
-                |> FileSystemError
-
-        Shikensu.Error.PlatformUnknownError _ ->
-            FileSystemError "Unknown FileSystem error"
+    Shikensu.Error.toString error
+        |> PipelineError
 
 
 errorString : Error -> String
@@ -502,19 +453,13 @@ errorString error =
         PipelineError str ->
             str
 
-        FileSystemError str ->
-            str
-
 
 {-| Write the Shikensu Bundle to a directory.
-
-Where directory is a relative path as an array like: [ "path", "to", "dir" ].
 -}
-write : Array String -> Bundle -> Shikensu.Task
+write : String -> Bundle -> Shikensu.Task
 write destinationDir =
     destinationDir
-        |> Shikensu.Path.directory
-        |> Shikensu.Focus.Relative
+        |> Path.fromPosixString
         |> Shikensu.write
 
 
@@ -524,17 +469,27 @@ return the name that should be used in the resulting module signature.
 moduleName : Definition -> String
 moduleName def =
     let
-        path =
-            Shikensu.Path.unwrap def.directoryPath
+        parentPath =
+            Path.parentPath def.path
+                |> Maybe.map Path.toPosixString
+                |> Maybe.withDefault "."
 
         modulePath =
-            case path of
-                [] ->
+            case parentPath of
+                "." ->
                     "Components."
 
                 dirs ->
-                    "Components."
-                        ++ (String.join "." dirs)
-                        ++ "."
+                    dirs
+                        |> String.split "/"
+                        |> Array.pushFirst "Components"
+                        |> String.join "."
+                        |> String.append "."
     in
-    modulePath ++ def.baseName
+    modulePath ++ (baseName def)
+
+
+baseName : Definition -> String
+baseName def =
+    Path.filenameWithExtension def.path
+        |> String.dropRight 5 -- assumed .gren

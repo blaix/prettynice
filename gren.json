@@ -13,13 +13,13 @@
         "Prettynice.Response",
         "Prettynice.SimpleRouter"
     ],
-    "gren-version": "0.3.0 <= v < 0.4.0",
+    "gren-version": "0.4.5 <= v < 0.5.0",
     "dependencies": {
-        "gren-lang/core": "4.0.1 <= v < 5.0.0",
-        "gren-lang/node": "3.1.0 <= v < 4.0.0",
-        "gren-lang/parser": "3.0.1 <= v < 4.0.0",
-        "gren-lang/url": "3.0.0 <= v < 4.0.0",
-        "icidasset/html-gren": "4.1.0 <= v < 5.0.0",
-        "joeybright/gren-static-serve": "2.0.2 <= v < 3.0.0"
+        "gren-lang/core": "5.0.2 <= v < 6.0.0",
+        "gren-lang/node": "4.1.1 <= v < 5.0.0",
+        "gren-lang/parser": "4.0.0 <= v < 5.0.0",
+        "gren-lang/url": "4.0.0 <= v < 5.0.0",
+        "icidasset/html-gren": "4.2.0 <= v < 5.0.0",
+        "joeybright/gren-static-serve": "2.0.4 <= v < 3.0.0"
     }
 }

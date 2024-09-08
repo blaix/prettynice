@@ -413,8 +413,8 @@ clean fsPermission =
                 |> Task.andThen (\_ -> create path)
     in
     [ "./dist"
-    , ".client/.prettynice"
-    , ".server/.prettynice"
+    , "client/.prettynice"
+    , "server/.prettynice"
     ]
         |> Array.map recreate
         |> Task.sequence

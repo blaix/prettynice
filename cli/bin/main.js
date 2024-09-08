@@ -4361,7 +4361,7 @@ var $author$project$Main$clean = function(fsPermission) {
 	};
 	return $gren_lang$core$Task$map$(function(_v0) {
 			return {  };
-		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, recreate, [ './dist', '.client/.prettynice', '.server/.prettynice' ])));
+		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, recreate, [ './dist', 'client/.prettynice', 'server/.prettynice' ])));
 };
 
 

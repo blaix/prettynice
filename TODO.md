@@ -51,9 +51,9 @@
     - [ ] Update `cli/CodeGen.gren#genProject` to handle base dir names that came from windows
   - [ ] Bump version in gren.json and cli/package.json
   - [ ] Update CHANGELOG
-- [ ] Merge `v2`
 - [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
   - [ ] you MUST have time to do all of these!
+  - [ ] Rebase + Merge `v2`
   - [ ] release 2.0 gren package
   - [ ] update project generator template
   - [ ] release 2.0 npm package for cli

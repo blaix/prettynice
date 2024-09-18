@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "postinstall": "npx prisma migrate dev",
-    "dev": "npx concurrently npm:dev:*",
+    "dev": "npx concurrently --kill-others-on-fail npm:dev:*",
     "dev:node": "npx nodemon",
     "dev:db": "docker run --rm --name=ws4sqlite -p 8080:12321 -v ./prisma:/data --user 1000:1001 germanorizzo/ws4sqlite:latest --db /data/dev.db",
     "start": "node dist/server/index.js"

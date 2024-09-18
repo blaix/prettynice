@@ -39,25 +39,28 @@
 - [X] Fix examples that say "npm start" when it should be "npm run dev"
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [X] Update examples and READMEs with server-side ports drawbacks
-- [o] Upgrade to gren 0.4: see `gren_0.4` branch
-  - [X] Upgrade package code
-  - [o] Upgrade next/ examples
-    - [o] Start with static-assets to drive dependency upgrades
-    - [ ] Remaining next/ examples
-  - [ ] Upgrade project generator template
-- [ ] Dependency failures when generating client-side components don't fail the build? (try pointing to wrong/missing version and/or remove a required indirect dependency to test)
-- [ ] Update `cli/CodeGen.gren#genProject` to handle base dir names that came from windows
 - [o] Call the 1.0 docsite done.
   - [X] Stub missing pages in Basics section
   - [X] Stub missing pages in Next section
   - [ ] Stub missing pages in Guides section
     - [ ] Create basic auth example?
     - [ ] Create cookies example?
-- [ ] Don't expose Internal modules
-- [ ] Audit error messages
-- [ ] Test windows and linux support - add to Changelog
-- [ ] Update CHANGELOG
-- [ ] **=== release 2.0 and return to pencils ===**
+- [O] `v2` branch:
+  - [X] Upgrade to gren 0.4
+    - [X] Upgrade package code
+    - [X] Upgrade next/ examples
+    - [X] Upgrade cli
+    - [ ] Upgrade project generator template
+  - [ ] Don't expose Internal modules
+  - [ ] Exposing any custom type constructors that should be functions?
+  - [ ] Audit error messages
+  - [ ] Dependency failures when generating client-side components don't fail the build? (try pointing to wrong/missing version and/or remove a required indirect dependency to test)
+  - [ ] Test windows and linux support - add to Changelog
+    - [ ] Update `cli/CodeGen.gren#genProject` to handle base dir names that came from windows
+  - [ ] Bump version in gren.json and cli/package.json
+  - [ ] Update CHANGELOG
+- [ ] Merge `v2`
+- [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
 - [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
 - [ ] HTMX example?
 - [.] 2.0 doc site:

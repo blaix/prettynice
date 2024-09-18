@@ -71,7 +71,7 @@ update msg model =
                     | requestId = model.requestId + 1
                     , responses = 
                         model.responses 
-                            |> Dict.insert model.requestId response
+                            |> Dict.set model.requestId response
                 }
             , command =
                 getUuid model.requestId

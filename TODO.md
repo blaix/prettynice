@@ -43,8 +43,6 @@
   - [X] Stub missing pages in Basics section
   - [X] Stub missing pages in Next section
   - [ ] Stub missing pages in Guides section
-    - [ ] Create basic auth example?
-    - [ ] Create cookies example?
 - [O] `v2` branch:
   - [X] Upgrade to gren 0.4
     - [X] Upgrade package code
@@ -62,7 +60,10 @@
 - [ ] Merge `v2`
 - [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
 - [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
-- [ ] HTMX example?
+- [ ] Add more examples:
+  - [ ] basic auth
+  - [ ] cookies
+  - [ ] HTMX?
 - [.] 2.0 doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39

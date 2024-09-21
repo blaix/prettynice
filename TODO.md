@@ -43,6 +43,8 @@
   - [X] Stub missing pages in Basics section
   - [X] Stub missing pages in Next section
   - [ ] Stub missing pages in Guides section
+  - [ ] link to website from github
+- [ ] Link to API docs from README and website
 - [O] `v2` branch:
   - [X] Upgrade to gren 0.4
     - [X] Upgrade package code
@@ -60,6 +62,11 @@
 - [ ] Merge `v2`
 - [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
 - [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
+- [ ] v2 website
+  - [ ] copy v1 site
+  - [ ] update and point links correctly for v2
+  - [ ] deploy to v2 subdomain
+  - [ ] update root domains redirects
 - [ ] Add more examples:
   - [ ] basic auth
   - [ ] cookies

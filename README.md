@@ -8,8 +8,11 @@ A purely functional, fully type-safe, full-stack web framework for [Gren](https:
 Your code runs on the server, but your responses can include fully-interactive, client-side components that run in the browser.
 Initialize those components with data server-side and you don't have to deal with loading states or data fetching errors.
 
-Follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [#prettynice][]
-channel on the Gren [Discord][] for updates.
+You can go through this README to learn about the framework and how to get started.
+Then check out the [docsite](https://prettynice.dev/), [examples](https://github.com/blaix/prettynice/tree/main/examples), and [API docs](https://packages.gren-lang.org/package/blaix/prettynice).
+
+You ca follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [#prettynice][]
+channel on the Gren [Discord][] for updates or to ask for help.
 
 ## Table of Contents
 

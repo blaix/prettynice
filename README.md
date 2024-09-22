@@ -9,9 +9,9 @@ Your code runs on the server, but your responses can include fully-interactive, 
 Initialize those components with data server-side and you don't have to deal with loading states or data fetching errors.
 
 You can go through this README to learn about the framework and how to get started.
-Then check out the [docsite](https://prettynice.dev/), [examples](https://github.com/blaix/prettynice/tree/main/examples), and [API docs](https://packages.gren-lang.org/package/blaix/prettynice).
+Then check out the [docsite](https://prettynice.dev/), [examples](https://github.com/blaix/prettynice/tree/main/examples), and [API docs](https://packages.gren-lang.org/package/blaix/prettynice) for more details.
 
-You ca follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [#prettynice][]
+You can follow [@blaix@hachyderm.io](https://hachyderm.io/@blaix) or check the [#prettynice][]
 channel on the Gren [Discord][] for updates or to ask for help.
 
 ## Table of Contents

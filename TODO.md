@@ -43,10 +43,6 @@
 - [X] Link to API docs from README and website
 - [O] `v2` branch:
   - [X] Upgrade to gren 0.4
-    - [X] Upgrade package code
-    - [X] Upgrade next/ examples
-    - [X] Upgrade cli
-    - [ ] Upgrade project generator template
   - [ ] Don't expose Internal modules
   - [ ] Exposing any custom type constructors that should be functions?
   - [ ] Audit error messages
@@ -57,6 +53,11 @@
   - [ ] Update CHANGELOG
 - [ ] Merge `v2`
 - [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
+  - [ ] you MUST have time to do all of these!
+  - [ ] release 2.0 gren package
+  - [ ] update project generator template
+  - [ ] release 2.0 npm package for cli
+- [ ] Announce release
 - [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
 - [ ] v2 website
   - [ ] copy v1 site
@@ -126,12 +127,14 @@
   - [ ] LOTS of potential here! => see https://dev.to/jmpavlick/for-lack-of-a-better-name-im-calling-it-the-module-pattern-5dfi
   - [ ] and https://dark.elm.dmy.fr/packages/lue-bird/elm-state-interface/latest/
   - [ ] and https://discourse.elm-lang.org/t/what-are-your-thoughts-on-the-translator-pattern-for-child-parent-communication/9730
-- [ ] Experiment with htmx:
+- [ ] Experiment with htmx and hyperview:
+  - [ ] https://hypermedia.systems/
   - [ ] https://htmx.org/essays/when-to-use-hypermedia/
   - [ ] See this experiment / write-up by Mario: https://github.com/supermario/elm-htmx
   - [ ] May be able to incorporate the core 80% without using the library: https://joshi.monster/posts/build-your-own-htmx/
   - [ ] Server-side only dynamic interactions. All logic in one place. [Grug like](https://grugbrain.dev/#grug-on-soc).
   - [ ] Use case: add/edit/delete items from todo list.
+  - [ ] Hyperview for mobile...?
   - [ ] Also look at liveview
   - [ ] ...and SSE
 - [ ] See `notes/js-task.md`. Do I need some kind of composable, Task-like interface for js functions yet (will pencils need this for db calls?)?

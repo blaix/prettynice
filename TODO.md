@@ -40,7 +40,7 @@
 - [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [X] Call the 1.0 docsite done. (add some quicky tldr content to missing pages)
-- [ ] Link to API docs from README and website
+- [X] Link to API docs from README and website
 - [O] `v2` branch:
   - [X] Upgrade to gren 0.4
     - [X] Upgrade package code

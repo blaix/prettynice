@@ -41,13 +41,10 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [X] Call the 1.0 docsite done. (add some quicky tldr content to missing pages)
 - [X] Link to API docs from README and website
-- [O] `v2` branch:
+- [.] `v2` branch:
   - [X] Upgrade to gren 0.4
-  - [ ] Don't expose Internal modules
-  - [ ] Exposing any custom type constructors that should be functions?
-  - [ ] Audit error messages
-  - [ ] Dependency failures when generating client-side components don't fail the build? (try pointing to wrong/missing version and/or remove a required indirect dependency to test)
-  - [ ] Test windows and linux support - add to Changelog
+  - [X] Audit error messages
+  - [ ] Test windows and linux support
     - [ ] Update `cli/CodeGen.gren#genProject` to handle base dir names that came from windows
   - [ ] Bump version in gren.json and cli/package.json
   - [ ] Update CHANGELOG
@@ -211,3 +208,4 @@
 - [ ] Any ideas to steal from Lustre server components?
 - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/blob/main/guides/
 - [ ] Look at [elm-duet](https://github.com/BrianHicks/elm-duet) and [json type definitions](https://jsontypedef.com/)
+- [ ] `gren run package-name` to replace npm package and stop exposing `Prettynice.Internal`

@@ -1,36 +1,5 @@
 # TODO
 
-- [X] Kill exploration history and move to github
-- [X] Add example with FE components
-- [X] Mount handlers as full tea modules? Manual example only for now.
-- [X] Update main project README
-- [X] Helpful error message when compile fails from unsupported loader type
-- [X] === Get feedback on the API ===
-- [X] Client-side ports
-- [X] js console error: The script from “http://localhost:3000/main.js” was loaded even though its MIME type (“”) is not a valid JavaScript MIME type.
-- [X] Improve component codegen with a required Props record
-- [X] More supported component prop types
-- [X] Change examples to use local package path for prettynice instead of src in gren.json
-- [X] Clean up all the scattered gren.json, package.json, node_modules, etc.
-- [X] Justfile and entr for running/watching examples
-- [X] Add a form POST example
-- [X] Special characters in form data
-- [X] Custom `<head>` elements
-- [X] Fix static image handling in node `HttpServer`
-- [X] CSS example
-- [X] Response.sendBytes
-- [X] Database example using ports?
-- [X] Support Array and Maybe in Props
-- [X] Fix components nested under a parent module (e.g. client/Components/Foo/Bar.gren)
-- [X] Handle TODO comments in code. Move things here or to github issues if they don't need to be addressed yet.
-- [X] Use HttpServer.requestInfo for request logging in the terminal.
-- [X] Move build logic into cli
-- [X] Add --optimize flag to cli
-- [X] Test deeply-nested types in Props. E.g. Array (Array (Array Int))
-- [X] Improve cli interface and server startup output (with charm.sh/gum?)
-- [X] cli commands build, build --optimize, and help commands
-- [X] Switch examples to use cli npm package
-- [X] API Docs (reminder: use gren-doc-preview):
 - [X] **=== release 1.0 ===**
 - [X] Verify type safety of components in a newly installed project outside of this repo
 - [X] New project generator
@@ -41,12 +10,11 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [X] Call the 1.0 docsite done. (add some quicky tldr content to missing pages)
 - [X] Link to API docs from README and website
-- [.] `v2` branch:
+- [O] `v2` branch:
   - [X] Upgrade to gren 0.4
   - [X] Audit error messages
-  - [ ] Test windows and linux support
-    - [ ] Update `cli/CodeGen.gren#genProject` to handle base dir names that came from windows
-  - [ ] Bump version in gren.json and cli/package.json
+  - [X] Test windows. Created issue: https://github.com/blaix/prettynice/issues/2
+  - [X] Bump version in gren.json
   - [ ] Update CHANGELOG
 - [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
   - [ ] you MUST have time to do all of these!

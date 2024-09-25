@@ -53,8 +53,16 @@ type Body msg
         , head : Array (Html msg)
         , body : Array (Html msg)
         }
+    | BytesBody Bytes
     | JsonBody Json.Encode.Value
     | TextBody String
+
+
+{-| Internal representation of body is either a String or Bytes
+-}
+type RawBody
+    = RawBodyString String
+    | RawBodyBytes Bytes
 
 
 {-| Turn a [Node HttpServer Response](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/HttpServer.Response#Response)
@@ -84,10 +92,9 @@ Use this to send binary data like files, images, etc.
 sendBytes : { contentType : String, body : Bytes } -> Response -> Cmd a
 sendBytes { contentType, body } response =
     response
-        |> getHttpResponse
-        |> Http.setHeader "Content-type" contentType
-        |> Http.setBodyAsBytes body
-        |> Http.send
+        |> setBody (BytesBody body)
+        |> setHeader "Content-type" contentType
+        |> send
 
 
 {-| Respond with plain text.
@@ -139,7 +146,7 @@ setBody bodyVariant response =
             case bodyVariant of
                 HtmlBody { title, head, body } ->
                     { contentType = "text/html"
-                    , rawBody =
+                    , rawBody = RawBodyString <|
                         ( H.toString H.doctype ) ++ 
                         ( H.toString
                             ( H.html [ A.lang "en" ]
@@ -177,19 +184,28 @@ setBody bodyVariant response =
 
                 JsonBody json ->
                     { contentType = "application/json"
-                    , rawBody = Json.Encode.encode 2 json
+                    , rawBody = RawBodyString <| Json.Encode.encode 2 json 
                     }
 
                 TextBody text ->
                     { contentType = "text/plain"
-                    , rawBody = text
+                    , rawBody = RawBodyString text
                     }
 
+                BytesBody bytes ->
+                    { contentType = "application/octet-stream"
+                    , rawBody = RawBodyBytes bytes
+                    }
     in
     response
         |> getHttpResponse
         |> Http.setHeader "Content-type" contentType
-        |> Http.setBody rawBody
+        |> ( case rawBody of
+                RawBodyString body ->
+                    Http.setBody body
+                RawBodyBytes body ->
+                    Http.setBodyAsBytes body
+            )
         |> new
 
 

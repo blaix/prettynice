@@ -253,7 +253,7 @@ serverComponentsFromBundle bundle =
                            It either doesn't exist, is formatted in a way I
                            can't recognize, or it uses unsupported field types.
                            See Prettynice.Internal.Props.Fieldtype for supported types:
-                           https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Internal.Props#FieldType
+                           https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.Internal.Props#FieldType
                         """
                 )
 

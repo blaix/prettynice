@@ -5334,7 +5334,7 @@ var $author$project$CodeGen$serverComponentsFromBundle = function(bundle) {
 		return $gren_lang$core$Task$succeed(newBundle);
 	} else {
 		var def = badDef.a;
-		return $gren_lang$core$Task$fail($icidasset$shikensu_gren$Shikensu$Error$ErrorMessage(A3($gren_lang$core$String$replace, '{{COMPONENT}}', def.D, 'Oops! I can\'t parse props for the {{COMPONENT}} component.\n   I\'m looking for a type alias that looks like this:\n\n        type alias Props =\n            { myField : String\n            , myOtherField : Int\n            }\n\n   It either doesn\'t exist, is formatted in a way I\n   can\'t recognize, or it uses unsupported field types.\n   See Prettynice.Internal.Props.Fieldtype for supported types:\n   https://packages.gren-lang.org/package/blaix/prettynice/version/1.0.2/module/Prettynice.Internal.Props#FieldType')));
+		return $gren_lang$core$Task$fail($icidasset$shikensu_gren$Shikensu$Error$ErrorMessage(A3($gren_lang$core$String$replace, '{{COMPONENT}}', def.D, 'Oops! I can\'t parse props for the {{COMPONENT}} component.\n   I\'m looking for a type alias that looks like this:\n\n        type alias Props =\n            { myField : String\n            , myOtherField : Int\n            }\n\n   It either doesn\'t exist, is formatted in a way I\n   can\'t recognize, or it uses unsupported field types.\n   See Prettynice.Internal.Props.Fieldtype for supported types:\n   https://packages.gren-lang.org/package/blaix/prettynice/version/1/module/Prettynice.Internal.Props#FieldType')));
 	}
 };
 var $author$project$CodeGen$genServerComponents = function(fsPermission) {

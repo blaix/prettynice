@@ -4,7 +4,7 @@
     "name": "blaix/prettynice",
     "summary": "Full stack web framework for Gren",
     "license": "BSD-3-Clause",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "exposed-modules": [
         "Prettynice",
         "Prettynice.FormData",

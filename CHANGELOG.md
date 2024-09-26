@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 (2024-09-26)
+## 2.0.1 (2024-09-26)
 
 * Upgrade to gren 0.4 and associated packages
 * `Prettynice.startProgram` accepts a `command` field, to match the API of `Node.startProgram`.

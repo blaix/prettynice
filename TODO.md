@@ -16,9 +16,9 @@
   - [X] Test windows
   - [X] Bump version in gren.json
   - [X] Update CHANGELOG
-- [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
-  - [ ] you MUST have time to do all of these!
-  - [ ] Rebase + Merge `v2`
+- [.] **=== release 2.0 (gren + npm packages) and return to pencils ===**
+  - [X] you MUST have time to do all of these!
+  - [X] Rebase + Merge `v2`
   - [ ] release 2.0 gren package
   - [ ] update project generator template
   - [ ] release 2.0 npm package for cli

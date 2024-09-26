@@ -98,7 +98,7 @@ router request response =
                 |> Response.sendText "Oops!"
 ```
 
-See [examples/v1/routing/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/routing/server/src/Main.gren).
+See [examples/v2/routing/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/routing/server/src/Main.gren).
 
 ## Server-side HTML
 
@@ -117,7 +117,7 @@ Response.sendHtml
     }
 ```
 
-See [examples/v1/content-types/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/content-types/server/src/Main.gren).
+See [examples/v2/content-types/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/content-types/server/src/Main.gren).
 
 ## Client-side Components
 
@@ -191,7 +191,7 @@ subscriptions _ =
     Sub.none
 ```
 
-See [examples/v1/client-side-components/client/src/Components/Counter.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-components/client/src/Components/Counter.gren).
+See [examples/v2/client-side-components/client/src/Components/Counter.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-components/client/src/Components/Counter.gren).
 
 Dropping a component in `client/src/Components/` makes it available to embed in
 your server-side HTML:
@@ -219,14 +219,14 @@ myResponse =
     }
 ```
 
-See [examples/v1/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-components/server/src/Main.gren).
+See [examples/v2/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-components/server/src/Main.gren).
 
 Because you can initialize your client-side components with data from the
 server, **you don't need loading states or encoders, and the data will be
 type-checked at compile time.**
 
 Note: This is still a work-in-progress, and only works with certain types. See
-[examples/v1/client-side-components/README.md](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-components/README.md)
+[examples/v2/client-side-components/README.md](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-components/README.md)
 for details.
 
 ## Forms
@@ -283,14 +283,14 @@ viewResult request =
         name ++ " likes: " ++ hobbies
 ``` 
 
-See [examples/v1/forms](https://github.com/blaix/prettynice/tree/main/examples/v1/forms) for a full working example.
+See [examples/v2/forms](https://github.com/blaix/prettynice/tree/main/examples/v2/forms) for a full working example.
 
 ## Static assets
 
 Any files in `public/` will be copied to `dist/client` and available at the
 root url path.
 
-See [examples/v1/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v1/static-assets) for a full working example.
+See [examples/v2/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v2/static-assets) for a full working example.
 
 ## Customizing `<head>`
 
@@ -311,7 +311,7 @@ Response.sendHtml
     }
 ```
 
-See [examples/v1/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v1/static-assets) for a full working example.
+See [examples/v2/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v2/static-assets) for a full working example.
 
 ## Javascript Interop in the Browser
 
@@ -344,7 +344,7 @@ update msg model =
             }
 ```
 
-See [examples/v1/client-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/client-side-ports) for a full working example.
+See [examples/v2/client-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-ports) for a full working example.
 
 ## More Control
 
@@ -394,11 +394,11 @@ update msg model =
 
 See:
 
-* [examples/v1/running-tasks](/examples/v1/running-tasks)
-* [examples/v1/running-commands](/examples/v1/running-commands)
-* [examples/v1/server-side-state](/examples/v1/server-side-state)
-* [examples/v1/server-side-ports](/examples/v1/server-side-ports)
-* [examples/v1/database-ports](/examples/v1/database-ports)
+* [examples/v2/running-tasks](/examples/v2/running-tasks)
+* [examples/v2/running-commands](/examples/v2/running-commands)
+* [examples/v2/server-side-state](/examples/v2/server-side-state)
+* [examples/v2/server-side-ports](/examples/v2/server-side-ports)
+* [examples/v2/database-ports](/examples/v2/database-ports)
 
 ## Javascript Interop in Node
 
@@ -410,8 +410,8 @@ If you aren't familiar with ports, you can read [this section of the elm guide](
 
 See:
 
-* [examples/v1/server-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/server-side-ports).
-* [examples/v1/database-ports](https://github.com/blaix/prettynice/tree/main/examples/v1/database-ports).
+* [examples/v2/server-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v2/server-side-ports).
+* [examples/v2/database-ports](https://github.com/blaix/prettynice/tree/main/examples/v2/database-ports).
 
 **Note:** due to the async and decoupled nature of ports, if you are triggering
 a port on a request, and your response depends on the result of that port,
@@ -429,8 +429,8 @@ So you need to use ports or some form of db-over-http.
 
 See:
 
-* [examples/v1/database-http](/examples/v1/database-http) (recommended)
-* [examples/v1/database-ports](/examples/v1/database-ports)
+* [examples/v2/database-http](/examples/v2/database-http) (recommended)
+* [examples/v2/database-ports](/examples/v2/database-ports)
 
 ## Deployment
 

@@ -31,10 +31,10 @@ build-cli-debug:
   cd cli && npx gren make src/Main.gren --output=bin/main.js
 
 web:
-  cd website/v1 && npm install && npm run dev
+  cd website/v2 && npm install && npm run dev
 
 deploy-web:
-  cd website/v1 && flyctl deploy
+  cd website/v2 && flyctl deploy
 
 header MSG:
   @echo -e "\n{{green}}{{MSG}}{{nc}}"

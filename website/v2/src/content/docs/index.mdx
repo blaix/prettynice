@@ -1,0 +1,51 @@
+---
+title: Pretty Nice
+description: A full stack web framework for the gren programming language.
+template: doc
+hero:
+  tagline: A purely functional full-stack web framework.
+  image:
+    file: ../../assets/cherry-blossom.svg
+  actions:
+    - text: Get Started
+      link: /basics/start/
+      icon: right-arrow
+      variant: primary
+    - text: API Docs
+      link: https://packages.gren-lang.org/package/blaix/prettynice/version/2/overview
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Some pretty nice features
+
+<CardGrid>
+	<Card title="Server-side Simplicity" icon="laptop">
+        [Serve your pages](/basics/server/) with
+        all content and everything they need for interactivity right from the start.
+	</Card>
+	<Card title="Client-side Confidence" icon="seti:html">
+        [Client components](/basics/client/) are initialized on the server with data that is type-checked at compile time.
+	</Card>
+	<Card title="Guidance and Guarantees" icon="seti:todo">
+        Immutability, strong static types, carefully managed side-effects, and a helpful compiler thanks to [gren](https://gren-lang.org/)
+	</Card>
+	<Card title="Javascript just where you need it" icon="seti:javascript">
+        Want to color outside the lines? Easy access to the full JS ecosystem
+        in the [browser](/next/client-js/) _and_ [node](/next/server-js/).
+	</Card>
+</CardGrid>
+
+## The Gren Programming Language
+
+Pretty Nice uses [Gren](https://gren-lang.org/), a purely functional language with carefully managed side-effects, a strong static type system, and a helpful compiler.
+
+All of these combined let you code with confidence and peace of mind.
+Gren won't let you forget an edge case or accidentally introduce a runtime exception.
+You can liberally change and refactor code without worrying that you've missed or broken something.
+Create applications that _just work_.
+
+A good place to start learning Gren is [gren-lang.org/learn](https://gren-lang.org/learn)
+
+To get started using Gren for full-stack web applications, head to the [get started page](/basics/start/)!

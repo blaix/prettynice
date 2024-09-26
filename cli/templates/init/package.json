@@ -13,8 +13,8 @@
     ]
   },
   "dependencies": {
-    "gren-lang": "^0.3.0",
-    "prettynice": "^1.2.2"
+    "gren-lang": "^0.4.5",
+    "prettynice": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

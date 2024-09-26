@@ -166,11 +166,11 @@ update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         Increment ->
-            { model = { model | count = model.count + 1
+            { model = { model | count = model.count + 1 }
             , command = Cmd.none
             }
         Decrement ->
-            { model = { model | count = model.count - 1
+            { model = { model | count = model.count - 1 }
             , command = Cmd.none
             }
 

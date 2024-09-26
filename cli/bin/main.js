@@ -2809,7 +2809,7 @@ var $gren_lang$parser$Parser$Advanced$AddRight$ = function (a, b) {
 var $gren_lang$parser$Parser$Advanced$AddRight = F2($gren_lang$parser$Parser$Advanced$AddRight$);
 var $gren_lang$parser$Parser$Advanced$Empty = { $: 0 };
 var $gren_lang$parser$Parser$Advanced$fromState$ = function(s, x) {
-	return $gren_lang$parser$Parser$Advanced$AddRight$($gren_lang$parser$Parser$Advanced$Empty, { _: s._, aC: s.b, al: x, an: s.an });
+	return $gren_lang$parser$Parser$Advanced$AddRight$($gren_lang$parser$Parser$Advanced$Empty, { ab: s.ab, aC: s.b, am: x, an: s.an });
 };
 var $gren_lang$parser$Parser$Advanced$fromState = F2($gren_lang$parser$Parser$Advanced$fromState$);
 
@@ -2963,7 +2963,7 @@ var $gren_lang$core$Basics$negate = function(n) {
 var $gren_lang$parser$Parser$Advanced$chompIf$ = function(isGood, expecting) {
 	return function(s) {
 		var newOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, isGood, s.d, s.a);
-		return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, expecting)) : (_Utils_eq(newOffset, -2) ? $gren_lang$parser$Parser$Advanced$Good$(true, {  }, { _: 1, b: s.b, c: s.c, d: s.d + 1, an: s.an + 1, a: s.a }) : $gren_lang$parser$Parser$Advanced$Good$(true, {  }, { _: s._ + 1, b: s.b, c: s.c, d: newOffset, an: s.an, a: s.a }));
+		return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, expecting)) : (_Utils_eq(newOffset, -2) ? $gren_lang$parser$Parser$Advanced$Good$(true, {  }, { ab: 1, b: s.b, c: s.c, d: s.d + 1, an: s.an + 1, a: s.a }) : $gren_lang$parser$Parser$Advanced$Good$(true, {  }, { ab: s.ab + 1, b: s.b, c: s.c, d: newOffset, an: s.an, a: s.a }));
 	};
 };
 var $gren_lang$parser$Parser$Advanced$chompIf = F2($gren_lang$parser$Parser$Advanced$chompIf$);
@@ -2974,12 +2974,12 @@ var $gren_lang$core$String$length = _String_length;
 var $gren_lang$core$Basics$lt = _Utils_lt;
 var $gren_lang$parser$Parser$Advanced$chompUntilEndOr = function(str) {
 	return function(s) {
-		var _v0 = A5(_Parser_findSubString, str, s.d, s.an, s._, s.a);
+		var _v0 = A5(_Parser_findSubString, str, s.d, s.an, s.ab, s.a);
 		var newOffset = _v0.aY;
 		var newRow = _v0.aZ;
 		var newCol = _v0.aX;
 		var adjustedOffset = (newOffset < 0) ? $gren_lang$core$String$length(s.a) : newOffset;
-		return $gren_lang$parser$Parser$Advanced$Good$(_Utils_cmp(s.d, adjustedOffset) < 0, {  }, { _: newCol, b: s.b, c: s.c, d: adjustedOffset, an: newRow, a: s.a });
+		return $gren_lang$parser$Parser$Advanced$Good$(_Utils_cmp(s.d, adjustedOffset) < 0, {  }, { ab: newCol, b: s.b, c: s.c, d: adjustedOffset, an: newRow, a: s.a });
 	};
 };
 var $gren_lang$parser$Parser$chompUntilEndOr = $gren_lang$parser$Parser$Advanced$chompUntilEndOr;
@@ -2988,7 +2988,7 @@ var $gren_lang$parser$Parser$Advanced$chompWhileHelp$ = function(isGood, offset,
 	while (true) {
 		var newOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, isGood, offset, s0.a);
 		if (_Utils_eq(newOffset, -1)) {
-			return $gren_lang$parser$Parser$Advanced$Good$(_Utils_cmp(s0.d, offset) < 0, {  }, { _: col, b: s0.b, c: s0.c, d: offset, an: row, a: s0.a });
+			return $gren_lang$parser$Parser$Advanced$Good$(_Utils_cmp(s0.d, offset) < 0, {  }, { ab: col, b: s0.b, c: s0.c, d: offset, an: row, a: s0.a });
 		} else {
 			if (_Utils_eq(newOffset, -2)) {
 				var $temp$isGood = isGood,
@@ -3021,7 +3021,7 @@ var $gren_lang$parser$Parser$Advanced$chompWhileHelp$ = function(isGood, offset,
 var $gren_lang$parser$Parser$Advanced$chompWhileHelp = F5($gren_lang$parser$Parser$Advanced$chompWhileHelp$);
 var $gren_lang$parser$Parser$Advanced$chompWhile = function(isGood) {
 	return function(s) {
-		return $gren_lang$parser$Parser$Advanced$chompWhileHelp$(isGood, s.d, s.an, s._, s);
+		return $gren_lang$parser$Parser$Advanced$chompWhileHelp$(isGood, s.d, s.an, s.ab, s);
 	};
 };
 var $gren_lang$parser$Parser$chompWhile = $gren_lang$parser$Parser$Advanced$chompWhile;
@@ -3177,7 +3177,7 @@ var $joeybright$gren_args$Args$parseArg = function () {
 				})), A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed($joeybright$gren_args$Args$String), $gren_lang$parser$Parser$getChompedString($gren_lang$parser$Parser$chompUntilEndOr(' '))) ]);
 }();
 var $gren_lang$parser$Parser$problemToDeadEnd = function(p) {
-	return { _: p._, al: p.al, an: p.an };
+	return { ab: p.ab, am: p.am, an: p.an };
 };
 var $gren_lang$parser$Parser$Advanced$bagToArray$ = function(bag, array) {
 	bagToArray:
@@ -3207,7 +3207,7 @@ var $gren_lang$parser$Parser$Advanced$bagToArray$ = function(bag, array) {
 var $gren_lang$parser$Parser$Advanced$bagToArray = F2($gren_lang$parser$Parser$Advanced$bagToArray$);
 var $gren_lang$parser$Parser$Advanced$run$ = function(_v0, src) {
 	var parse = _v0;
-	var _v1 = parse({ _: 1, b: [  ], c: 1, d: 0, an: 1, a: src });
+	var _v1 = parse({ ab: 1, b: [  ], c: 1, d: 0, an: 1, a: src });
 	if (!_v1.$) {
 		var value = _v1.b;
 		return $gren_lang$core$Result$Ok(value);
@@ -3856,7 +3856,7 @@ var _FileSystem_listDirectory = function (path) {
           callback(
             _Scheduler_succeed(
               content.map((f) => ({
-                ak: _FilePath_fromString(f.name),
+                al: _FilePath_fromString(f.name),
                 aE: _FileSystem_toEntityType(f),
               }))
             )
@@ -3897,7 +3897,7 @@ var _FileSystem_fchmod = F2(function (mode, fd) {
 
 var _FileSystem_fchown = F2(function (ids, fd) {
   return _Scheduler_binding(function (callback) {
-    fs.fchown(fd, ids.Y, ids.R, function (err) {
+    fs.fchown(fd, ids._, ids.S, function (err) {
       if (err) {
         callback(_Scheduler_fail(_FileSystem_constructError(err.message)));
       } else {
@@ -4021,8 +4021,8 @@ var _FileSystem_chown = F2(function (ids, path) {
   return _Scheduler_binding(function (callback) {
     fs.chown(
       _FilePath_toString(path),
-      ids.Y,
-      ids.R,
+      ids._,
+      ids.S,
       function (err) {
         if (err) {
           callback(_Scheduler_fail(_FileSystem_constructError(err)));
@@ -4038,8 +4038,8 @@ var _FileSystem_lchown = F2(function (ids, path) {
   return _Scheduler_binding(function (callback) {
     fs.lchown(
       _FilePath_toString(path),
-      ids.Y,
-      ids.R,
+      ids._,
+      ids.S,
       function (err) {
         if (err) {
           callback(_Scheduler_fail(_FileSystem_constructError(err)));
@@ -4212,11 +4212,11 @@ var _FileSystem_statToGrenRecord = function (stats) {
     bk: stats.size,
     br: $gren_lang$core$Time$millisToPosix(Math.floor(stats.birthtimeMs)),
     bu: stats.dev,
-    R: stats.gid,
+    S: stats.gid,
     bU: $gren_lang$core$Time$millisToPosix(Math.floor(stats.atimeMs)),
     bV: $gren_lang$core$Time$millisToPosix(Math.floor(stats.ctimeMs)),
     bW: $gren_lang$core$Time$millisToPosix(Math.floor(stats.mtimeMs)),
-    Y: stats.uid,
+    _: stats.uid,
   };
 };
 
@@ -4663,7 +4663,7 @@ var $gren_lang$node$Node$setExitCode = function(code) {
 var $author$project$Main$run$ = function(model, _v0) {
 	var args = _v0.av;
 	var options = _v0.k;
-	return (_Utils_eq(args, [ 'version' ]) || ($gren_lang$core$Dict$member$('v', options) || $gren_lang$core$Dict$member$('version', options))) ? { g: $author$project$Main$getVersion({  }), h: model } : (_Utils_eq(args, [ 'build' ]) ? { g: $author$project$Main$runBuild(model), h: model } : (_Utils_eq(args, [ 'init' ]) ? { g: $gren_lang$core$Task$execute($gren_lang$node$Stream$sendString$(model.e, '󱚤 Can I turn the current directory into a new Prettynice project (y|n)? ')), h: _Utils_update(model, { X: $gren_lang$core$Maybe$Just($author$project$Main$GenProject_Confirmation) }) } : (_Utils_eq(args, [  ]) ? { g: $gren_lang$core$Task$execute($gren_lang$node$Stream$sendLine$(model.e, $author$project$Main$help)), h: model } : { g: $gren_lang$core$Task$execute(A2($gren_lang$core$Task$andThen, function(_v2) {
+	return (_Utils_eq(args, [ 'version' ]) || ($gren_lang$core$Dict$member$('v', options) || $gren_lang$core$Dict$member$('version', options))) ? { g: $author$project$Main$getVersion({  }), h: model } : (_Utils_eq(args, [ 'build' ]) ? { g: $author$project$Main$runBuild(model), h: model } : (_Utils_eq(args, [ 'init' ]) ? { g: $gren_lang$core$Task$execute($gren_lang$node$Stream$sendString$(model.e, '󱚤 Can I turn the current directory into a new Prettynice project (y|n)? ')), h: _Utils_update(model, { Z: $gren_lang$core$Maybe$Just($author$project$Main$GenProject_Confirmation) }) } : (_Utils_eq(args, [  ]) ? { g: $gren_lang$core$Task$execute($gren_lang$node$Stream$sendLine$(model.e, $author$project$Main$help)), h: model } : { g: $gren_lang$core$Task$execute(A2($gren_lang$core$Task$andThen, function(_v2) {
 				return $gren_lang$node$Node$setExitCode(1);
 			}, A2($gren_lang$core$Task$andThen, function(_v1) {
 					return $gren_lang$node$Stream$sendLine$(model.f, $author$project$Main$help);
@@ -4676,7 +4676,7 @@ var $gren_lang$node$Node$startProgram = function(initResult) {
 var $author$project$Main$init = function(env) {
 	return $gren_lang$node$Init$await$($gren_lang$node$FileSystem$initialize, function(fsPermission) {
 			return $gren_lang$node$Init$await$($gren_lang$node$ChildProcess$initialize, function(procPermission) {
-					var model = { ad: $gren_lang$core$Maybe$Nothing, bG: fsPermission, ai: $gren_lang$core$Array$member$('--optimize', env.av), W: procPermission, X: $gren_lang$core$Maybe$Nothing, f: env.f, aq: env.aq, e: env.e };
+					var model = { ae: $gren_lang$core$Maybe$Nothing, bG: fsPermission, aj: $gren_lang$core$Array$member$('--optimize', env.av), X: procPermission, Z: $gren_lang$core$Maybe$Nothing, f: env.f, aq: env.aq, e: env.e };
 					return $gren_lang$node$Node$startProgram($author$project$Main$run$(model, $joeybright$gren_args$Args$parse($gren_lang$core$Array$dropFirst$(2, env.av))));
 				});
 		});
@@ -4803,7 +4803,7 @@ var $gren_lang$node$Stream$listen$ = function(stream, msgMap) {
 var $gren_lang$node$Stream$listen = F2($gren_lang$node$Stream$listen$);
 var $author$project$Main$subscriptions = function(model) {
 	return $gren_lang$core$Platform$Sub$batch([ $author$project$Main$gotDirname($author$project$Main$GotDirname), $author$project$Main$gotVersion($author$project$Main$GotVersion), function () {
-			var _v0 = model.X;
+			var _v0 = model.Z;
 			if (!_v0.$) {
 				var msg = _v0.a;
 				return $gren_lang$node$Stream$listen$(model.aq, msg);
@@ -4867,7 +4867,7 @@ var $gren_lang$node$ChildProcess$InheritEnvironmentVariables = { $: 0 };
 var $gren_lang$node$ChildProcess$InheritWorkingDirectory = { $: 0 };
 var $gren_lang$node$ChildProcess$NoLimit = { $: 0 };
 var $gren_lang$core$Basics$mul = _Basics_mul;
-var $gren_lang$node$ChildProcess$defaultRunOptions = { B: $gren_lang$node$ChildProcess$InheritEnvironmentVariables, ag: 1024 * 1024, D: $gren_lang$node$ChildProcess$NoLimit, E: $gren_lang$node$ChildProcess$DefaultShell, bd: $gren_lang$node$ChildProcess$InheritWorkingDirectory };
+var $gren_lang$node$ChildProcess$defaultRunOptions = { B: $gren_lang$node$ChildProcess$InheritEnvironmentVariables, ah: 1024 * 1024, D: $gren_lang$node$ChildProcess$NoLimit, E: $gren_lang$node$ChildProcess$DefaultShell, bd: $gren_lang$node$ChildProcess$InheritWorkingDirectory };
 var $author$project$CodeGen$errorString = function(error) {
 	var str = error;
 	return str;
@@ -4895,7 +4895,7 @@ var $gren_lang$node$FileSystem$Path$append$ = function(left, right) {
 };
 var $gren_lang$node$FileSystem$Path$append = F2($gren_lang$node$FileSystem$Path$append$);
 var $author$project$CodeGen$emptyBundle = function(permission) {
-	return { aa: [  ], bG: permission, b9: $gren_lang$core$Maybe$Nothing };
+	return { ac: [  ], bG: permission, b9: $gren_lang$core$Maybe$Nothing };
 };
 var $gren_lang$node$FileSystem$errorIsNoSuchFileOrDirectory = function(_v0) {
 	var code = _v0.a;
@@ -4908,7 +4908,7 @@ var $icidasset$shikensu_gren$Shikensu$Error$PlatformError$ = function (a, b) {
 };
 var $icidasset$shikensu_gren$Shikensu$Error$PlatformError = F2($icidasset$shikensu_gren$Shikensu$Error$PlatformError$);
 var $icidasset$shikensu_gren$Shikensu$Definition$create = function(relPath) {
-	return { G: $gren_lang$core$Maybe$Nothing, aR: $gren_lang$core$Dict$empty, ak: _Utils_update(relPath, { cd: '' }) };
+	return { G: $gren_lang$core$Maybe$Nothing, aR: $gren_lang$core$Dict$empty, al: _Utils_update(relPath, { cd: '' }) };
 };
 var $gren_lang$core$Array$flatMap = _Array_flatMap;
 var $gren_lang$core$Array$filterMap$ = function(mapper, array) {
@@ -4940,7 +4940,7 @@ var $icidasset$shikensu_gren$Shikensu$recursiveList$ = function(permission, read
 	return A2($gren_lang$core$Task$andThen, function(listing) {
 			return $gren_lang$core$Task$map$($gren_lang$core$Array$flatten, $gren_lang$core$Task$sequence($gren_lang$core$Array$filterMap$(function(_v0) {
 							var entityType = _v0.aE;
-							var path = _v0.ak;
+							var path = _v0.al;
 							switch (entityType) {
 								case 0:
 									return A2($gren_lang$core$String$startsWith, '.', path.n) ? $gren_lang$core$Maybe$Nothing : $gren_lang$core$Maybe$Just($gren_lang$core$Task$succeed($gren_lang$core$Array$singleton($icidasset$shikensu_gren$Shikensu$Definition$create($gren_lang$node$FileSystem$Path$prepend$(listPath, path)))));
@@ -4955,7 +4955,7 @@ var $icidasset$shikensu_gren$Shikensu$recursiveList$ = function(permission, read
 var $icidasset$shikensu_gren$Shikensu$recursiveList = F3($icidasset$shikensu_gren$Shikensu$recursiveList$);
 var $icidasset$shikensu_gren$Shikensu$list$ = function(fsPermission, readPath) {
 	return $gren_lang$core$Task$map$(function(compendium) {
-			return { aa: compendium, bG: fsPermission, b9: $gren_lang$core$Maybe$Just(readPath) };
+			return { ac: compendium, bG: fsPermission, b9: $gren_lang$core$Maybe$Just(readPath) };
 		}, $icidasset$shikensu_gren$Shikensu$recursiveList$(fsPermission, readPath, $gren_lang$node$FileSystem$Path$empty));
 };
 var $icidasset$shikensu_gren$Shikensu$list = F2($icidasset$shikensu_gren$Shikensu$list$);
@@ -4972,12 +4972,12 @@ var $author$project$CodeGen$tryList$ = function(fsPermission, dirs) {
 };
 var $author$project$CodeGen$tryList = F2($author$project$CodeGen$tryList$);
 var $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium$ = function(fn, bundle) {
-	return _Utils_update(bundle, { aa: fn(bundle.aa) });
+	return _Utils_update(bundle, { ac: fn(bundle.ac) });
 };
 var $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium = F2($icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium$);
 var $icidasset$shikensu_gren$Shikensu$Contrib$withExtension = function(extension) {
 	return $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium($gren_lang$core$Array$filter(function(def) {
-				return _Utils_eq(def.ak.m, extension);
+				return _Utils_eq(def.al.m, extension);
 			}));
 };
 var $author$project$CodeGen$listComponents = function(fsPermission) {
@@ -5005,8 +5005,8 @@ var $gren_lang$node$FileSystem$Path$toPosixString = _FilePath_toPosix;
 var $author$project$CodeGen$generatedComponentPaths = function(fsPermission) {
 	return $gren_lang$core$Task$mapError$($author$project$CodeGen$mapError, $gren_lang$core$Task$map$($gren_lang$core$Array$map($gren_lang$node$FileSystem$Path$toPosixString), A2($gren_lang$core$Task$andThen, function(bundle) {
 					return $gren_lang$core$Task$succeed(A2($gren_lang$core$Array$map, function(d) {
-								return $gren_lang$node$FileSystem$Path$append$(d.ak, $gren_lang$node$FileSystem$Path$fromPosixString('.prettynice/Gen/Components'));
-							}, bundle.aa));
+								return $gren_lang$node$FileSystem$Path$append$(d.al, $gren_lang$node$FileSystem$Path$fromPosixString('.prettynice/Gen/Components'));
+							}, bundle.ac));
 				}, $author$project$CodeGen$listComponents(fsPermission))));
 };
 
@@ -5030,7 +5030,7 @@ var _ChildProcess_run = function (options) {
         cwd: _ChildProcess_handleCwd(workingDir),
         env: _ChildProcess_handleEnv(env),
         timeout: options.D,
-        maxBuffer: options.ag,
+        maxBuffer: options.ah,
         shell: _ChildProcess_handleShell(shell),
       },
       function (err, stdout, stderr) {
@@ -5083,11 +5083,11 @@ var _ChildProcess_spawn = function (options) {
       env: _ChildProcess_handleEnv(env),
       timeout: options.D,
       shell: _ChildProcess_handleShell(shell),
-      stdio: options.ab === 0 ? "inherit" : "ignore",
-      detached: options.ab === 2 && process.platform === "win32",
+      stdio: options.ad === 0 ? "inherit" : "ignore",
+      detached: options.ad === 2 && process.platform === "win32",
     });
 
-    if (options.ab === 2) {
+    if (options.ad === 2) {
       subproc.unref();
     }
 
@@ -5098,7 +5098,7 @@ var _ChildProcess_spawn = function (options) {
 };
 
 function _ChildProcess_handleCwd(cwd) {
-  return cwd.S ? process.cwd() : cwd.V;
+  return cwd.T ? process.cwd() : cwd.W;
 }
 
 function _ChildProcess_handleEnv(env) {
@@ -5146,7 +5146,7 @@ var $gren_lang$node$ChildProcess$run$ = function(_v0, program, _arguments, opts)
 					var value = _v1.a;
 					return { C: 2, bc: value };
 			}
-		}(), ag: opts.ag, a4: program, D: function () {
+		}(), ah: opts.ah, a4: program, D: function () {
 			var _v2 = opts.D;
 			if (!_v2.$) {
 				return 0;
@@ -5168,10 +5168,10 @@ var $gren_lang$node$ChildProcess$run$ = function(_v0, program, _arguments, opts)
 		}(), bd: function () {
 			var _v4 = opts.bd;
 			if (!_v4.$) {
-				return { S: true, V: '' };
+				return { T: true, W: '' };
 			} else {
 				var value = _v4.a;
-				return { S: false, V: value };
+				return { T: false, W: value };
 			}
 		}() });
 };
@@ -5211,7 +5211,7 @@ var $gren_lang$node$FileSystem$readFile$ = function(_v0, path) {
 };
 var $gren_lang$node$FileSystem$readFile = F2($gren_lang$node$FileSystem$readFile$);
 var $icidasset$shikensu_gren$Shikensu$readDefinition$ = function(fsPermission, readingDirectory, def) {
-	var path = $gren_lang$node$FileSystem$Path$prepend$(readingDirectory, def.ak);
+	var path = $gren_lang$node$FileSystem$Path$prepend$(readingDirectory, def.al);
 	return $gren_lang$core$Task$map$(function(bytes) {
 			return _Utils_update(def, { G: $gren_lang$core$Maybe$Just(bytes) });
 		}, $gren_lang$core$Task$mapError$($icidasset$shikensu_gren$Shikensu$Error$PlatformError(path), $gren_lang$node$FileSystem$readFile$(fsPermission, path)));
@@ -5219,7 +5219,7 @@ var $icidasset$shikensu_gren$Shikensu$readDefinition$ = function(fsPermission, r
 var $icidasset$shikensu_gren$Shikensu$readDefinition = F3($icidasset$shikensu_gren$Shikensu$readDefinition$);
 var $icidasset$shikensu_gren$Shikensu$read = function(bun) {
 	return $gren_lang$core$Task$map$(function(compendium) {
-			return _Utils_update(bun, { aa: compendium });
+			return _Utils_update(bun, { ac: compendium });
 		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, function(def) {
 					var _v0 = bun.b9;
 					if (!_v0.$) {
@@ -5228,7 +5228,7 @@ var $icidasset$shikensu_gren$Shikensu$read = function(bun) {
 					} else {
 						return $gren_lang$core$Task$succeed(def);
 					}
-				}, bun.aa)));
+				}, bun.ac)));
 };
 var $gren_lang$core$Basics$sub = _Basics_sub;
 var $gren_lang$core$Array$dropLast$ = function(n, array) {
@@ -5275,7 +5275,7 @@ var $gren_lang$node$FileSystem$writeFile$ = function(_v0, bytes, path) {
 };
 var $gren_lang$node$FileSystem$writeFile = F3($gren_lang$node$FileSystem$writeFile$);
 var $icidasset$shikensu_gren$Shikensu$writeDefinition$ = function(permission, destinationDirectory, def) {
-	var path = $gren_lang$node$FileSystem$Path$prepend$(destinationDirectory, def.ak);
+	var path = $gren_lang$node$FileSystem$Path$prepend$(destinationDirectory, def.al);
 	return $gren_lang$core$Task$map$(function(_v1) {
 			return {  };
 		}, $gren_lang$core$Task$mapError$($icidasset$shikensu_gren$Shikensu$Error$PlatformError(path), A2($gren_lang$core$Task$andThen, function(_v0) {
@@ -5286,7 +5286,7 @@ var $icidasset$shikensu_gren$Shikensu$writeDefinition = F3($icidasset$shikensu_g
 var $icidasset$shikensu_gren$Shikensu$write$ = function(destinationPath, bun) {
 	return $gren_lang$core$Task$map$(function(_v0) {
 			return bun;
-		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, A2($icidasset$shikensu_gren$Shikensu$writeDefinition, bun.bG, destinationPath), bun.aa)));
+		}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, A2($icidasset$shikensu_gren$Shikensu$writeDefinition, bun.bG, destinationPath), bun.ac)));
 };
 var $icidasset$shikensu_gren$Shikensu$write = F2($icidasset$shikensu_gren$Shikensu$write$);
 var $author$project$CodeGen$write = function(destinationDir) {
@@ -5313,7 +5313,7 @@ var $gren_lang$core$String$dropRight$ = function(n, string) {
 };
 var $gren_lang$core$String$dropRight = F2($gren_lang$core$String$dropRight$);
 var $author$project$CodeGen$baseName = function(def) {
-	return $gren_lang$core$String$dropRight$(5, $gren_lang$node$FileSystem$Path$filenameWithExtension(def.ak));
+	return $gren_lang$core$String$dropRight$(5, $gren_lang$node$FileSystem$Path$filenameWithExtension(def.al));
 };
 var $gren_lang$core$String$prepend = _String_append;
 var $gren_lang$core$String$append$ = function(lhs, rhs) {
@@ -5321,7 +5321,7 @@ var $gren_lang$core$String$append$ = function(lhs, rhs) {
 };
 var $gren_lang$core$String$append = F2($gren_lang$core$String$append$);
 var $author$project$CodeGen$moduleName = function(def) {
-	var parentPath = $gren_lang$core$Maybe$withDefault$('.', $gren_lang$core$Maybe$map$($gren_lang$node$FileSystem$Path$toPosixString, $gren_lang$node$FileSystem$Path$parentPath(def.ak)));
+	var parentPath = $gren_lang$core$Maybe$withDefault$('.', $gren_lang$core$Maybe$map$($gren_lang$node$FileSystem$Path$toPosixString, $gren_lang$node$FileSystem$Path$parentPath(def.al)));
 	var modulePath = function () {
 		if (parentPath === '.') {
 			return 'Components.';
@@ -5358,7 +5358,7 @@ var $author$project$CodeGen$genClientComponents = function(fsPermission) {
 	return $gren_lang$core$Task$map$($gren_lang$core$Basics$identity, $gren_lang$core$Task$mapError$($author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write('client/.prettynice/Gen/Components'), $gren_lang$core$Task$map$($icidasset$shikensu_gren$Shikensu$Contrib$renderContent($author$project$CodeGen$clientComponentFromDef), $author$project$CodeGen$readComponents(fsPermission)))));
 };
 var $icidasset$shikensu_gren$Shikensu$Contrib$Definition$renameExtension$ = function(oldExtname, newExtname, def) {
-	return _Utils_eq(def.ak.m, oldExtname) ? _Utils_update(def, { ak: _Utils_update(def.ak, { m: newExtname }) }) : def;
+	return _Utils_eq(def.al.m, oldExtname) ? _Utils_update(def, { al: _Utils_update(def.al, { m: newExtname }) }) : def;
 };
 var $icidasset$shikensu_gren$Shikensu$Contrib$Definition$renameExtension = F3($icidasset$shikensu_gren$Shikensu$Contrib$Definition$renameExtension$);
 var $icidasset$shikensu_gren$Shikensu$Contrib$renameExtension$ = function(old, _new) {
@@ -5374,7 +5374,7 @@ var $author$project$CodeGen$genClientPorts = function(fsPermission) {
 	return $gren_lang$core$Task$map$($gren_lang$core$Basics$identity, $gren_lang$core$Task$mapError$($author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write('dist/client/Components'), $author$project$CodeGen$tryRead($gren_lang$core$Task$map$($icidasset$shikensu_gren$Shikensu$Contrib$renameExtension$('gren', 'js'), $author$project$CodeGen$listComponents(fsPermission))))));
 };
 var $icidasset$shikensu_gren$Shikensu$bundle$ = function(fsPermission, compendium) {
-	return { aa: compendium, bG: fsPermission, b9: $gren_lang$core$Maybe$Nothing };
+	return { ac: compendium, bG: fsPermission, b9: $gren_lang$core$Maybe$Nothing };
 };
 var $icidasset$shikensu_gren$Shikensu$bundle = F2($icidasset$shikensu_gren$Shikensu$bundle$);
 var $author$project$CodeGen$createDef$ = function(content, path) {
@@ -5388,11 +5388,11 @@ var $author$project$CodeGen$genDependencies = function(fsPermission) {
 	return $gren_lang$core$Task$map$($gren_lang$core$Basics$identity, $gren_lang$core$Task$mapError$($author$project$CodeGen$mapError, A2($author$project$CodeGen$write, '.', $icidasset$shikensu_gren$Shikensu$bundle$(fsPermission, [ $author$project$CodeGen$createDef$('', 'dist/client/main.js'), $author$project$CodeGen$createDef$($author$project$CodeGen$prettyniceComponentModule, 'client/.prettynice/Prettynice/Component.gren'), $author$project$CodeGen$createDef$($author$project$CodeGen$serverWrapper, 'dist/server/index.js') ]))));
 };
 var $icidasset$shikensu_gren$Shikensu$Definition$fork$ = function(relPath, def) {
-	return { G: def.G, aR: def.aR, ak: relPath };
+	return { G: def.G, aR: def.aR, al: relPath };
 };
 var $icidasset$shikensu_gren$Shikensu$Definition$fork = F2($icidasset$shikensu_gren$Shikensu$Definition$fork$);
 var $icidasset$shikensu_gren$Shikensu$Contrib$Definition$rename$ = function(oldPath, newPath, def) {
-	return _Utils_eq(def.ak, oldPath) ? $icidasset$shikensu_gren$Shikensu$Definition$fork$(newPath, def) : def;
+	return _Utils_eq(def.al, oldPath) ? $icidasset$shikensu_gren$Shikensu$Definition$fork$(newPath, def) : def;
 };
 var $icidasset$shikensu_gren$Shikensu$Contrib$Definition$rename = F3($icidasset$shikensu_gren$Shikensu$Contrib$Definition$rename$);
 var $icidasset$shikensu_gren$Shikensu$Contrib$rename$ = function(oldPath, newPath) {
@@ -5412,18 +5412,18 @@ var $icidasset$shikensu_gren$Shikensu$Error$ErrorMessage = function (a) {
 var $gren_lang$parser$Parser$Forbidden = 0;
 var $gren_lang$parser$Parser$Advanced$findSubString = _Parser_findSubString;
 var $gren_lang$parser$Parser$Advanced$fromInfo$ = function(row, col, x, context) {
-	return $gren_lang$parser$Parser$Advanced$AddRight$($gren_lang$parser$Parser$Advanced$Empty, { _: col, aC: context, al: x, an: row });
+	return $gren_lang$parser$Parser$Advanced$AddRight$($gren_lang$parser$Parser$Advanced$Empty, { ab: col, aC: context, am: x, an: row });
 };
 var $gren_lang$parser$Parser$Advanced$fromInfo = F4($gren_lang$parser$Parser$Advanced$fromInfo$);
 var $gren_lang$parser$Parser$Advanced$chompUntil = function(_v0) {
 	var str = _v0.a;
 	var expecting = _v0.b;
 	return function(s) {
-		var _v1 = A5($gren_lang$parser$Parser$Advanced$findSubString, str, s.d, s.an, s._, s.a);
+		var _v1 = A5($gren_lang$parser$Parser$Advanced$findSubString, str, s.d, s.an, s.ab, s.a);
 		var newOffset = _v1.aY;
 		var newRow = _v1.aZ;
 		var newCol = _v1.aX;
-		return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromInfo$(newRow, newCol, expecting, s.b)) : $gren_lang$parser$Parser$Advanced$Good$(_Utils_cmp(s.d, newOffset) < 0, {  }, { _: newCol, b: s.b, c: s.c, d: newOffset, an: newRow, a: s.a });
+		return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromInfo$(newRow, newCol, expecting, s.b)) : $gren_lang$parser$Parser$Advanced$Good$(_Utils_cmp(s.d, newOffset) < 0, {  }, { ab: newCol, b: s.b, c: s.c, d: newOffset, an: newRow, a: s.a });
 	};
 };
 var $gren_lang$parser$Parser$Expecting = function (a) {
@@ -5461,13 +5461,13 @@ var $gren_lang$parser$Parser$Advanced$keyword = function(_v0) {
 	var expecting = _v0.b;
 	var progress = !$gren_lang$core$String$isEmpty(kwd);
 	return function(s) {
-		var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, kwd, s.d, s.an, s._, s.a);
+		var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, kwd, s.d, s.an, s.ab, s.a);
 		var newOffset = _v1.aY;
 		var newRow = _v1.aZ;
 		var newCol = _v1.aX;
 		return (_Utils_eq(newOffset, -1) || (0 <= A3($gren_lang$parser$Parser$Advanced$isSubChar, function(c) {
 				return $gren_lang$core$Char$isAlphaNum(c) || (c === '_');
-			}, newOffset, s.a))) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, expecting)) : $gren_lang$parser$Parser$Advanced$Good$(progress, {  }, { _: newCol, b: s.b, c: s.c, d: newOffset, an: newRow, a: s.a });
+			}, newOffset, s.a))) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, expecting)) : $gren_lang$parser$Parser$Advanced$Good$(progress, {  }, { ab: newCol, b: s.b, c: s.c, d: newOffset, an: newRow, a: s.a });
 	};
 };
 var $gren_lang$parser$Parser$keyword = function(kwd) {
@@ -5619,11 +5619,11 @@ var $gren_lang$parser$Parser$Advanced$token = function(_v0) {
 	var expecting = _v0.b;
 	var progress = !$gren_lang$core$String$isEmpty(str);
 	return function(s) {
-		var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, str, s.d, s.an, s._, s.a);
+		var _v1 = A5($gren_lang$parser$Parser$Advanced$isSubString, str, s.d, s.an, s.ab, s.a);
 		var newOffset = _v1.aY;
 		var newRow = _v1.aZ;
 		var newCol = _v1.aX;
-		return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, expecting)) : $gren_lang$parser$Parser$Advanced$Good$(progress, {  }, { _: newCol, b: s.b, c: s.c, d: newOffset, an: newRow, a: s.a });
+		return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, expecting)) : $gren_lang$parser$Parser$Advanced$Good$(progress, {  }, { ab: newCol, b: s.b, c: s.c, d: newOffset, an: newRow, a: s.a });
 	};
 };
 var $gren_lang$parser$Parser$Advanced$sequence = function(i) {
@@ -5666,7 +5666,7 @@ var $gren_lang$parser$Parser$Advanced$varHelp$ = function(isGood, offset, row, c
 	while (true) {
 		var newOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, isGood, offset, src);
 		if (_Utils_eq(newOffset, -1)) {
-			return { _: col, b: context, c: indent, d: offset, an: row, a: src };
+			return { ab: col, b: context, c: indent, d: offset, an: row, a: src };
 		} else {
 			if (_Utils_eq(newOffset, -2)) {
 				var $temp$isGood = isGood,
@@ -5711,7 +5711,7 @@ var $gren_lang$parser$Parser$Advanced$variable = function(i) {
 		if (_Utils_eq(firstOffset, -1)) {
 			return $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, i.aF));
 		} else {
-			var s1 = _Utils_eq(firstOffset, -2) ? $gren_lang$parser$Parser$Advanced$varHelp$(i.bP, s.d + 1, s.an + 1, 1, s.a, s.c, s.b) : $gren_lang$parser$Parser$Advanced$varHelp$(i.bP, firstOffset, s.an, s._ + 1, s.a, s.c, s.b);
+			var s1 = _Utils_eq(firstOffset, -2) ? $gren_lang$parser$Parser$Advanced$varHelp$(i.bP, s.d + 1, s.an + 1, 1, s.a, s.c, s.b) : $gren_lang$parser$Parser$Advanced$varHelp$(i.bP, firstOffset, s.an, s.ab + 1, s.a, s.c, s.b);
 			var name = A3($gren_lang$core$String$slice, s.d, s1.d, s.a);
 			return $gren_lang$core$Set$member$(name, i.ca) ? $gren_lang$parser$Parser$Advanced$Bad$(false, $gren_lang$parser$Parser$Advanced$fromState$(s, i.aF)) : $gren_lang$parser$Parser$Advanced$Good$(true, name, s1);
 		}
@@ -5806,7 +5806,7 @@ var $author$project$CodeGen$serverComponentsFromBundle = function(bundle) {
 			}), bundle);
 	var badDef = A2($gren_lang$core$Array$findFirst, function(def) {
 			return _Utils_eq(def.G, $gren_lang$core$Maybe$Nothing);
-		}, newBundle.aa);
+		}, newBundle.ac);
 	if (badDef.$ === 1) {
 		return $gren_lang$core$Task$succeed(newBundle);
 	} else {
@@ -5819,7 +5819,7 @@ var $author$project$CodeGen$genServerComponents = function(fsPermission) {
 };
 var $icidasset$shikensu_gren$Shikensu$Contrib$withBaseName = function(baseName) {
 	return $icidasset$shikensu_gren$Shikensu$Bundle$mapCompendium($gren_lang$core$Array$filter(function(def) {
-				return _Utils_eq(def.ak.n, baseName);
+				return _Utils_eq(def.al.n, baseName);
 			}));
 };
 var $author$project$CodeGen$genServerPorts = function(fsPermission) {
@@ -5834,7 +5834,7 @@ var $author$project$Main$update$ = function(msg, model) {
 	switch (msg.$) {
 		case 12:
 			var dirname = msg.a;
-			return { g: $gren_lang$core$Platform$Cmd$none, h: _Utils_update(model, { ad: $gren_lang$core$Maybe$Just(dirname) }) };
+			return { g: $gren_lang$core$Platform$Cmd$none, h: _Utils_update(model, { ae: $gren_lang$core$Maybe$Just(dirname) }) };
 		case 13:
 			var version = msg.a;
 			return { g: $gren_lang$core$Task$execute($gren_lang$node$Stream$sendLine$(model.e, version)), h: model };
@@ -5902,7 +5902,7 @@ var $author$project$Main$update$ = function(msg, model) {
 			var result = msg.a;
 			return { g: function () {
 				if (!result.$) {
-					return $gren_lang$core$Platform$Cmd$batch([ $author$project$Main$progress$(model.e, 'Building client components'), $gren_lang$core$Task$attempt$($author$project$Main$BuiltClientComponents, $author$project$Main$buildClientComponents$(model.bG, model.W, model.ai)) ]);
+					return $gren_lang$core$Platform$Cmd$batch([ $author$project$Main$progress$(model.e, 'Building client components'), $gren_lang$core$Task$attempt$($author$project$Main$BuiltClientComponents, $author$project$Main$buildClientComponents$(model.bG, model.X, model.aj)) ]);
 				} else {
 					var e = result.a;
 					return $author$project$Main$codeGenError$(model.f, e);
@@ -5920,7 +5920,7 @@ var $author$project$Main$update$ = function(msg, model) {
 								var s = success.a;
 								return $gren_lang$core$Task$execute($gren_lang$node$Stream$send$(model.e, s.e));
 							}
-						}(), $author$project$Main$progress$(model.e, 'Building server'), $gren_lang$core$Task$attempt$($author$project$Main$BuiltServer, $author$project$Main$buildServer$(model.W, model.ai)) ]);
+						}(), $author$project$Main$progress$(model.e, 'Building server'), $gren_lang$core$Task$attempt$($author$project$Main$BuiltServer, $author$project$Main$buildServer$(model.X, model.aj)) ]);
 				} else {
 					if (!result.a.$) {
 						var failure = result.a.a;
@@ -5948,19 +5948,19 @@ var $author$project$Main$update$ = function(msg, model) {
 			var bytes = msg.a;
 			var answer = $gren_lang$core$String$trim($gren_lang$core$Maybe$withDefault$('', $gren_lang$core$Bytes$toString(bytes)));
 			return { g: ((answer === 'y') || (answer === 'yes')) ? $gren_lang$core$Platform$Cmd$batch([ $author$project$Main$progress$(model.e, 'Generating project'), function () {
-					var _v12 = model.ad;
+					var _v12 = model.ae;
 					if (!_v12.$) {
 						var dir = _v12.a;
 						return $gren_lang$core$Task$attempt$($author$project$Main$GenProject_Created, $author$project$CodeGen$genProject$(model.bG, dir));
 					} else {
 						return $author$project$Main$endWithErrorMessage$(model.f, 'Can\'t find path to current executable.');
 					}
-				}() ]) : $gren_lang$core$Platform$Cmd$none, h: _Utils_update(model, { X: $gren_lang$core$Maybe$Nothing }) };
+				}() ]) : $gren_lang$core$Platform$Cmd$none, h: _Utils_update(model, { Z: $gren_lang$core$Maybe$Nothing }) };
 		case 10:
 			var result = msg.a;
 			return { g: function () {
 				if (!result.$) {
-					return $gren_lang$core$Platform$Cmd$batch([ $author$project$Main$progress$(model.e, 'Installing dependencies'), $gren_lang$core$Task$attempt$($author$project$Main$GenProject_NpmInstalled, $gren_lang$node$ChildProcess$runWithDefaultOptions$(model.W, 'npm', [ 'install' ])) ]);
+					return $gren_lang$core$Platform$Cmd$batch([ $author$project$Main$progress$(model.e, 'Installing dependencies'), $gren_lang$core$Task$attempt$($author$project$Main$GenProject_NpmInstalled, $gren_lang$node$ChildProcess$runWithDefaultOptions$(model.X, 'npm', [ 'install' ])) ]);
 				} else {
 					var e = result.a;
 					return $author$project$Main$codeGenError$(model.f, e);

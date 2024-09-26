@@ -1,0 +1,200 @@
+port module Main exposing (main)
+
+import Dict exposing (Dict)
+import Init
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+-- MODEL
+
+
+-- Because our outgoing and incoming ports for db query and result are commands
+-- (isolated and async), we need to track the request/response pairs on our
+-- model so we can respond appropriately when we get the results.
+type alias Model =
+    { requestId : RequestId
+    , responses : Dict RequestId Response
+    }
+
+
+type alias RequestId = Int
+type alias UserId = Int
+
+
+type alias UserPortRequest =
+    { requestId : RequestId
+    , userId : UserId
+    }
+
+
+type alias UserPortResponse =
+    { requestId : RequestId
+    , user : Maybe User
+    }
+
+
+type alias User =
+    { id : UserId
+    , name : String
+    }
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , onRequest = GotRequest
+        }
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        , command = Cmd.none
+        , model =
+            { requestId = 1
+            , responses = Dict.empty
+            }
+        }
+
+
+-- UPDATE
+
+
+type Msg
+    = GotRequest Request Response
+    | GotUser UserPortResponse
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            case request.path of
+                [] ->
+                    { model = model
+                    , command =
+                        Response.sendHtml viewHome response
+                    }
+
+                [ "users", userId ] ->
+                    { model = 
+                        { model 
+                            | requestId = model.requestId + 1
+                            , responses = model.responses |> Dict.set model.requestId response
+                        }
+                    , command =
+                        getUser
+                            { requestId = model.requestId
+                            , userId =
+                                userId
+                                    |> String.toInt
+                                    |> Maybe.withDefault 0
+                            }
+                    }
+
+                _ ->
+                    { model = model
+                    , command = notFound response
+                    }
+
+
+        GotUser userPortResponse ->
+            case Dict.get userPortResponse.requestId model.responses of
+                Just response ->
+                    { model = 
+                        { model
+                            | responses = 
+                                model.responses 
+                                    |> Dict.remove userPortResponse.requestId
+                        }
+                    , command =
+                        case userPortResponse.user of
+                            Just user ->
+                                Response.sendHtml (viewUser user) response
+
+                            Nothing ->
+                                notFound response
+                    }
+
+                Nothing ->
+                    -- How did we get here?
+                    { model = model
+                    , command = Cmd.none
+                    }
+
+
+-- In reality you probably want to pass json through the ports so you can
+-- encode/decode yourself to make it impossible to accidentally introduce
+-- unhandled runtime errors by changing one side and not the other.
+port getUser : UserPortRequest -> Cmd msg
+port gotUser : (UserPortResponse -> msg) -> Sub msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    gotUser GotUser
+
+
+-- VIEW
+
+
+viewUser : User -> { title : String, head : Array (Html Msg), body : Array (Html Msg) }
+viewUser user =
+    { title = "User Details"
+    , head = []
+    , body = 
+        [ H.p []
+            [ H.text (String.fromInt user.id)
+            , H.text ": "
+            , H.text user.name
+            ]
+        , H.p []
+            [ H.a [ A.href "/" ]
+                [ H.text "Home" ]
+            ]
+        ]
+    }
+
+
+viewHome : { title : String, head : Array (Html Msg), body : Array (Html Msg) }
+viewHome =
+    { title = "Home"
+    , head = []
+    , body =
+        [ H.ul []
+            [ H.li []
+                [ H.a
+                    [ A.href "/users/1" ]
+                    [ H.text "user 1" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/2" ]
+                    [ H.text "user 2" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/3" ]
+                    [ H.text "user 3" ]
+                ]
+            ]
+        ]
+    }
+
+
+notFound : Response -> Cmd Msg
+notFound response =
+    response
+        |> Response.setStatus 404
+        |> Response.sendText "not found"

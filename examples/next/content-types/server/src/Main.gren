@@ -1,0 +1,64 @@
+module Main exposing (main)
+
+import Bytes
+import Json.Encode as Json
+import Node exposing (Environment)
+import Prettynice.SimpleRouter as Router
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+main : Router.Program
+main =
+    Router.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Router.Init
+init env =
+    Router.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        }
+
+
+router : Request -> Response -> Cmd msg
+router request response =
+    case request.path of
+
+        [ "text" ] ->
+            response
+                |> Response.sendText
+                    "This is text. <i>Not</i> HTML."
+
+        [ "json" ] ->
+            response
+                |> Response.sendJson
+                    (Json.array Json.int [1, 2, 3])
+
+        [ "bytes" ] ->
+            response
+                |> Response.sendBytes 
+                    { contentType = "application/octet-stream"
+                    , body = 
+                        "Byte me"
+                            |> Bytes.fromString
+                    }
+
+        _ ->
+            response
+                |> Response.sendHtml
+                    { title = "Welcome!"
+                    , head = []
+                    , body =
+                        [ H.h1 [] [ H.text "Welcome!" ]
+                        , H.p [] [ H.a [ A.href "/json" ] [ H.text "json" ] ]
+                        , H.p [] [ H.a [ A.href "/text" ] [ H.text "text" ] ]
+                        , H.p [] [ H.a [ A.href "/bytes" ] [ H.text "bytes" ] ]
+                        ]
+                    }

@@ -10,12 +10,12 @@
 - [X] Update examples and READMEs with server-side ports drawbacks
 - [X] Call the 1.0 docsite done. (add some quicky tldr content to missing pages)
 - [X] Link to API docs from README and website
-- [O] `v2` branch:
+- [X] `v2` branch:
   - [X] Upgrade to gren 0.4
   - [X] Audit error messages
-  - [X] Test windows. Created issue: https://github.com/blaix/prettynice/issues/2
+  - [X] Test windows
   - [X] Bump version in gren.json
-  - [ ] Update CHANGELOG
+  - [X] Update CHANGELOG
 - [ ] **=== release 2.0 (gren + npm packages) and return to pencils ===**
   - [ ] you MUST have time to do all of these!
   - [ ] Rebase + Merge `v2`

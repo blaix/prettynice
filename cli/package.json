@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/blaix/prettynice",
   "dependencies": {
-    "gren-lang": "0.3.x"
+    "gren-lang": ">=0.4.5 <0.5"
   }
 }

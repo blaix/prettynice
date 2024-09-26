@@ -4,7 +4,7 @@
     "docs": "npx gren-doc-preview"
   },
   "dependencies": {
-    "gren-lang": "^0.3.0",
+    "gren-lang": "^0.4.5",
     "prettynice": "file:cli"
   },
   "devDependencies": {

@@ -3,7 +3,9 @@ module Main exposing (main)
 import Bytes exposing (Bytes) 
 import Bytes.Decode as Decode
 import Init
-import FileSystem exposing (AccessError, ReadableFileHandle, UnknownFileSystemError)
+import FileSystem
+import FileSystem.FileHandle as FileHandle
+import FileSystem.Path as Path
 import Node exposing (Environment)
 import Prettynice
 import Prettynice.Request exposing (Request)
@@ -39,8 +41,7 @@ init env =
 
 
 type FileError
-    = OpenError AccessError
-    | ReadError UnknownFileSystemError
+    = FileSystemError FileSystem.Error
     | DecodeError
 
 
@@ -79,21 +80,23 @@ update msg model =
             }
 
 
-open : FileSystem.Permission -> String -> Task FileError (ReadableFileHandle Never)
+open : FileSystem.Permission -> String -> Task FileError (FileHandle.ReadableFileHandle Never)
 open fsPermission fname =
-    FileSystem.openForRead fsPermission fname
-        |> Task.mapError OpenError
+    fname
+        |> Path.fromPosixString
+        |> FileHandle.openForRead fsPermission
+        |> Task.mapError FileSystemError
 
 
-read : ReadableFileHandle a -> Task FileError Bytes
+read : FileHandle.ReadableFileHandle a -> Task FileError Bytes
 read file =
-    FileSystem.read file
-        |> Task.mapError ReadError
+    FileHandle.read file
+        |> Task.mapError FileSystemError
 
 
 decode : Bytes -> Task FileError String
 decode bytes =
-    case Decode.decode (Decode.string (Bytes.width bytes)) bytes of
+    case Bytes.toString bytes of
         Just string ->
             Task.succeed string
 

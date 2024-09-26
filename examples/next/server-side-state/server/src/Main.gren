@@ -56,6 +56,7 @@ update msg model =
             { model = { model | count = count }
             , command = Cmd.batch
                 [ Stream.sendLine model.stdout message
+                    |> Task.execute
                 , Response.sendText message response
                 ]
             }

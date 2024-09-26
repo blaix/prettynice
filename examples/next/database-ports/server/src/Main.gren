@@ -91,7 +91,7 @@ update msg model =
                     { model = 
                         { model 
                             | requestId = model.requestId + 1
-                            , responses = model.responses |> Dict.insert model.requestId response
+                            , responses = model.responses |> Dict.set model.requestId response
                         }
                     , command =
                         getUser

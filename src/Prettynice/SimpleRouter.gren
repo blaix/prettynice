@@ -40,7 +40,7 @@ import Init
 import Node exposing (Environment, Program)
 import Prettynice.Request exposing (Request)
 import Prettynice.Response exposing (Response)
-import Server.Static as Static exposing (ReadFileError, Mode(..))
+import Server.Static as Static exposing (Mode(..))
 import Stream exposing (Stream)
 import Task exposing (Task)
 import Transmutable.Html as H
@@ -151,13 +151,17 @@ update router msg model =
             case result of
                 Ok server ->
                     { model = { model | server = Just server }
-                    , command = Stream.sendLine model.stdout <|
-                        "Server started on http://" ++ model.host ++ ":" ++ String.fromInt model.port_
+                    , command = 
+                        Task.execute <|
+                            Stream.sendLine model.stdout <|
+                                "Server started on http://" ++ model.host ++ ":" ++ String.fromInt model.port_
                     }
                 Err (ServerError code message) ->
                     { model = model
-                    , command = Stream.sendLine model.stderr <|
-                        "Server failed to start: " ++ code ++ "\n" ++ message
+                    , command = 
+                        Task.execute <|
+                            Stream.sendLine model.stderr <|
+                                "Server failed to start: " ++ code ++ "\n" ++ message
                     }
         
         GotRequest req res ->
@@ -171,8 +175,9 @@ update router msg model =
                 appResponseTask =
                     Task.succeed <|
                         Cmd.batch
-                            [ Stream.sendLine model.stdout <|
-                                Http.requestInfo req ++ ": routing to app"
+                            [ Task.execute <|
+                                Stream.sendLine model.stdout <|
+                                    Http.requestInfo req ++ ": routing to app"
                             , router request response
                             ]
 
@@ -187,8 +192,9 @@ update router msg model =
                         |> Task.map 
                             (\staticResponse ->
                                 Cmd.batch
-                                    [ Stream.sendLine model.stdout <|
-                                        Http.requestInfo req ++ ": responding with static file"
+                                    [ Task.execute <|
+                                        Stream.sendLine model.stdout <|
+                                            Http.requestInfo req ++ ": responding with static file"
                                     , HttpResponse.send staticResponse
                                     ]
                             )

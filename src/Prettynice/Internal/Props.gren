@@ -172,7 +172,7 @@ fieldTypeToEncoder fieldType =
 
 parser : Parser (Dict String FieldType)
 parser =
-    P.succeed Dict.fromArray
+    P.succeed (Array.foldl (\r d -> Dict.set r.key r.value d) Dict.empty)
         |. P.chompUntil "type alias Props"
         |. P.token "type alias Props"
         |. P.spaces
@@ -200,6 +200,7 @@ parser =
                     |. P.spaces
                     |= fieldParser
             }
+
 
 
 fieldParser : Parser FieldType

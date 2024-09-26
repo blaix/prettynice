@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import Bytes.Encode
+import Bytes
 import Json.Encode as Json
 import Node exposing (Environment)
 import Prettynice.SimpleRouter as Router
@@ -47,8 +47,7 @@ router request response =
                     { contentType = "application/octet-stream"
                     , body = 
                         "Byte me"
-                            |> Bytes.Encode.string
-                            |> Bytes.Encode.encode
+                            |> Bytes.fromString
                     }
 
         _ ->

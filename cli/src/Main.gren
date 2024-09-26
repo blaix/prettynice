@@ -7,6 +7,7 @@ import ChildProcess
 import CodeGen
 import Dict
 import FileSystem
+import FileSystem.Path
 import Init
 import Node
 import Stream exposing (Stream)
@@ -81,22 +82,23 @@ run model { args, options } =
         , command = 
             Stream.sendString model.stdout
                 "󱚤 Can I turn the current directory into a new Prettynice project (y|n)? "
+                    |> Task.execute
         }
 
     else if args == [] then
         { model = model
-        , command = Stream.sendLine model.stdout help
+        , command = 
+            Stream.sendLine model.stdout help
+                |> Task.execute
         }
     
     else
         { model = model
         , command =
-            Cmd.batch
-                [ Stream.sendLine 
-                    model.stderr "I don't recognize those arguments."
-                , Stream.sendLine model.stderr help
-                , Node.setExitCode 1
-                ]
+            Stream.sendLine model.stderr "I don't recognize those arguments."
+                |> Task.andThen (\_ -> Stream.sendLine model.stderr help)
+                |> Task.andThen (\_ -> Node.setExitCode 1)
+                |> Task.execute
         }
 
 
@@ -134,7 +136,7 @@ runBuild model =
 
 
 type Msg
-    = Cleaned (Result FileSystem.AccessError {})
+    = Cleaned (Result FileSystem.Error {})
     | GeneratedDependencies (Result CodeGen.Error CodeGen.Result)
     | GeneratedServerComponents (Result CodeGen.Error CodeGen.Result)
     | GeneratedClientComponents (Result CodeGen.Error CodeGen.Result)
@@ -172,6 +174,7 @@ update msg model =
             { model = model
             , command = 
                 Stream.sendLine model.stdout version
+                    |> Task.execute
             }
 
         Cleaned result ->
@@ -289,8 +292,10 @@ update msg model =
                             [ case success of
                                 NoComponents ->
                                     Stream.sendLine model.stdout "No components to build"
+                                        |> Task.execute
                                 ComponentBuildSucceeded s ->
                                     Stream.send model.stdout s.stdout
+                                        |> Task.execute
                             , progress model.stdout "Building server"
                             , Task.attempt BuiltServer <|
                                 buildServer model.procPermission model.optimize
@@ -298,7 +303,7 @@ update msg model =
 
                     Err (ComponentBuildFailed failure) ->
                         failure.stderr
-                            |> bytesToString
+                            |> Bytes.toString
                             |> Maybe.withDefault "Unknown error building client components"
                             |> endWithErrorMessage model.stderr
 
@@ -311,14 +316,13 @@ update msg model =
             , command =
                 case result of
                     Ok success ->
-                        Cmd.batch
-                            [ Stream.send model.stdout success.stdout
-                            , Stream.sendLine model.stdout "✅ Done"
-                            ]
+                        Stream.send model.stdout success.stdout
+                            |> Task.andThen (\_ -> Stream.sendLine model.stdout "✅ Done")
+                            |> Task.execute
 
                     Err error ->
                         error.stderr
-                            |> bytesToString
+                            |> Bytes.toString
                             |> Maybe.withDefault "Unknown error building server"
                             |> endWithErrorMessage model.stderr
             }
@@ -327,7 +331,7 @@ update msg model =
             let
                 answer =
                     bytes
-                        |> bytesToString
+                        |> Bytes.toString
                         |> Maybe.withDefault ""
                         |> String.trim
             in
@@ -379,37 +383,38 @@ update msg model =
                             * Make changes to your server at: server/src/Main.gren
                             * View examples at: https://github.com/blaix/prettynice/tree/main/examples
                             """
+                                |> Task.execute
 
                     Err error ->
                         error.stderr
-                            |> bytesToString
+                            |> Bytes.toString
                             |> Maybe.withDefault "Unknown error installing dependencies"
                             |> endWithErrorMessage model.stderr
             }
 
 
-clean : FileSystem.Permission -> Task FileSystem.AccessError {}
+clean : FileSystem.Permission -> Task FileSystem.Error {}
 clean fsPermission =
     let
         remove path =
             FileSystem.remove
                 fsPermission
-                (FileSystem.buildPath path)
                 { recursive = True, ignoreErrors = True }
+                (FileSystem.Path.fromPosixString path)
 
         create path =
             FileSystem.makeDirectory
                 fsPermission
-                (FileSystem.buildPath path)
                 { recursive = True }
+                (FileSystem.Path.fromPosixString path)
 
         recreate path =
             remove path
                 |> Task.andThen (\_ -> create path)
     in
-    [ [ "dist" ]
-    , [ "client", ".prettynice" ]
-    , [ "server", ".prettynice" ]
+    [ "./dist"
+    , "client/.prettynice"
+    , "server/.prettynice"
     ]
         |> Array.map recreate
         |> Task.sequence
@@ -424,10 +429,10 @@ buildClientComponents :
 buildClientComponents fsPermission procPermission optimize =
     let
         workingDirectory =
-            FileSystem.buildPath [ "client" ]
+            "./client"
 
         outputPath =
-            FileSystem.buildPath [ "..", "dist", "client", "main.js" ]
+            "../dist/client/main.js"
 
         optimizeFlag =
             if optimize then
@@ -469,13 +474,13 @@ buildServer :
 buildServer procPermission optimize =
     let
         workingDirectory =
-            FileSystem.buildPath [ "server" ]
+            "./server"
 
         inputPath =
-            FileSystem.buildPath [ "src", "Main.gren" ]
+            "./src/Main.gren"
 
         outputPath =
-            FileSystem.buildPath [ "..", "dist", "server", "main.js" ]
+            "../dist/server/main.js"
 
         optimizeFlag =
             if optimize then
@@ -496,43 +501,23 @@ codeGenError stream error =
     endWithErrorMessage stream (CodeGen.errorString error)
 
 
-fileSystemError : Stream -> FileSystem.AccessError -> Cmd Msg
+fileSystemError : Stream -> FileSystem.Error -> Cmd Msg
 fileSystemError stream error =
     endWithErrorMessage stream <|
-        case error of
-            FileSystem.AccessErrorNotFound ->
-                "File not found"
-
-            FileSystem.AccessErrorNoAccess ->
-                "Cannot access file"
-
-            FileSystem.AccessErrorNotADirectory ->
-                "Path is not a directory"
-
-            FileSystem.AccessErrorUnknown str ->
-                "File system error: " ++ str
+        FileSystem.errorToString error
 
 
 endWithErrorMessage : Stream -> String -> Cmd Msg
 endWithErrorMessage stream message =
-    Cmd.batch
-        [ Stream.sendLine stream ("🚨 " ++ message ++ "\n")
-        , Node.setExitCode 1
-        ]
+    Stream.sendLine stream ("🚨 " ++ message ++ "\n")
+        |> Task.andThen (\_ -> Node.setExitCode 1)
+        |> Task.execute
 
 
 progress : Stream -> String -> Cmd Msg
 progress stream message =
     Stream.sendLine stream ("🌸 " ++ message ++ "...")
-
-
-bytesToString : Bytes -> Maybe String
-bytesToString bytes =
-    bytes
-        |> Bytes.width
-        |> Bytes.Decode.string
-        |> (\decoder -> Bytes.Decode.decode decoder bytes)
-
+        |> Task.execute
 
 
 

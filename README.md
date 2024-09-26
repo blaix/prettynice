@@ -132,9 +132,11 @@ If you aren't familiar, you can read [this guide](https://elmprogramming.com/mod
 
 module Components.Counter exposing (component, Model, Msg, Props)
 
-import Prettynice
+import Prettynice.Component exposing (Component)
+import Transmutable.Html exposing (..)
+import Transmutable.Html.Events exposing (..)
 
-component : Prettynice.Component Props Model Msg
+component : Component Props Model Msg
 component =
         { init = init
         , update = update

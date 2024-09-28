@@ -22,13 +22,12 @@
   - [X] release 2.0 gren package
   - [X] update project generator template
   - [X] release 2.0 npm package for cli
-  - [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
   - [X] v2 website
     - [X] copy v1 site
     - [X] update and point links correctly for v2
     - [X] deploy to v2 subdomain
     - [X] update root domains redirects
-    - [ ] Update v1 website with link to v2
+    - [X] Update v1 website with link to v2
   - [X] Announce release
 - [ ] RealWorld example? TodoMVC example? Blog? Live code it?
 - [ ] Add more examples:

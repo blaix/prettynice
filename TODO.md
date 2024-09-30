@@ -4,6 +4,7 @@
 - [ ] Fixes for project template:
   - [ ] Fix indent on main function
   - [ ] Update nodemon watch list to include public dir and all file extensions
+- [ ] POSSIBLE BREAKING CHANGE: send http response as task instead of cmd? Then simplify examples with `Task.andThen`
 - [ ] Add a "full program" version of project generator
 - [.] 2.0 doc site:
   - [X] Think about versioning...

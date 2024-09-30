@@ -1,9 +1,14 @@
 # TODO
 
 - [X] **=== release 2.0 ===**
+- [ ] Fixes for project template:
+  - [ ] Fix indent on main function
+  - [ ] Update nodemon watch list to include public dir and all file extensions
+- [ ] Add a "full program" version of project generator
 - [.] 2.0 doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39
+  - [ ] Find appropriate place to include instructions for the "full program" version of generator
   - [o] Flesh out gren guide as needed:
     - [ ] Add applications section:
       - [ ] The Elm Architecture

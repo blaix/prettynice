@@ -1,39 +1,6 @@
 # TODO
 
-- [X] **=== release 1.0 ===**
-- [X] Verify type safety of components in a newly installed project outside of this repo
-- [X] New project generator
-- [X] Try deploying an example project template: https://prettynice-demo.fly.dev/
-- [X] Start migrating pencils.dev
-- [X] Fix examples that say "npm start" when it should be "npm run dev"
-- [X] Update links in example READMEs to point to API docs where appropriate (e.g. linking to FieldType in component example)
-- [X] Update examples and READMEs with server-side ports drawbacks
-- [X] Call the 1.0 docsite done. (add some quicky tldr content to missing pages)
-- [X] Link to API docs from README and website
-- [X] `v2` branch:
-  - [X] Upgrade to gren 0.4
-  - [X] Audit error messages
-  - [X] Test windows
-  - [X] Bump version in gren.json
-  - [X] Update CHANGELOG
-- [o] **=== release 2.0 (gren + npm packages) and return to pencils ===**
-  - [X] you MUST have time to do all of these!
-  - [X] Rebase + Merge `v2`
-  - [X] release 2.0 gren package
-  - [X] update project generator template
-  - [X] release 2.0 npm package for cli
-  - [X] v2 website
-    - [X] copy v1 site
-    - [X] update and point links correctly for v2
-    - [X] deploy to v2 subdomain
-    - [X] update root domains redirects
-    - [X] Update v1 website with link to v2
-  - [X] Announce release
-- [ ] RealWorld example? TodoMVC example? Blog? Live code it?
-- [ ] Add more examples:
-  - [ ] basic auth
-  - [ ] cookies
-  - [ ] HTMX?
+- [X] **=== release 2.0 ===**
 - [.] 2.0 doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39
@@ -46,6 +13,7 @@
       - [ ] Node Applications
     - [ ] Add "gren for elm programmers" to appendix?
     - [ ] Elaborate on the FAQ section about differences from elm
+  - [ ] Flesh out remaining pages
   - [ ] Link on github project settings and README
   - [ ] Link to relevant sections from the example READMEs
   - [ ] Link in the error message for failed props parsing
@@ -55,17 +23,14 @@
     - [ ] Fly.io vs Render.com
     - [ ] docker?
     - [ ] caddy as reverse proxy (and serving static)?
-- [ ] Offically announce the release:
-  - [ ] blog.blaix.com
-  - [ ] zulip
-  - [ ] mastodon
-  - [ ] discord
-  - [ ] twitter?
-- [ ] Update to gren 0.4 and the new node and core packages
-  - [ ] update shikensu-gren: https://github.com/icidasset/shikensu-gren/blob/6.0.0/CHANGELOG.md#600
-  - [ ] Update gren-static-serve
-  - [ ] Update html-gren
-- [ ] Vite support (required for pencils):
+- [ ] Basic offline support with https://github.com/DannyMoerkerke/basic-service-worker ?
+- [ ] Blog post about prettynice?
+- [ ] RealWorld example? TodoMVC example? Blog? Live code it?
+- [ ] Add more examples:
+  - [ ] basic auth
+  - [ ] cookies
+  - [ ] HTMX?
+- [ ] Vite support? (required for pencils?):
   - [ ] FIRST: consider web components to clean up the "isolate element" js
   - [ ] ALSO FIRST: consider esbuild instead of vite:
     - [ ] Worried vite is overkill, changes too rapidly, and has too much happening implicitly / under the hood

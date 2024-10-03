@@ -458,10 +458,10 @@ there are scripts for the build and run steps:
   No loading spinners, no littering your client-side model with Maybes and loading state variants.
 * Passing data between server and client should be fully type safe and verified at compile time.
   No hand-written encoders that require runtime error handling.
-* Explicit separation of client and server code. 
-  No compile-time magic to decide what should be where.
+* Clear separation of client-only and server-only code. 
+  No compile-time magic to split things up and decide what should be where.
   No accidentally shipping secrets or server-only libraries to the client.
-  But this should not interfere with a full stack DX that feels unified and holistic.
+  _But this should not interfere with a full stack DX that feels unified and holistic._
 * Lean on the platform: Prevent preventDefault as the default.
   Prefer normal browser behavior and HTTP request/response cycles.
   E.g. normal forms that default to normal requests to the server.

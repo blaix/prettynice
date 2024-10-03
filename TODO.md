@@ -4,13 +4,14 @@
 - [ ] Fixes for project template:
   - [ ] Fix indent on main function
   - [ ] Update nodemon watch list to include public dir and all file extensions
-  - [ ] add `dist`, `.gren`, and `.prettynice` dirs to gitignore
+  - [ ] Fix gitignore not getting renamed to .gitignore
   - [ ] README fixes
     - [ ] path to counter component is wrong (missing Components dir)
     - [ ] Last sentence should have a Deployment heading
 - [ ] Update deployment section of README: it's not "deploy dist dir" it's deploy project dir, run build, npm start (but still explain dist dir)
 - [ ] POSSIBLE BREAKING CHANGE: send http response as task instead of cmd? Then simplify examples with `Task.andThen`
 - [ ] Add a "full program" version of project generator
+- [ ] Add a component generator to cli
 - [.] 2.0 doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39

@@ -12,7 +12,8 @@
 - [ ] POSSIBLE BREAKING CHANGE: send http response as task instead of cmd? Then simplify examples with `Task.andThen`
 - [ ] Add a "full program" version of project generator
 - [ ] Add a component generator to cli
-- [.] 2.0 doc site:
+- [ ] Experiment/Idea: [server-side TEA](https://gist.github.com/blaix/cdcb9f95b731244d2b3fcbcc139eb616)
+- [ ] 2.0 doc site:
   - [X] Think about versioning...
   - [X] Update doc links to use major version prefix: https://github.com/gren-lang/package.gren-lang.org/issues/39
   - [ ] Find appropriate place to include instructions for the "full program" version of generator

@@ -6,16 +6,20 @@
   - [X] Update nodemon watch list to include public dir and all file extensions
   - [X] Fix gitignore not getting renamed to .gitignore
   - [X] bump and release cli
-- [ ] Merge v3 branch
-- [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
-  - [ ] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
-    - [ ] == SEE `effectful-router` BRANCH ==
-    - [ ] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and deprecate SimpleRouter
-    - [ ] Add Prettynice.defineRouter with Task Never Response
-    - [ ] Update examples to use defineRouter where appropriate
-    - [ ] Update docs to show progression from defineSimpleRouter -> defineRouter -> defineProgram
-    - [ ] Address TODO comments and release new version
-  - [ ] Long term / Any program: Change HttpServer.Response.send to a task (or add a new function?)
+- [.] v3 branch
+    - [.] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
+      - [o] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
+        - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
+        - [X] Add Prettynice.defineRouter with Task Never Response
+        - [ ] Update examples to use the new defineRouter, etc. where appropriate
+        - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
+        - [ ] Update docs to show progression from defineSimpleRouter -> defineRouter -> defineProgram
+      - [ ] Long term / Any program: Change HttpServer.Response.send to a task (or add a new function?)
+    - [ ] Update examples/v2 to use hardcoded v2 of prettynice in gren.json
+    - [ ] Address TODO comments
+    - [ ] Merge
+    - [ ] See notes/releasing.md
+- [ ] **== release 3.0 ==**
 - [ ] listen to lustre episode of developer voices and check out the links
 - [ ] Options for project generator
   - [ ] default: defineSimpleRouter

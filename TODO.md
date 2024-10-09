@@ -10,11 +10,12 @@
     - [ ] Last sentence should have a Deployment heading
 - [ ] Update deployment section of README: it's not "deploy dist dir" it's deploy project dir, run build, npm start (but still explain dist dir)
 - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
-  - [ ] Short term: add a router definition that returns Task Never Response instead of Response
+  - [ ] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
     - [ ] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and deprecate SimpleRouter
     - [ ] Add Prettynice.defineRouter with Task Never Response
     - [ ] Update examples to use defineRouter where appropriate
     - [ ] Update docs to show progression from defineSimpleRouter -> defineRouter -> defineProgram
+  - [ ] Long term / Any program: Change HttpServer.Response.send to a task (or add a new function?)
 - [ ] Options for project generator
   - [ ] default: defineSimpleRouter
   - [ ] `router`: defineRouter

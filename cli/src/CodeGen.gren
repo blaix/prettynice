@@ -153,18 +153,28 @@ genProject fsPermission dirname =
                 |> Path.append (Path.fromPosixString "../templates/init")
 
         ignoreFileFrom =
-            Path.fromPosixString "gitignore"
+            Path.fromPosixString ".gitignore"
                 |> Path.prepend templateDir
 
         ignoreFileTo =
             Path.fromPosixString ".gitignore"
-                |> Path.prepend templateDir
     in
     Shikensu.list fsPermission templateDir
         |> Task.andThen Shikensu.read
         |> Task.map (Shikensu.rename ignoreFileFrom ignoreFileTo)
         |> Task.andThen (write ".")
         |> Task.mapError mapError
+        |> Task.andThen 
+            (\bundle ->
+                -- Shikensu ignores hidden files?
+                FileSystem.copyFile fsPermission ignoreFileTo ignoreFileFrom
+                    |> Task.map (\_ -> bundle)
+                    |> Task.mapError 
+                        (\e ->
+                            -- PipelineError (Debug.toString e)
+                            PipelineError "Error moving .gitignore file."
+                        )
+            )
         |> Task.map Result
 
 

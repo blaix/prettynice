@@ -7,9 +7,9 @@
   },
   "nodemonConfig": {
     "exec": "npx prettynice build && npm start",
-    "ext": "js,gren",
+    "ext": "*",
     "watch": [
-      "{client,server}/src/**/*"
+      "{client/src,server/src,public}/**/*"
     ]
   },
   "dependencies": {

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.1 (2024-10-10)
+
+* Update generated project so nodemon watches public/ files too
+* Fix project generator creating gitignore instead of .gitignore
+
+## 2.0.0 (2024-09-26)
+
+* Upgrade to prettynice v2
+
 ## 1.2.2 (2024-04-19)
 
 * Update link in the error output when the cli fails to parse component props.

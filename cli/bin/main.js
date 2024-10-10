@@ -5387,6 +5387,10 @@ var $author$project$CodeGen$serverWrapper = 'const main = require("./main.js");\
 var $author$project$CodeGen$genDependencies = function(fsPermission) {
 	return $gren_lang$core$Task$map$($gren_lang$core$Basics$identity, $gren_lang$core$Task$mapError$($author$project$CodeGen$mapError, A2($author$project$CodeGen$write, '.', $icidasset$shikensu_gren$Shikensu$bundle$(fsPermission, [ $author$project$CodeGen$createDef$('', 'dist/client/main.js'), $author$project$CodeGen$createDef$($author$project$CodeGen$prettyniceComponentModule, 'client/.prettynice/Prettynice/Component.gren'), $author$project$CodeGen$createDef$($author$project$CodeGen$serverWrapper, 'dist/server/index.js') ]))));
 };
+var $gren_lang$node$FileSystem$copyFile$ = function(_v0, dest, src) {
+	return A2(_FileSystem_copyFile, src, dest);
+};
+var $gren_lang$node$FileSystem$copyFile = F3($gren_lang$node$FileSystem$copyFile$);
 var $icidasset$shikensu_gren$Shikensu$Definition$fork$ = function(relPath, def) {
 	return { G: def.G, aR: def.aR, al: relPath };
 };
@@ -5401,9 +5405,15 @@ var $icidasset$shikensu_gren$Shikensu$Contrib$rename$ = function(oldPath, newPat
 var $icidasset$shikensu_gren$Shikensu$Contrib$rename = F2($icidasset$shikensu_gren$Shikensu$Contrib$rename$);
 var $author$project$CodeGen$genProject$ = function(fsPermission, dirname) {
 	var templateDir = $gren_lang$node$FileSystem$Path$append$($gren_lang$node$FileSystem$Path$fromPosixString('../templates/init'), $gren_lang$node$FileSystem$Path$fromPosixString(dirname));
-	var ignoreFileTo = $gren_lang$node$FileSystem$Path$prepend$(templateDir, $gren_lang$node$FileSystem$Path$fromPosixString('.gitignore'));
-	var ignoreFileFrom = $gren_lang$node$FileSystem$Path$prepend$(templateDir, $gren_lang$node$FileSystem$Path$fromPosixString('gitignore'));
-	return $gren_lang$core$Task$map$($gren_lang$core$Basics$identity, $gren_lang$core$Task$mapError$($author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write('.'), $gren_lang$core$Task$map$($icidasset$shikensu_gren$Shikensu$Contrib$rename$(ignoreFileFrom, ignoreFileTo), A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, $icidasset$shikensu_gren$Shikensu$list$(fsPermission, templateDir))))));
+	var ignoreFileTo = $gren_lang$node$FileSystem$Path$fromPosixString('.gitignore');
+	var ignoreFileFrom = $gren_lang$node$FileSystem$Path$prepend$(templateDir, $gren_lang$node$FileSystem$Path$fromPosixString('.gitignore'));
+	return $gren_lang$core$Task$map$($gren_lang$core$Basics$identity, A2($gren_lang$core$Task$andThen, function(bundle) {
+				return $gren_lang$core$Task$mapError$(function(e) {
+						return 'Error moving .gitignore file.';
+					}, $gren_lang$core$Task$map$(function(_v0) {
+							return bundle;
+						}, $gren_lang$node$FileSystem$copyFile$(fsPermission, ignoreFileTo, ignoreFileFrom)));
+			}, $gren_lang$core$Task$mapError$($author$project$CodeGen$mapError, A2($gren_lang$core$Task$andThen, $author$project$CodeGen$write('.'), $gren_lang$core$Task$map$($icidasset$shikensu_gren$Shikensu$Contrib$rename$(ignoreFileFrom, ignoreFileTo), A2($gren_lang$core$Task$andThen, $icidasset$shikensu_gren$Shikensu$read, $icidasset$shikensu_gren$Shikensu$list$(fsPermission, templateDir)))))));
 };
 var $author$project$CodeGen$genProject = F2($author$project$CodeGen$genProject$);
 var $icidasset$shikensu_gren$Shikensu$Error$ErrorMessage = function (a) {

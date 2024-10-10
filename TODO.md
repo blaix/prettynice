@@ -1,10 +1,11 @@
 # TODO
 
 - [X] **=== release 2.0 ===**
-- [ ] Fixes for project template:
-  - [ ] Fix indent on main function
-  - [ ] Update nodemon watch list to include public dir and all file extensions
-  - [ ] Fix gitignore not getting renamed to .gitignore
+- [o] Fixes for project template:
+  - [X] Fix indent on main function
+  - [X] Update nodemon watch list to include public dir and all file extensions
+  - [X] Fix gitignore not getting renamed to .gitignore
+  - [ ] bump and release cli
   - [ ] README fixes
     - [ ] path to counter component is wrong (missing Components dir)
     - [ ] Last sentence should have a Deployment heading

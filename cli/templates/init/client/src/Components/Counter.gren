@@ -7,11 +7,11 @@ import Prettynice.Component exposing (Component)
 
 component : Component Props Model Msg
 component =
-        { init = init
-        , update = update
-        , subscriptions = subscriptions
-        , view = view
-        }
+    { init = init
+    , update = update
+    , subscriptions = subscriptions
+    , view = view
+    }
 
 
 -- MODEL

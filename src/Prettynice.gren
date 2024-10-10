@@ -1,34 +1,50 @@
 module Prettynice exposing 
- ( Program
- , Config
- , Init
- , defineProgram
- , startProgram
- )
+
+    -- Routers
+    ( Router
+    , RouterInit
+    , defineSimpleRouter
+    , defineRouter
+    , startRouter
+
+    -- Programs
+    , Program
+    , ProgramInit
+    , defineProgram
+    , startProgram
+    )
 
  
-{-| Use this module to define your server as a full-fledged program that can
-send commands, respond to messages, and listen for subscriptions, just like
-a normal [Node](https://packages.gren-lang.org/package/gren-lang/node) program.
+{-| Define and start your web server as a router or a full program.
 
-**Note:** If all you want to do is respond to requests with simple responses,
-look at [`Prettynice.SimpleRouter`](Prettynice.SimpleRouter) instead.
+A router is stateless and simply responds to incoming requests with a response.
+It comes in two flavors:
 
-Typically you will use [`defineProgram`](#defineProgram) in your `main`,
-and [`startProgram`](#startProgram) in your `init`. See below for details.
-Or check out some complete example programs that use this module:
+* [`defineSimpleRouter`](#defineSimpleRouter): given a [request](Prettynice.Request.Request), return a [response](Prettynice.Response.Response)
+* [`defineRouter`](#defineRouter): given a [request](Prettynice.Request.Request), return a [task](https://packages.gren-lang.org/package/gren-lang/core/version/latest/module/Task) that resolves to a [response](Prettynice.Response.Response). This lets you do things like read a file, make a database call, etc. before responding.
 
-* [examples/next/server-side-state](/examples/next/server-side-state)
-* [examples/next/running-tasks](/examples/next/running-tasks)
-* [examples/next/running-commands](/examples/next/running-commands)
+If you need more control, you can define a full program (TODO: write and link to application section of book):
 
-## Defining your program
+* [`defineProgram`](#defineProgram): Define a webserver as a full program with long-lived state, the ability to respond to messages, and listen to subscriptions
 
-@docs defineProgram, Program
+In all cases, your application should define a `main` function that returns the result of one of the `define` functions.
+And the required `init` function should return the result of one of the `start` functions from this module.
 
-## Starting your program
+See the following examples:
 
-@docs startProgram, Config, Init
+(TODO: update examples to use the three flavors and link to an example for each one here)
+
+* simple router example
+* router example
+* program example
+
+## Routers
+
+@docs Router, RouterInit, defineSimpleRouter, defineRouter, startRouter
+
+## Programs
+
+@docs Program, ProgramInit, defineProgram, startProgram
 
 -}
 
@@ -47,25 +63,6 @@ import Transmutable.Html.Attributes as A
 import Url exposing (Url)
 
 
-{-| The definition of your Prettynice program.
--}
-type alias Program appModel appMsg =
-    Node.Program (Model appModel) (Msg appModel appMsg)
-
-
-{-| The task that starts your program.
-It should be returned from your `init` function.
-
-You will get this from [`startProgram`](#startProgram), which you can wrap in an
-[`await`](https://packages.gren-lang.org/package/gren-lang/node/version/3.1.0/module/Init#await)
-if you need to initialize other subsystems (see the 
-[running-tasks example](https://github.com/blaix/prettynice/blob/main/examples/next/running-tasks/server/src/Main.gren)
-for an example of this).
--}
-type alias Init appModel appMsg =
-    Init.Task { model : Model appModel, command : Cmd (Msg appModel appMsg) }
-
-
 type alias Model appModel =
     { server : Maybe Http.Server
     , stdout : Stream
@@ -73,53 +70,151 @@ type alias Model appModel =
     , host : String
     , port_ : Int
     , env : Environment
-    , appModel : appModel
     , fsPermission : FileSystem.Permission
+    , appModel : appModel
     }
 
 
-{-| Application config. You will pass this to [`startProgram`](#startProgram).
+-- DEFINITIONS
+
+
+{-| The definition of your Prettynice router.
 -}
-type alias Config appModel appMsg =
-    { host : String
-    , port_ : Int
-    , env : Environment
-    , model : appModel
-    , command : Cmd appMsg
-    }
+type alias Router =
+    Node.Program (Model {}) (Msg {} {})
 
 
-type alias AppUpdate appModel appMsg =
-    appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
+{-| The definition of your Prettynice program.
+-}
+type alias Program appModel appMsg =
+    Node.Program (Model appModel) (Msg appModel appMsg)
 
 
-{-| Define your Prettynice program.
+{-| Init task for starting your Prettynice router.
+-}
+type alias RouterInit =
+    Init.Task { model : Model {}, command : Cmd (Msg {} {}) }
 
-This will give you a [`Program`](#Program) that you can return from your `main`
-function.
 
-If you don't need the full model/update/view cycle, see
-[`Prettynice.SimpleRouter`](Prettynice.SimpleRouter) instead.
+{-| Init task for starting your Prettynice program.
+-}
+type alias ProgramInit appModel appMsg =
+    Init.Task { model : Model appModel, command : Cmd (Msg appModel appMsg) }
+
+
+{-| Define a simple router.
+
+The router is stateless and cannot trigger effects.
+-}
+defineSimpleRouter :
+    { init : Environment -> RouterInit
+    , router : Request -> Response -> Response
+    } -> Router
+defineSimpleRouter app =
+    let
+        router request response =
+            app.router request response
+                |> Task.succeed
+    in
+    Node.defineProgram
+        { init = app.init
+        , update = update (RouterUpdate { model = {}, router = router })
+        , subscriptions = (\_ -> Sub.none)
+        }
+
+
+{-| Define a router that can depend on tasks.
+
+TODO: link to example
+-}
+defineRouter :
+    { init : Environment -> RouterInit
+    , router : Request -> Response -> Task Never Response
+    } -> Program {} {}
+defineRouter app =
+    Node.defineProgram
+        { init = app.init
+        , update = update (RouterUpdate { model = {}, router = app.router })
+        , subscriptions = (\_ -> Sub.none)
+        }
+
+
+{-| Define a Prettynice program.
+
+If you don't need the full model/update/view cycle,
+you probably want a [router](#defineRouter) or [simple router](#defineSimpleRouter) instead.
+
+TODO: link to example
 -}
 defineProgram :
-    { init : Environment -> Init appModel appMsg
-    , update : AppUpdate appModel appMsg
+    { init : Environment -> ProgramInit appModel appMsg
+    , update : appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
     , subscriptions : appModel -> Sub appMsg
     , onRequest : Request -> Response -> appMsg
     } -> Program appModel appMsg
 defineProgram app =
     Node.defineProgram
         { init = app.init
-        , update = update app.update app.onRequest
+        , update = update (ProgramUpdate { appUpdate = app.update, onRequest = app.onRequest })
         , subscriptions = subscriptions app.subscriptions
         }
 
 
-{-| Start your server!
+-- STARTUP
 
-This creates the startup task you can return from your `init` function.
+{-| Start your router.
+
+This creates the init task you can return from your `init` function.
+
+You can wrap this in an [Init.await](TODO: link)
+if you need to [initialize any subsystems](TODO: link).
+
+TODO: link to example
 -}
-startProgram : Config appModel appMsg -> Init appModel appMsg
+startRouter :
+   { host : String
+   , port_ : Int
+   , env : Environment
+   } -> RouterInit
+startRouter config =
+    Init.await Http.initialize <| \serverPermission ->
+        Init.await FileSystem.initialize <| \fsPermission ->
+            Node.startProgram
+                { model =
+                    { server = Nothing
+                    , stdout = config.env.stdout
+                    , stderr = config.env.stderr
+                    , host = config.host
+                    , port_ = config.port_
+                    , env = config.env
+                    , fsPermission = fsPermission
+                    , appModel = {}
+                    }
+                , command =
+                    Task.attempt CreateServerResult <|
+                        Http.createServer serverPermission
+                            { host = config.host
+                            , port_ = config.port_
+                            }
+                }
+
+
+{-| Start your server program.
+
+This creates the init task you can return from your `init` function.
+
+You can wrap this in an [Init.await](TODO: link)
+if you need to [initialize any subsystems](TODO: link).
+
+TODO: link to example
+-}
+startProgram :
+    { host : String
+    , port_ : Int
+    , env : Environment
+    , model : appModel
+    , command : Cmd appMsg
+    } -> ProgramInit appModel appMsg
 startProgram config =
     Init.await Http.initialize <| \serverPermission ->
         Init.await FileSystem.initialize <| \fsPermission ->
@@ -146,20 +241,35 @@ startProgram config =
                 }
 
 
+-- UPDATE
+
+
 type Msg appModel appMsg
     = CreateServerResult (Result Http.ServerError Http.Server)
     | GotRequest Http.Request HttpResponse.Response
-    | ResponseReady Request { model : appModel, command : Cmd (Msg appModel appMsg) }
+    | ResponseReady { model : appModel, command : Cmd (Msg appModel appMsg) }
     | MsgToApp appMsg
 
 
+type AppUpdate appModel appMsg
+    = RouterUpdate 
+        { router : Request -> Response -> Task Never Response 
+        , model : appModel
+        }
+    | ProgramUpdate 
+        { onRequest : Request -> Response -> appMsg
+        , appUpdate : appMsg -> appModel -> 
+            { model : appModel
+            , command : Cmd appMsg
+            }
+        }
+
 update : 
     AppUpdate appModel appMsg
-    -> (Request -> Response -> appMsg)
     -> Msg appModel appMsg
     -> Model appModel
     -> { model : Model appModel, command : Cmd (Msg appModel appMsg) }
-update appUpdate onRequest msg model =
+update appUpdate msg model =
     case msg of
         CreateServerResult result ->
             case result of
@@ -186,11 +296,27 @@ update appUpdate onRequest msg model =
                 response =
                     Prettynice.Response.new res
 
-                appMsg =
-                    onRequest request response
-
                 appUpdateReturn =
-                    appUpdate appMsg model.appModel
+                    case appUpdate of
+                        RouterUpdate up ->
+                            { model = up.model
+                            , updateTask =
+                                up.router request response
+                                    |> Task.map Prettynice.Response.send
+                            }
+
+                        ProgramUpdate up ->
+                            let
+                                updateReturn =
+                                    up.appUpdate 
+                                        (up.onRequest request response) 
+                                        model.appModel
+                            in
+                            { model = updateReturn.model
+                            , updateTask =
+                                updateReturn.command
+                                    |> Task.succeed
+                            }
 
                 appUpdateTask =
                     Task.succeed
@@ -200,7 +326,9 @@ update appUpdate onRequest msg model =
                                 [ Task.execute <|
                                     Stream.sendLine model.stdout <|
                                         Http.requestInfo req ++ ": routing to app"
-                                , Cmd.map MsgToApp appUpdateReturn.command
+                                , appUpdateReturn.updateTask
+                                    |> Task.execute
+                                    |> Cmd.map MsgToApp
                                 ]
                         }
 
@@ -229,22 +357,30 @@ update appUpdate onRequest msg model =
             , command = 
                     tryStaticResponse
                         |> Task.onError (\_ -> appUpdateTask)
-                        |> Task.perform (ResponseReady request)
+                        |> Task.perform ResponseReady
             }
 
-        ResponseReady req result ->
-            { model = { model | appModel = result.model }
-            , command = result.command
+        ResponseReady appUpdateReturn ->
+            { model = { model | appModel = appUpdateReturn.model }
+            , command = appUpdateReturn.command
             }
 
         MsgToApp appMsg ->
-            let
-                appUpdateReturn =
-                    appUpdate appMsg model.appModel
-            in
-            { model = { model | appModel = appUpdateReturn.model }
-            , command = Cmd.map MsgToApp appUpdateReturn.command
-            }
+            case appUpdate of
+                RouterUpdate _ ->
+                    -- router can't receive messages
+                    { model = model
+                    , command = Cmd.none
+                    }
+
+                ProgramUpdate up ->
+                    let
+                        appUpdateReturn =
+                            up.appUpdate appMsg model.appModel
+                    in
+                    { model = { model | appModel = appUpdateReturn.model }
+                    , command = Cmd.map MsgToApp appUpdateReturn.command
+                    }
 
 
 -- SUBS

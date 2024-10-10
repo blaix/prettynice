@@ -7,27 +7,23 @@ module Prettynice.Response exposing
     , sendHtml
     , sendJson
     , sendBytes
-    , setBody
-    , setHeader
-    , setStatus
+    , withBody
+    , withText
+    , withHtml
+    , withJson
+    , withBytes
+    , withHeader
+    , withStatus
     ) 
 
 
 {-| HTTP Responses
 
-@docs Response, Body, new
-
-## Updating Responses
-
-@docs setStatus, setHeader, setBody
-
-## Sending Responses
-
-You can construct and send a [`Response`](#Response) directly with [`send`](#send),
-or you can use one of the `send*` helpers to send data with the content-type set automatically.
+@docs withHtml, withJson, withText, withBytes, withStatus, withHeader, withBody
 
 @docs send, sendHtml, sendText, sendJson, sendBytes
 
+@docs Response, Body, new
 -}
 
 import Bytes exposing (Bytes)
@@ -45,7 +41,7 @@ type Response
     = Response Http.Response
 
 
-{-| Custom type for text-based response bodies.
+{-| Custom type for response bodies.
 -}
 type Body msg
     = HtmlBody 
@@ -76,7 +72,7 @@ new httpResponse =
     Response httpResponse
 
 
-{-| Command to send a response to the current HTTP request.
+{-| Send a Response as a Cmd for the current request.
 -}
 send : Response -> Cmd a
 send response =
@@ -88,31 +84,64 @@ send response =
 {-| Respond with raw bytes.
 
 Use this to send binary data like files, images, etc.
+
+If you want to update a response to send bytes without turning it into a command,
+see [`withBytes`](#withBytes).
 -}
 sendBytes : { contentType : String, body : Bytes } -> Response -> Cmd a
-sendBytes { contentType, body } response =
+sendBytes bytesConfig response =
     response
-        |> setBody (BytesBody body)
-        |> setHeader "Content-type" contentType
+        |> withBytes bytesConfig
         |> send
 
 
+{-| Update a response to send raw bytes.
+
+Use this to send binary data like files, images, etc.
+-}
+withBytes : { contentType : String, body : Bytes } -> Response -> Response
+withBytes { contentType, body } response =
+    response
+        |> withBody (BytesBody body)
+        |> withHeader "Content-type" contentType
+
+
 {-| Respond with plain text.
+
+If you want to update a response to send text without turning it into a command,
+see [`withText`](#withText).
 -}
 sendText : String -> Response -> Cmd a
 sendText text response =
     response
-        |> setBody (TextBody text)
+        |> withText text
         |> send
 
 
+{-| Update a response to send plain text.
+-}
+withText : String -> Response -> Response
+withText text =
+    withBody (TextBody text)
+
+
 {-| Respond with Json.
+
+If you want to update a response to send json without turning it into a command,
+see [`withJson`](#withJson).
 -}
 sendJson : Json.Encode.Value -> Response -> Cmd a
 sendJson json response =
     response
-        |> setBody (JsonBody json)
+        |> withJson json
         |> send
+
+
+{-| Update a response to send json.
+-}
+withJson : Json.Encode.Value -> Response -> Response
+withJson json =
+    withBody (JsonBody json)
 
 
 {-| Respond with HTML.
@@ -123,15 +152,35 @@ and `body` will go into the `<body>` tag.
 
 Note that Prettynice uses and expects Html from [icidasset/html-gren](https://packages.gren-lang.org/package/icidasset/html-gren),
 not from gren-lang/browser. The API is the same, but html-gren is needed because it supports server-side rendering.
+
+If you want to update a response to send HTML without turning it into a Cmd,
+see [`withHtml`](#withHtml).
 -}
 sendHtml : 
     { title : String, head : Array (Html msg), body : Array (Html msg) } 
     -> Response 
     -> Cmd msg
-sendHtml { title, head, body } response =
+sendHtml html response =
     response
-        |> setBody (HtmlBody { title = title, head = head, body = body })
+        |> withHtml html
         |> send
+
+
+{-| Update a response to send HTML.
+
+`title` will go into the `<title>` tag,
+`head` will be added to the `<head>` tag,
+and `body` will go into the `<body>` tag.
+
+Note that Prettynice uses and expects Html from [icidasset/html-gren](https://packages.gren-lang.org/package/icidasset/html-gren),
+not from gren-lang/browser. The API is the same, but html-gren is needed because it supports server-side rendering.
+-}
+withHtml :
+    { title : String, head : Array (Html msg), body : Array (Html msg) } 
+    -> Response 
+    -> Response
+withHtml html =
+    withBody (HtmlBody html)
 
 
 {-| Set the body of the response directly.
@@ -139,8 +188,8 @@ sendHtml { title, head, body } response =
 Normally you can use one of the `send*` functions,
 but if you need more control, you can set a [`Body`](#Body) directly.
 -}
-setBody : Body msg -> Response -> Response
-setBody bodyVariant response =
+withBody : Body msg -> Response -> Response
+withBody bodyVariant response =
     let
         { contentType, rawBody } =
             case bodyVariant of
@@ -211,8 +260,8 @@ setBody bodyVariant response =
 
 {-| Add a header to the response.
 -}
-setHeader : String -> String -> Response -> Response
-setHeader key val (Response httpResponse) =
+withHeader : String -> String -> Response -> Response
+withHeader key val (Response httpResponse) =
     httpResponse
         |> Http.setHeader key val
         |> Response
@@ -220,8 +269,8 @@ setHeader key val (Response httpResponse) =
 
 {-| Set the status of the response.
 -}
-setStatus : Int -> Response -> Response
-setStatus status (Response httpResponse) =
+withStatus : Int -> Response -> Response
+withStatus status (Response httpResponse) =
     httpResponse
         |> Http.setStatus status
         |> Response

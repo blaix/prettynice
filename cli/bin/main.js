@@ -5406,7 +5406,7 @@ var $icidasset$shikensu_gren$Shikensu$Contrib$rename = F2($icidasset$shikensu_gr
 var $author$project$CodeGen$genProject$ = function(fsPermission, dirname) {
 	var templateDir = $gren_lang$node$FileSystem$Path$append$($gren_lang$node$FileSystem$Path$fromPosixString('../templates/init'), $gren_lang$node$FileSystem$Path$fromPosixString(dirname));
 	var ignoreFileTo = $gren_lang$node$FileSystem$Path$fromPosixString('.gitignore');
-	var ignoreFileFrom = $gren_lang$node$FileSystem$Path$prepend$(templateDir, $gren_lang$node$FileSystem$Path$fromPosixString('.gitignore'));
+	var ignoreFileFrom = $gren_lang$node$FileSystem$Path$prepend$(templateDir, $gren_lang$node$FileSystem$Path$fromPosixString('gitignore'));
 	return $gren_lang$core$Task$map$($gren_lang$core$Basics$identity, A2($gren_lang$core$Task$andThen, function(bundle) {
 				return $gren_lang$core$Task$mapError$(function(e) {
 						return 'Error moving .gitignore file.';

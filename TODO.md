@@ -16,6 +16,7 @@
     - [ ] Update docs to show progression from defineSimpleRouter -> defineRouter -> defineProgram
     - [ ] Address TODO comments and release new version
   - [ ] Long term / Any program: Change HttpServer.Response.send to a task (or add a new function?)
+- [ ] listen to lustre episode of developer voices and check out the links
 - [ ] Options for project generator
   - [ ] default: defineSimpleRouter
   - [ ] `router`: defineRouter

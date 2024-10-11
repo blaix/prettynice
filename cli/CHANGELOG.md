@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.1 (2024-10-10)
+## 2.0.2 (2024-10-10)
 
 * Update generated project so nodemon watches public/ files too
 * Fix project generator creating gitignore instead of .gitignore

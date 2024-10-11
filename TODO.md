@@ -1,16 +1,11 @@
 # TODO
 
 - [X] **=== release 2.0 ===**
-- [o] Fixes for project template:
+- [O] Fixes for project template:
   - [X] Fix indent on main function
   - [X] Update nodemon watch list to include public dir and all file extensions
   - [X] Fix gitignore not getting renamed to .gitignore
-  - [ ] bump and release cli
-  - [ ] README fixes
-    - [ ] path to counter component is wrong (missing Components dir)
-    - [ ] Last sentence should have a Deployment heading
-- [ ] Update deployment section of README: it's not "deploy dist dir" it's deploy project dir, run build, npm start (but still explain dist dir)
-- [ ] **=== release 2.x update ===**
+  - [X] bump and release cli
 - [ ] Merge v3 branch
 - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
   - [ ] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response

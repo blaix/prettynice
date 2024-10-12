@@ -6,47 +6,46 @@ import Gen.Components.Table as Table
 
 import Transmutable.Html as H exposing (Html)
 import Node exposing (Environment)
-import Prettynice.SimpleRouter as Router
+import Prettynice
 import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
 
 
-main : Router.Program
+main : Prettynice.Router {}
 main =
-    Router.defineProgram
+    Prettynice.defineSimpleRouter
         { init = init
         , router = router
         }
 
 
-init : Environment -> Router.Init
+init : Environment -> Prettynice.RouterInit {}
 init env =
-    Router.startProgram
+    Prettynice.startSimpleRouter
         { host = "127.0.0.1"
         , port_ = 3000
         , env = env
         }
 
 
-router : Request -> Response -> Cmd msg
-router request response =
-    response
-        |> Response.sendHtml
-            { title = "Component Example"
-            , head = []
-            , body =
-                [ H.p [] [ H.text "Client-side components embedded in server-rendered HTML:" ]
-                , Counter.init { start = 0 }
-                , H.p [] [ H.text "Multiple instances of the same component with different flags, passed from the server, automatically encoded, and type-checked at compile time:" ]
-                , Counter.init { start = 123 }
-                , H.p [] [ H.text "Components with props that use recursive types (Array and Maybe):" ]
-                , Table.init
-                    { title = Just "My Numbers"
-                    , rows = 
-                        [ [ 5, 8, 1, 2 ]
-                        , [ 3, 1, 2, 6 ]
-                        , [ 8, 9, 0, 1 ]
-                        ]
-                    }
-                ]
-            }
+router : Request -> Response -> Response
+router _ =
+    Response.withHtml
+        { title = "Component Example"
+        , head = []
+        , body =
+            [ H.p [] [ H.text "Client-side components embedded in server-rendered HTML:" ]
+            , Counter.init { start = 0 }
+            , H.p [] [ H.text "Multiple instances of the same component with different flags, passed from the server, automatically encoded, and type-checked at compile time:" ]
+            , Counter.init { start = 123 }
+            , H.p [] [ H.text "Components with props that use recursive types (Array and Maybe):" ]
+            , Table.init
+                { title = Just "My Numbers"
+                , rows = 
+                    [ [ 5, 8, 1, 2 ]
+                    , [ 3, 1, 2, 6 ]
+                    , [ 8, 9, 0, 1 ]
+                    ]
+                }
+            ]
+        }

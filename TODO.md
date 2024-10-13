@@ -1,14 +1,14 @@
 # TODO
 
 - [X] **=== release 2.0 ===**
-- [O] Fixes for project template:
+- [X] Fixes for project template:
   - [X] Fix indent on main function
   - [X] Update nodemon watch list to include public dir and all file extensions
   - [X] Fix gitignore not getting renamed to .gitignore
   - [X] bump and release cli
-- [.] v3 branch
-    - [.] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
-      - [o] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
+- [ ] v3 branch
+    - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
+      - [ ] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
         - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
         - [X] Add Prettynice.defineRouter with Task Never Response
         - [ ] Update examples to use the new defineRouter, etc. where appropriate

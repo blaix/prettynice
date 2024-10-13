@@ -13,90 +13,74 @@ import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
 
 
-type alias Model =
-    { httpPerm : HttpClient.Permission
-    }
-
-
 type alias User =
     { id : Int
     , name : String
     }
 
 
-main : Prettynice.Program Model Msg
+type alias Context =
+    { httpPerm : HttpClient.Permission
+    }
+
+
+main : Prettynice.Router Context
 main =
-    Prettynice.defineProgram
+    Prettynice.defineRouter
         { init = init
-        , update = update
-        , subscriptions = (\_ -> Sub.none)
-        , onRequest = GotRequest
+        , router = router
         }
 
 
-init : Environment -> Prettynice.Init Model Msg
+init : Environment -> Prettynice.RouterInit Context
 init env =
     Init.await HttpClient.initialize <| \httpPerm -> 
-        Prettynice.startProgram
+        Prettynice.startRouter
             { host = "127.0.0.1"
             , port_ = 3000
             , env = env
-            , model = { httpPerm = httpPerm }
-            , command = Cmd.none
+            , context = { httpPerm = httpPerm }
             }
 
 
-type Msg
-    = GotRequest Request Response
-    | GotUserResult Response 
-        (Result 
-            (HttpClient.Error (Array User))
-            (HttpClient.Response (Array User))
-        )
+router : Context -> Request -> Response -> Task Never Response
+router context request response =
+    case request.path of
+        [] ->
+            response
+                |> Response.withHtml viewHome
+                |> Task.succeed
+
+        [ "users", userId ] ->
+            userId
+                |> decodeUserId
+                |> getUser context.httpPerm
+                |> Task.map (getUserSuccess response)
+                |> Task.onError (getUserError response)
+
+        _ ->
+            response
+                |> notFound
+                |> Task.succeed
 
 
-update : Msg -> Model -> { model : Model, command : Cmd Msg }
-update msg model =
-    case msg of
-        GotRequest request response ->
-            case request.path of
-                [] ->
-                    { model = model
-                    , command =
-                        Response.sendHtml viewHome response
-                    }
+getUserSuccess : Response -> HttpClient.Response (Array User) -> Response
+getUserSuccess response getUserResponse =
+    case getUserResponse.data of
+        [ user ] ->
+            Response.withHtml (viewUser user) response
 
-                [ "users", userId ] ->
-                    { model = model
-                    , command =
-                        userId
-                            |> String.toInt
-                            |> Maybe.withDefault 0
-                            |> getUser model.httpPerm
-                            |> Task.attempt (GotUserResult response)
-                    }
+        _ ->
+            notFound response
 
-                _ ->
-                    { model = model
-                    , command = notFound response
-                    }
 
-        GotUserResult response (Ok userResult) ->
-            { model = model
-            , command = 
-                case userResult.data of
-                    [ user ] ->
-                        Response.sendHtml (viewUser user) response
-
-                    _ ->
-                        notFound response
-            }
-
-        GotUserResult response (Err e) ->
-            { model = model
-            -- In a real app you will want to handle this properly
-            , command = Response.sendText (Debug.toString e) response
-            }
+getUserError : Response -> HttpClient.Error (Array User) -> Task Never Response
+getUserError response error =
+    response
+        -- In a real app you will want to handle this without debug
+        |> Response.withText (Debug.toString error)
+        |> Response.withStatus 500
+        |> Task.succeed
 
 
 getUser : 
@@ -108,7 +92,7 @@ getUser :
 getUser httpPerm userId =
     HttpClient.post "http://localhost:8080/dev"
         |> HttpClient.withJsonBody (userQuery userId)
-        |> HttpClient.expectJson decodeUserResult
+        |> HttpClient.expectJson decodeUserResponse
         |> HttpClient.send httpPerm
 
 
@@ -139,8 +123,15 @@ userQuery userId =
         ]
 
 
-decodeUserResult : Decode.Decoder (Array User)
-decodeUserResult =
+decodeUserId : String -> Int
+decodeUserId userId =
+    userId
+        |> String.toInt
+        |> Maybe.withDefault 0
+
+
+decodeUserResponse : Decode.Decoder (Array User)
+decodeUserResponse =
     -- See https://germ.gitbook.io/ws4sqlite/documentation/responses
     -- We will get a response that looks like this:
     --     {
@@ -168,7 +159,7 @@ makeUser id name =
     { id = id, name = name }
 
 
-viewUser : User -> { title : String, head : Array (Html Msg), body : Array (Html Msg) }
+viewUser : User -> { title : String, head : Array (Html msg), body : Array (Html msg) }
 viewUser user =
     { title = "User Details"
     , head = []
@@ -186,7 +177,7 @@ viewUser user =
     }
 
 
-viewHome : { title : String, head : Array (Html Msg), body : Array (Html Msg) }
+viewHome : { title : String, head : Array (Html msg), body : Array (Html msg) }
 viewHome =
     { title = "Home"
     , head = []
@@ -212,8 +203,8 @@ viewHome =
     }
 
 
-notFound : Response -> Cmd Msg
+notFound : Response -> Response
 notFound response =
     response
-        |> Response.setStatus 404
-        |> Response.sendText "not found"
+        |> Response.withStatus 404
+        |> Response.withText "not found"

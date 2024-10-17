@@ -15,6 +15,7 @@
         - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
         - [ ] Update docs to show progression from defineSimpleRouter -> defineRouter -> defineProgram
       - [ ] Long term / Any program: Change HttpServer.Response.send to a task (or add a new function?)
+    - [ ] Is it possible to have a websockets example yet?
     - [ ] Update examples/v2 to use hardcoded v2 of prettynice in gren.json
     - [ ] Address TODO comments
     - [ ] Merge

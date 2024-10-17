@@ -1,16 +1,14 @@
 module Prettynice exposing 
+    ( Program
+    , Init
 
     -- Routers
-    ( Router
-    , RouterInit
     , defineSimpleRouter
     , defineRouter
     , startRouter
     , startSimpleRouter
 
     -- Programs
-    , Program
-    , ProgramInit
     , defineProgram
     , startProgram
     )
@@ -79,27 +77,15 @@ type alias Model appModel =
 -- DEFINITIONS
 
 
-{-| The definition of your Prettynice router.
--}
-type alias Router context =
-    Node.Program (Model context) (Msg context {})
-
-
 {-| The definition of your Prettynice program.
 -}
 type alias Program appModel appMsg =
     Node.Program (Model appModel) (Msg appModel appMsg)
 
 
-{-| Init task for starting your Prettynice router.
--}
-type alias RouterInit context =
-    Init.Task { model : Model context, command : Cmd (Msg context {}) }
-
-
 {-| Init task for starting your Prettynice program.
 -}
-type alias ProgramInit appModel appMsg =
+type alias Init appModel appMsg =
     Init.Task { model : Model appModel, command : Cmd (Msg appModel appMsg) }
 
 

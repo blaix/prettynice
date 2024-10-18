@@ -6,9 +6,9 @@
   - [X] Update nodemon watch list to include public dir and all file extensions
   - [X] Fix gitignore not getting renamed to .gitignore
   - [X] bump and release cli
-- [.] v3 branch
-    - [.] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
-      - [o] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
+- [ ] v3 branch
+    - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
+      - [ ] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
         - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
         - [X] Add Prettynice.defineRouter with Task Never Response
         - [ ] Update examples/next to use the new defineRouter, etc. where appropriate
@@ -17,6 +17,7 @@
     - [ ] Update README and gren package docs with changes
     - [ ] Create v3 website and update to show progression from defineSimpleRouter -> defineRouter -> defineProgram
       - [ ] Consider a diff-based approach like the README for https://github.com/edkelly303/elm-composer
+      - [ ] Take some inspiration from: https://fresh.deno.dev/
     - [ ] Update examples/v2 to use hardcoded v2 of prettynice in gren.json
     - [ ] Address TODO comments
     - [ ] Merge

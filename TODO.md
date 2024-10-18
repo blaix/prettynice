@@ -8,12 +8,11 @@
   - [X] bump and release cli
 - [ ] v3 branch
     - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
-      - [ ] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
-        - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
-        - [X] Add Prettynice.defineRouter with Task Never Response
-        - [ ] Update examples/next to use the new defineRouter, etc. where appropriate
-        - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
-      - [ ] Long term / Any program: Change HttpServer.Response.send to a task (or add a new function?)
+      - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
+      - [X] Add Prettynice.defineRouter with Task Never Response
+      - [ ] detour: experiment with sendAsTask in Node, see if it simplifies https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90 enough to be worth it
+      - [ ] Update examples/next to use the new defineRouter, etc. where appropriate
+      - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
     - [ ] Update README and gren package docs with changes
     - [ ] Create v3 website and update to show progression from defineSimpleRouter -> defineRouter -> defineProgram
       - [ ] Consider a diff-based approach like the README for https://github.com/edkelly303/elm-composer

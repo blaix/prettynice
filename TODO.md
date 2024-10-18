@@ -11,16 +11,19 @@
       - [o] Short term / Router-only (no state): add a router definition that returns Task Never Response instead of Response
         - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
         - [X] Add Prettynice.defineRouter with Task Never Response
-        - [ ] Update examples to use the new defineRouter, etc. where appropriate
+        - [ ] Update examples/next to use the new defineRouter, etc. where appropriate
         - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
-        - [ ] Update docs to show progression from defineSimpleRouter -> defineRouter -> defineProgram
       - [ ] Long term / Any program: Change HttpServer.Response.send to a task (or add a new function?)
-    - [ ] Is it possible to have a websockets example yet?
+    - [ ] Update README and gren package docs with changes
+    - [ ] Create v3 website and update to show progression from defineSimpleRouter -> defineRouter -> defineProgram
+      - [ ] Consider a diff-based approach like the README for https://github.com/edkelly303/elm-composer
     - [ ] Update examples/v2 to use hardcoded v2 of prettynice in gren.json
     - [ ] Address TODO comments
     - [ ] Merge
     - [ ] See notes/releasing.md
 - [ ] **== release 3.0 ==**
+- [ ] Look at https://github.com/edkelly303/elm-composer - may be ideas here that are useful
+- [ ] Is it possible to have a websockets example yet?
 - [ ] listen to lustre episode of developer voices and check out the links
 - [ ] Options for project generator
   - [ ] default: defineSimpleRouter

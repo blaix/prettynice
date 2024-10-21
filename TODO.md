@@ -17,6 +17,7 @@
     - [ ] Create v3 website and update to show progression from defineSimpleRouter -> defineRouter -> defineProgram
       - [ ] Consider a diff-based approach like the README for https://github.com/edkelly303/elm-composer
       - [ ] Take some inspiration from: https://fresh.deno.dev/
+      - [ ] Update v1 and v2 version of website with a banner pointing to prettynice.dev for redirect to latest version
     - [ ] Update examples/v2 to use hardcoded v2 of prettynice in gren.json
     - [ ] Address TODO comments
     - [ ] Merge

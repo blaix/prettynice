@@ -15,5 +15,6 @@
 * [ ] `cd website/v[n]` and `fly launch` with name `prettynice-v[n]`
 * [ ] `flyctl deploy` and point `v[n].prettynice.dev` subdomain at `prettynice-v[n]`
 * [ ] change `prettynice.dev` redirect to `v[n]` subdomain
+* [ ] add banner to old version of website pointing to main domain for redirect to latest version
 * [ ] blog post
 * [ ] announce the release

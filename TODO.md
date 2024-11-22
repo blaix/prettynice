@@ -176,3 +176,7 @@
 - [ ] Look at mdgriffith's elm-prefab: https://github.com/mdgriffith/elm-prefab/blob/main/guides/
 - [ ] Look at [elm-duet](https://github.com/BrianHicks/elm-duet) and [json type definitions](https://jsontypedef.com/)
 - [ ] `gren run package-name` to replace npm package and stop exposing `Prettynice.Internal`
+- [ ] offline-first PWA experiment
+  - [ ] https://docs.yjs.dev/
+  - [ ] Learn about CRDTS. Start here: https://docs.yjs.dev/api/internals
+

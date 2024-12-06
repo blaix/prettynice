@@ -25,6 +25,10 @@
     - [ ] See notes/releasing.md
 - [ ] **== release 3.0 ==**
 - [ ] Video showing benefits of fullstack type safety: update view in client component and watch compiler guide you to changes all the way down to the server.
+- [ ] Example & documentation for building a SPA
+  - [ ] Entire app in a client/src/Main.gren component
+  - [ ] Communicates with server/src/Main.gren via HTTP client
+  - [ ] Great for a PWA - show how to do this?
 - [ ] Look at https://github.com/edkelly303/elm-composer - may be ideas here that are useful
 - [ ] Is it possible to have a websockets example yet?
 - [ ] listen to lustre episode of developer voices and check out the links

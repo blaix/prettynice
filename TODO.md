@@ -6,7 +6,7 @@
   - [X] Update nodemon watch list to include public dir and all file extensions
   - [X] Fix gitignore not getting renamed to .gitignore
   - [X] bump and release cli
-- [ ] Try https://devenv.sh/
+- [ ] Devbox?
 - [ ] v3 branch
     - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
       - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
@@ -24,6 +24,7 @@
     - [ ] Merge
     - [ ] See notes/releasing.md
 - [ ] **== release 3.0 ==**
+- [ ] Video showing benefits of fullstack type safety: update view in client component and watch compiler guide you to changes all the way down to the server.
 - [ ] Look at https://github.com/edkelly303/elm-composer - may be ideas here that are useful
 - [ ] Is it possible to have a websockets example yet?
 - [ ] listen to lustre episode of developer voices and check out the links

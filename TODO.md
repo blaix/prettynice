@@ -7,6 +7,7 @@
   - [X] Fix gitignore not getting renamed to .gitignore
   - [X] bump and release cli
 - [ ] Devbox?
+- [ ] project generator should set up shared code directory
 - [ ] v3 branch
     - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
       - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter

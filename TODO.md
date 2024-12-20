@@ -25,6 +25,7 @@
     - [ ] Merge
     - [ ] See notes/releasing.md
 - [ ] **== release 3.0 ==**
+- [ ] Create a starter repo using [github templates](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository)
 - [ ] Video showing benefits of fullstack type safety: update view in client component and watch compiler guide you to changes all the way down to the server.
 - [ ] Example & documentation for building a SPA
   - [ ] Entire app in a client/src/Main.gren component

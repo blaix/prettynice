@@ -1,0 +1,132 @@
+port module Components.Chat exposing (component, Model, Msg, Props)
+
+import Http
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+import Transmutable.Html.Events as E
+import Prettynice.Component exposing (Component)
+
+
+component : Component Props Model Msg
+component =
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+
+type alias Model =
+    { pendingMessage : String
+    , allMessages : Array String
+    }
+
+
+type alias Props =
+    { messages : Array String
+    }
+
+
+init : Props -> { model : Model, command : Cmd Msg }
+init { messages } =
+    { model =
+        { pendingMessage = ""
+        , allMessages = messages
+        }
+    , command = Cmd.none
+    }
+
+
+type Msg
+    = MessageFieldUpdated String
+    | MessageFormSubmitted
+    | MessageSent (Result Http.Error {})
+    | MessageReceived String
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+
+        -- Update pending message as they type.
+        MessageFieldUpdated message ->
+            { model = 
+                { model | pendingMessage = message }
+            , command = Cmd.none
+            }
+
+        -- Post to server when form is submitted.
+        MessageFormSubmitted ->
+            { model = 
+                { model | pendingMessage = "" }
+            , command = 
+                Http.post
+                    { url = "/send"
+                    , body = Http.stringBody "text/plain" model.pendingMessage
+                    , expect = Http.expectWhatever MessageSent
+                    }
+            }
+
+        -- Handle result of posting message to the server.
+        MessageSent result ->
+            { model = 
+                case result of
+                    Ok _ -> 
+                        model
+
+                    Err _ -> 
+                        appendMessage "Oops! Failed to send." model
+            , command =
+                Cmd.none
+            }
+
+        -- Received new message from the incoming port.
+        -- (see ports and subscriptions below)
+        MessageReceived message ->
+            { model =
+                appendMessage message model
+            , command =
+                Cmd.none
+            }
+
+
+appendMessage : String -> Model -> Model
+appendMessage message model =
+    { model
+        | allMessages =
+            Array.pushLast message model.allMessages
+    }
+
+
+{-| Show all messages and a form to post new messages.
+-}
+view : Model -> Html Msg
+view model =
+    H.div []
+        [ model.allMessages
+            |> Array.map (\m -> H.div [] [ H.text m ]) 
+            |> H.div []
+        , H.form
+            [ E.onSubmit MessageFormSubmitted ]
+            [ H.input
+                [ A.value model.pendingMessage
+                , E.onInput MessageFieldUpdated
+                ]
+                []
+            , H.button
+                [ A.type_ "submit" ]
+                [ H.text "Send" ]
+            ]
+        ]
+
+
+{-| This is where we'll receive new messages from the websocket.
+    See client/src/Components/Chat.js
+-}
+port gotMessage : (String -> msg) -> Sub msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    gotMessage MessageReceived
+

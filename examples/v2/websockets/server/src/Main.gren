@@ -1,0 +1,129 @@
+port module Main exposing (main)
+
+import Bytes exposing (Bytes)
+import Gen.Components.Chat as Chat
+import Node exposing (Environment)
+import HttpServer exposing (Method(..))
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Transmutable.Html as H exposing (Html)
+
+
+-- MODEL
+
+
+{-| Model holds all chat messages.
+
+For now this is only held in memory, so it will reset when the server starts.
+In a real application you may want to persist this on the filesystem or in a database.
+-}
+type alias Model =
+    { messages : Array String
+    }
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , onRequest = GotRequest
+        }
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        , command = Cmd.none
+        , model = { messages = [] }
+        }
+
+
+-- UPDATE
+
+
+type Msg
+    = GotRequest Request Response
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotRequest request response ->
+            case request of
+
+                -- Handle homepage requests
+                { method = GET, path = [] } ->
+                    { model = model
+                    , command =
+                        viewChat model.messages response
+                    }
+                
+                -- Handle chat message posts
+                { method = POST, path = [ "send" ] } ->
+                    handleMessage request.body model response
+
+                -- All other requests: 404
+                _ ->
+                    { model = model
+                    , command =
+                        response
+                            |> Response.setStatus 404
+                            |> Response.sendText "Not Found"
+                    }
+
+
+{-| Respond with HTML that includes our Chat component initialized with
+    messages stored on the server.
+-}
+viewChat : Array String -> Response -> Cmd Msg
+viewChat messages =
+    Response.sendHtml
+        { title = "Cool Chat"
+        , head = []
+        , body =
+            [ H.h1 [] [ H.text "Welcome to Cool Chat" ]
+            -- See client/src/Components/Chat.gren
+            , Chat.init { messages = messages }
+            ]
+        }
+
+
+{-| Add new messages to list of messages stored on the server,
+    broadcast to connected clients through the outgoing port,
+    and send an empty response.
+-}
+handleMessage : Bytes -> Model -> Response -> { model : Model, command : Cmd Msg }
+handleMessage messageBytes model response =
+    let
+        message =
+            messageBytes
+                |> Bytes.toString
+                |> Maybe.withDefault ""
+    in
+    { model = 
+        { model 
+            | messages = 
+                Array.pushLast message model.messages
+        }
+    , command =
+        Cmd.batch
+            [ broadcast message
+            , Response.send response
+            ]
+    }
+
+
+{-| See server/src/ports.js
+-}
+port broadcast : String -> Cmd msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none

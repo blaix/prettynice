@@ -24,6 +24,7 @@
     - [ ] Address TODO comments
     - [ ] `npm install whatever` should be enough to make `whatever` available in client-side component `.js` files. (already works server-side).
     - [ ] Consider support for server-sent events
+    - [ ] Update v3 website to point to new sections of the gren book where appropriate
     - [ ] Add server and client js dependencies to docs (README and website).
     - [ ] Merge
     - [ ] See notes/releasing.md

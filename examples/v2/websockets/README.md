@@ -14,7 +14,7 @@ The important files:
 ## Running the app
 
 Copy the entire contents of this directory.
-[degit](https://github.com/Rich-Harris/degit) is great for this: `degit blaix/prettynice/examples/v2/websockets`
+[degit](https://github.com/Rich-Harris/degit) is great for this: `degit blaix/prettynice/examples/v2/websockets mysite`
 
 Then:
 

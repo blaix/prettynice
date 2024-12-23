@@ -23,6 +23,7 @@
     - [ ] Update examples/v2 to use hardcoded v2 of prettynice in gren.json
     - [ ] Address TODO comments
     - [ ] `npm install whatever` should be enough to make `whatever` available in client-side component `.js` files. (already works server-side).
+    - [ ] Consider support for server-sent events
     - [ ] Add server and client js dependencies to docs (README and website).
     - [ ] Merge
     - [ ] See notes/releasing.md

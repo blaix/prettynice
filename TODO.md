@@ -15,6 +15,8 @@
       - [ ] Try replacing `onRequest` in `defineProgram` with `router` so programs just add update and subscriptions instead of merging router into update. This makes it easier to upgrade from router to program, and lets you continue having a simple way to respond with tasks instead of needing to roll your own once you upgrade (e.g. https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90).
       - [ ] Update examples/next to use the new defineRouter, etc. where appropriate
       - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
+    - [ ] Component generator?
+    - [ ] See https://github.com/CharlonTank/rust-graphql-elm-tailwind-boilerplate for README / docsite (/ feature?) inspiration
     - [ ] Update README and gren package docs with changes
     - [ ] Create v3 website and update to show progression from defineSimpleRouter -> defineRouter -> defineProgram
       - [ ] Consider a diff-based approach like the README for https://github.com/edkelly303/elm-composer

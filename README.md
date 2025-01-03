@@ -436,7 +436,7 @@ See:
 
 ## Deployment
 
-Prettynice should work on any host that supports nodejs.
+Prettynice should work on any host that supports nodejs services (serverless is not a great option).
 
 The basic steps for deployment are:
 
@@ -444,11 +444,27 @@ The basic steps for deployment are:
 2. Deploy the `dist` folder. `dist/server` holds your node server. `dist/client` holds your static assets.
 3. Run with: `node dist/server/index.js`
 
-If you cloned one of the examples,
+If you generated your project with `prettynice init` or cloned one of the [examples](/examples),
 there are scripts for the build and run steps:
 
 * `npm run build`
 * `npm start`
+
+### Fly.io
+
+[Fly.io](https://fly.io/) is cloud host designed for containerized services that works great with prettynice.
+
+The [quickstart instructions](https://fly.io/docs/getting-started/launch/) should be enough to get your prettynice site up and running.
+`fly launch` will recognize your site as a node app with the typical build steps and set up the Dockerfile appropriately.
+
+**Note:** If you get errors during the build step about not finding a git binary, update the generated `Dockerfile` by adding `git-all` to the list of packages installed with `apt-get install` and then `fly deploy` should work.
+
+### Render
+
+[Render](https://render.com/) is another good hosting option.
+
+To host a prettynice site on render, on your dashboard, click Add New and select Web Service and then your repository.
+On the next step, choose Node as the language, and the rest of the defaults should work fine.
 
 ## Goals
 

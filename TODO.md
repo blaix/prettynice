@@ -6,7 +6,7 @@
   - [X] Update nodemon watch list to include public dir and all file extensions
   - [X] Fix gitignore not getting renamed to .gitignore
   - [X] bump and release cli
-- [ ] Fix the gitignore bug: https://github.com/blaix/prettynice/issues/5
+- [ ] Animate progress text in cli init?
 - [ ] Devbox?
 - [ ] project generator should set up shared code directory
 - [ ] v3 branch

@@ -452,7 +452,7 @@ Below are some recommendations for hosts that work well with prettynice.
 The [quickstart instructions](https://fly.io/docs/getting-started/launch/) should be enough to get your prettynice site up and running.
 `fly launch` will recognize your site as a node app and set up the Dockerfile appropriately.
 
-**Note:** If you get errors during the build step about not finding a git binary, update the generated `Dockerfile` by adding `git-all` to the list of packages installed with `apt-get install` and then `fly deploy` should work.
+**Note:** If you get errors during the build step about not finding a git binary, add `git-all` to the line that begins `apt-get install` in the generated `Dockerfile` and then `fly deploy` should work.
 
 ### Render
 

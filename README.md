@@ -438,17 +438,13 @@ See:
 
 Prettynice should work on any host that supports nodejs services (serverless is not a great option).
 
-The basic steps for deployment are:
+If you generated your project with `prettynice init` or cloned one of the [examples](/examples), the basic steps for deployment are:
 
-1. Build with optimizations: `npx prettynice build --optimize`
+1. Build: `npm run build` (runs `npx prettynice build --optimize` under the hood)
 2. Deploy the `dist` folder. `dist/server` holds your node server. `dist/client` holds your static assets.
-3. Run with: `node dist/server/index.js`
+3. Run with: `npm start` (runs `node dist/server/index.js` under the hood)
 
-If you generated your project with `prettynice init` or cloned one of the [examples](/examples),
-there are scripts for the build and run steps:
-
-* `npm run build`
-* `npm start`
+Below are some recommendations for hosts that work well with prettynice.
 
 ### Fly.io
 

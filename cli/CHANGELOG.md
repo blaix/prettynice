@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.3 (2025-01-03)
+
+* Fix https://github.com/blaix/prettynice/issues/5
+* Change default host to 0.0.0.0 in project template for easier deployment
+
 ## 2.0.2 (2024-10-10)
 
 * Update generated project so nodemon watches public/ files too

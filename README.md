@@ -452,7 +452,7 @@ there are scripts for the build and run steps:
 
 ### Fly.io
 
-[Fly.io](https://fly.io/) is cloud host designed for containerized services that works great with prettynice.
+[Fly.io](https://fly.io/) is a cloud host designed for containerized services that works great with prettynice.
 
 The [quickstart instructions](https://fly.io/docs/getting-started/launch/) should be enough to get your prettynice site up and running.
 `fly launch` will recognize your site as a node app with the typical build steps and set up the Dockerfile appropriately.
@@ -461,7 +461,7 @@ The [quickstart instructions](https://fly.io/docs/getting-started/launch/) shoul
 
 ### Render
 
-[Render](https://render.com/) is another good hosting option.
+[Render](https://render.com/) is another good hosting option for prettynice, especially if you want a more hands-off host with good support at the paid tiers.
 
 To host a prettynice site on render, on your dashboard, click Add New and select Web Service and then your repository.
 On the next step, choose Node as the language, and the rest of the defaults should work fine.

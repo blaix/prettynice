@@ -456,7 +456,7 @@ The [quickstart instructions](https://fly.io/docs/getting-started/launch/) shoul
 
 ### Render
 
-[Render](https://render.com/) is another good hosting option for prettynice, especially if you want a more hands-off host with good support at the paid tiers.
+[Render](https://render.com/) is another good hosting option for prettynice, especially if you want a more hands-off approach with good support at the paid tiers.
 
 To host a prettynice site on render, on your dashboard, click Add New and select Web Service and then your repository.
 On the next step, choose Node as the language, and the rest of the defaults should work fine.

@@ -13,7 +13,7 @@
     - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
       - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
       - [X] Add Prettynice.defineRouter with Task Never Response
-      - [ ] Try replacing `onRequest` in `defineProgram` with `router` so programs just add update and subscriptions instead of merging router into update. This makes it easier to upgrade from router to program, and lets you continue having a simple way to respond with tasks instead of needing to roll your own once you upgrade (e.g. https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90).
+      - [ ] Try replacing `onRequest` in `defineProgram` with `router` so programs just add update and subscriptions instead of merging router into update. This makes it easier to upgrade from router to program, and lets you continue having a simple way to respond with tasks instead of needing to roll your own once you upgrade (e.g. https://gist.github.com/blaix/7643fdc65df485ca5172e30b949f6d5d).
       - [ ] Update examples/next to use the new defineRouter, etc. where appropriate
       - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
     - [ ] Component generator?

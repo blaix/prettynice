@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.6/.schema/devbox.schema.json",
+  "packages": [
+    "flyctl@latest",
+    "just@latest",
+    "nodejs@20"
+  ],
+  "shell": {
+    "init_hook": [
+      "export PATH=\"$PWD/node_modules/.bin:$PATH\"",
+      "if [ ! -f \"$PWD/node_modules/.bin/gren\" ]; then npm install; fi"
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}

@@ -1,29 +1,42 @@
 module Prettynice.Response exposing 
+
+    -- Response type
     ( Response
-    , Body(..)
     , new
-    , send
-    , sendText
-    , sendHtml
-    , sendJson
-    , sendBytes
-    , withBody
-    , withText
-    , withHtml
-    , withJson
-    , withBytes
-    , withHeader
-    , withStatus
+    , unwrap
+
+    -- Setting response body
+    , asText
+    , asHtml
+    , asJson
+    , asBytes
+
+    -- Setting headers and status
+    , setHeader
+    , setStatus
     ) 
 
 
 {-| HTTP Responses
 
-@docs withHtml, withJson, withText, withBytes, withStatus, withHeader, withBody
+@docs Response
 
-@docs send, sendHtml, sendText, sendJson, sendBytes
+## Setting the Response Body
 
-@docs Response, Body, new
+@docs asHtml, asJson, asText, asBytes
+
+## Setting the Response headers and status
+
+@docs setHeader, setStatus
+
+## Raw HTTP Responses
+
+Use these functions to work with a raw
+[Http.Response](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/HttpServer.Response#Response)
+directly. You shouldn't need them in a typical Prettynice application but if you want to do something
+weird and cool I'm not going to stop you.
+
+@docs new, unwrap
 -}
 
 import Bytes exposing (Bytes)
@@ -72,98 +85,39 @@ new httpResponse =
     Response httpResponse
 
 
-{-| Send a Response as a Cmd for the current request.
+{-| Turn a Prettynice Response int a normal [Http.Response](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/HttpServer.Response#Response)
+
+You shouldn't need this in a typical Prettynice program.
+But it's here if you want to do anything weird and cool.
 -}
-send : Response -> Cmd a
-send response =
-    response
-        |> getHttpResponse
-        |> Http.send
-
-
-{-| Respond with raw bytes.
-
-Use this to send binary data like files, images, etc.
-
-If you want to update a response to send bytes without turning it into a command,
-see [`withBytes`](#withBytes).
--}
-sendBytes : { contentType : String, body : Bytes } -> Response -> Cmd a
-sendBytes bytesConfig response =
-    response
-        |> withBytes bytesConfig
-        |> send
+unwrap : Response -> Http.Response
+unwrap (Response httpResponse) =
+    httpResponse
 
 
 {-| Update a response to send raw bytes.
 
 Use this to send binary data like files, images, etc.
 -}
-withBytes : { contentType : String, body : Bytes } -> Response -> Response
-withBytes { contentType, body } response =
+asBytes : { contentType : String, body : Bytes } -> Response -> Response
+asBytes { contentType, body } response =
     response
         |> withBody (BytesBody body)
-        |> withHeader "Content-type" contentType
-
-
-{-| Respond with plain text.
-
-If you want to update a response to send text without turning it into a command,
-see [`withText`](#withText).
--}
-sendText : String -> Response -> Cmd a
-sendText text response =
-    response
-        |> withText text
-        |> send
+        |> setHeader "Content-type" contentType
 
 
 {-| Update a response to send plain text.
 -}
-withText : String -> Response -> Response
-withText text =
+asText : String -> Response -> Response
+asText text =
     withBody (TextBody text)
-
-
-{-| Respond with Json.
-
-If you want to update a response to send json without turning it into a command,
-see [`withJson`](#withJson).
--}
-sendJson : Json.Encode.Value -> Response -> Cmd a
-sendJson json response =
-    response
-        |> withJson json
-        |> send
 
 
 {-| Update a response to send json.
 -}
-withJson : Json.Encode.Value -> Response -> Response
-withJson json =
+asJson : Json.Encode.Value -> Response -> Response
+asJson json =
     withBody (JsonBody json)
-
-
-{-| Respond with HTML.
-
-`title` will go into the `<title>` tag,
-`head` will be added to the `<head>` tag,
-and `body` will go into the `<body>` tag.
-
-Note that Prettynice uses and expects Html from [icidasset/html-gren](https://packages.gren-lang.org/package/icidasset/html-gren),
-not from gren-lang/browser. The API is the same, but html-gren is needed because it supports server-side rendering.
-
-If you want to update a response to send HTML without turning it into a Cmd,
-see [`withHtml`](#withHtml).
--}
-sendHtml : 
-    { title : String, head : Array (Html msg), body : Array (Html msg) } 
-    -> Response 
-    -> Cmd msg
-sendHtml html response =
-    response
-        |> withHtml html
-        |> send
 
 
 {-| Update a response to send HTML.
@@ -175,18 +129,15 @@ and `body` will go into the `<body>` tag.
 Note that Prettynice uses and expects Html from [icidasset/html-gren](https://packages.gren-lang.org/package/icidasset/html-gren),
 not from gren-lang/browser. The API is the same, but html-gren is needed because it supports server-side rendering.
 -}
-withHtml :
+asHtml :
     { title : String, head : Array (Html msg), body : Array (Html msg) } 
     -> Response 
     -> Response
-withHtml html =
+asHtml html =
     withBody (HtmlBody html)
 
 
-{-| Set the body of the response directly.
-
-Normally you can use one of the `send*` functions,
-but if you need more control, you can set a [`Body`](#Body) directly.
+{-| Update a response to send the specified body.
 -}
 withBody : Body msg -> Response -> Response
 withBody bodyVariant response =
@@ -247,7 +198,7 @@ withBody bodyVariant response =
                     }
     in
     response
-        |> getHttpResponse
+        |> unwrap
         |> Http.setHeader "Content-type" contentType
         |> ( case rawBody of
                 RawBodyString body ->
@@ -260,8 +211,8 @@ withBody bodyVariant response =
 
 {-| Add a header to the response.
 -}
-withHeader : String -> String -> Response -> Response
-withHeader key val (Response httpResponse) =
+setHeader : String -> String -> Response -> Response
+setHeader key val (Response httpResponse) =
     httpResponse
         |> Http.setHeader key val
         |> Response
@@ -269,13 +220,8 @@ withHeader key val (Response httpResponse) =
 
 {-| Set the status of the response.
 -}
-withStatus : Int -> Response -> Response
-withStatus status (Response httpResponse) =
+setStatus : Int -> Response -> Response
+setStatus status (Response httpResponse) =
     httpResponse
         |> Http.setStatus status
         |> Response
-
-
-getHttpResponse : Response -> Http.Response
-getHttpResponse (Response httpResponse) =
-    httpResponse

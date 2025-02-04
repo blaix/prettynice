@@ -1,37 +1,12 @@
 # TODO
 
-- [X] **=== release 2.0 ===**
-- [X] Fixes for project template:
-  - [X] Fix indent on main function
-  - [X] Update nodemon watch list to include public dir and all file extensions
-  - [X] Fix gitignore not getting renamed to .gitignore
-  - [X] bump and release cli
-- [ ] Animate progress text in cli init?
-- [ ] Devbox?
-- [ ] project generator should set up shared code directory
-- [ ] v3 branch
-    - [ ] Annoyance with needing a full program and multiple update cycles to run tasks since Response.send is a CMD...
-      - [X] Move SimpleRouter.defineProgram to Prettynice.defineSimpleRouter and remove SimpleRouter
-      - [X] Add Prettynice.defineRouter with Task Never Response
-      - [ ] Try replacing `onRequest` in `defineProgram` with `router` so programs just add update and subscriptions instead of merging router into update. This makes it easier to upgrade from router to program, and lets you continue having a simple way to respond with tasks instead of needing to roll your own once you upgrade (e.g. https://gist.github.com/blaix/7643fdc65df485ca5172e30b949f6d5d).
-      - [ ] Update examples/next to use the new defineRouter, etc. where appropriate
-      - [ ] Use this "ResponseReady" pattern for full program examples: https://gist.github.com/blaix/106365cd437e776332ba15bab8a24c90
-    - [ ] Component generator?
-    - [ ] See https://github.com/CharlonTank/rust-graphql-elm-tailwind-boilerplate for README / docsite (/ feature?) inspiration
-    - [ ] Update README and gren package docs with changes
-    - [ ] Create v3 website and update to show progression from defineSimpleRouter -> defineRouter -> defineProgram
-      - [ ] Consider a diff-based approach like the README for https://github.com/edkelly303/elm-composer
-      - [ ] Take some inspiration from: https://fresh.deno.dev/
-      - [ ] Update v1 and v2 version of website with a banner pointing to prettynice.dev for redirect to latest version
-    - [ ] Update examples/v2 to use hardcoded v2 of prettynice in gren.json
-    - [ ] Address TODO comments
-    - [ ] `npm install whatever` should be enough to make `whatever` available in client-side component `.js` files. (already works server-side).
-    - [ ] Consider support for server-sent events
-    - [ ] Update v3 website to point to new sections of the gren book where appropriate
-    - [ ] Add server and client js dependencies to docs (README and website).
-    - [ ] Merge
-    - [ ] See notes/releasing.md
-- [ ] **== release 3.0 ==**
+- [ ] See https://github.com/CharlonTank/rust-graphql-elm-tailwind-boilerplate for README / docsite (/ feature?) inspiration
+- [ ] Take some inspiration from: https://fresh.deno.dev/ for README?
+- [ ] Update v1 and v2 version of website with a banner pointing to prettynice.dev for redirect to latest version
+- [ ] `npm install whatever` should be enough to make `whatever` available in client-side component `.js` files. (already works server-side).
+  - [ ] Add server and client js dependencies to docs (README and website).
+- [ ] Consider support for server-sent events
+- [ ] Update v3 website to point to new sections of the gren book where appropriate
 - [ ] Create a starter repo using [github templates](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository)
 - [ ] Video showing benefits of fullstack type safety: update view in client component and watch compiler guide you to changes all the way down to the server.
 - [ ] Example & documentation for building a SPA

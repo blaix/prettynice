@@ -150,6 +150,7 @@ startSimpleRouter config =
         { host = config.host
         , port_ = config.port_
         , env = config.env
+        , model = {}
         }
 
 {-| Start a router that was defined with [defineRouter](#defineRouter).
@@ -165,7 +166,8 @@ startRouter :
    { host : String
    , port_ : Int
    , env : Environment
-   } -> Init {} {}
+   , model : model
+   } -> Init model {}
 startRouter config =
     Init.await Http.initialize <| \serverPermission ->
         Init.await FileSystem.initialize <| \fsPermission ->
@@ -178,7 +180,7 @@ startRouter config =
                     , port_ = config.port_
                     , env = config.env
                     , fsPermission = fsPermission
-                    , appModel = {}
+                    , appModel = config.model
                     }
                 , command =
                     Task.attempt CreateServerResult <|

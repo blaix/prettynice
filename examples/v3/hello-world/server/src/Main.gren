@@ -1,0 +1,38 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+
+
+main : Prettynice.Program {} {}
+main =
+    Prettynice.defineSimpleRouter
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Prettynice.Init {} {}
+init env =
+    Prettynice.startSimpleRouter
+        { host = "0.0.0.0"
+        , port_ = 3000
+        , env = env
+        }
+
+
+{-| This router responds to every request with the same static text.
+
+See https://github.com/blaix/prettynice/tree/main/examples/v3/content-types
+for examples of sending other content types like html or json.
+
+Or https://github.com/blaix/prettynice/tree/main/examples/v3/routing
+for examples of sending different responses depending on the request.
+
+-}
+router : Request -> Response -> Response
+router request response =
+    response
+        |> Response.asText "Hello!"

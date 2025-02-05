@@ -3,7 +3,8 @@
   "packages": [
     "flyctl@latest",
     "just@latest",
-    "nodejs@20"
+    "nodejs@20",
+    "sqlite@latest"
   ],
   "shell": {
     "init_hook": [

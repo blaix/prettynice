@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import Init
 import Node exposing (Environment)
 import Prettynice
 import Prettynice.Request exposing (Request)
@@ -24,21 +25,23 @@ main =
 
 
 type alias Model =
-    { time : Maybe Time.Posix
-    , zone : Maybe Time.Zone
+    { time : Time.Posix
+    , zone : Time.Zone
     }
 
 
 
 init : Environment -> Prettynice.Init Model Msg
 init env =
-    Prettynice.startProgram
-        { env = env
-        , host = "127.0.0.1"
-        , port_ = 3000
-        , model = { time = Nothing, zone = Nothing }
-        , command = Time.here |> Task.perform GotZone
-        }
+    Init.awaitTask Time.here <| \zone ->
+    Init.awaitTask Time.now <| \time ->
+        Prettynice.startProgram
+            { env = env
+            , host = "127.0.0.1"
+            , port_ = 3000
+            , model = { time = time, zone = zone }
+            , command = Cmd.none
+            }
 
 
 -- ROUTER
@@ -57,43 +60,34 @@ viewTimePage model =
     , head = []
     , body =
         [ H.h1 [] [ H.text "Current Time" ]
-        , H.p []
-            [ H.text <|
-                case model of
-                    { time = Just time, zone = Just zone } ->
-                        [ Time.toHour zone time
-                        , Time.toMinute zone time
-                        , Time.toSecond zone time
-                        ]
-                            |> Array.map String.fromInt
-                            |> String.join ":"
-
-                    _ ->
-                        "Loading..."
-            ]
-        , H.p [] [ H.a [ A.href "/" ] [ H.text "reload" ] ]
+        , H.text (timeToString model)
         ]
     } 
+
+
+timeToString : Model -> String
+timeToString model =
+    [ Time.toHour model.zone model.time
+    , Time.toMinute model.zone model.time
+    , Time.toSecond model.zone model.time
+    ]
+       |> Array.map String.fromInt
+       |> Array.map (String.padLeft 2 '0')
+       |> String.join ":"
 
 
 -- UPDATE
 
 
 type Msg
-    = GotZone Time.Zone
-    | GotTime Time.Posix
+    = GotTime Time.Posix
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
-        GotZone zone ->
-            { model = { model | zone = Just zone }
-            , command = Cmd.none
-            }
-
         GotTime time ->
-            { model = { model | time = Just time }
+            { model = { model | time = time }
             , command = Cmd.none
             }
 

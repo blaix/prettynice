@@ -1,0 +1,103 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Time
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        , update = update
+        , subscriptions = subscriptions
+        }
+
+
+-- MODEL
+
+
+type alias Model =
+    { time : Maybe Time.Posix
+    , zone : Maybe Time.Zone
+    }
+
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startProgram
+        { env = env
+        , host = "127.0.0.1"
+        , port_ = 3000
+        , model = { time = Nothing, zone = Nothing }
+        , command = Time.here |> Task.perform GotZone
+        }
+
+
+-- ROUTER
+
+
+router : Model -> Request -> Response -> Task Never Response
+router model request response =
+    response
+        |> Response.asHtml (viewTimePage model)
+        |> Task.succeed
+
+
+viewTimePage : Model -> { title : String, head : Array (Html Msg), body :Array (Html Msg) }
+viewTimePage model =
+    { title = "Time Viewer"
+    , head = []
+    , body =
+        [ H.h1 [] [ H.text "Current Time" ]
+        , H.p []
+            [ H.text <|
+                case model of
+                    { time = Just time, zone = Just zone } ->
+                        [ Time.toHour zone time
+                        , Time.toMinute zone time
+                        , Time.toSecond zone time
+                        ]
+                            |> Array.map String.fromInt
+                            |> String.join ":"
+
+                    _ ->
+                        "Loading..."
+            ]
+        , H.p [] [ H.a [ A.href "/" ] [ H.text "reload" ] ]
+        ]
+    } 
+
+
+-- UPDATE
+
+
+type Msg
+    = GotZone Time.Zone
+    | GotTime Time.Posix
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotZone zone ->
+            { model = { model | zone = Just zone }
+            , command = Cmd.none
+            }
+
+        GotTime time ->
+            { model = { model | time = Just time }
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Time.every 1000 GotTime

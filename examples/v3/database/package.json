@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "scripts": {
+    "postinstall": "npx dbmate --url \"sqlite:db/dev.db\" up",
+    "dev": "npx concurrently --kill-others-on-fail npm:dev:*",
+    "dev:node": "npx nodemon",
+    "dev:db": "npx ws4sql --quick-db db/dev.db",
+    "start": "node dist/server/index.js"
+  },
+  "nodemonConfig": {
+    "exec": "npx prettynice build && npm start",
+    "ext": "js,json,gren",
+    "watch": [
+      "{client,server}/src/**/*",
+      "{client,server}/{gren,package}.json"
+    ]
+  },
+  "dependencies": {
+    "dbmate": "^2.25.0",
+    "gren-lang": "^0.4.5",
+    "prettynice": "file:../../../cli",
+    "ws4sql": "^0.17.0-dev2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.0"
+  }
+}

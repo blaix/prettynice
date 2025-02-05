@@ -1,0 +1,202 @@
+module Main exposing (main)
+
+import HttpClient
+import Init
+import Json.Encode as Encode
+import Json.Decode as Decode
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+type alias Model =
+    { httpPerm : HttpClient.Permission
+    }
+
+
+type alias User =
+    { id : Int
+    , name : String
+    }
+
+
+main : Prettynice.Program Model {}
+main =
+    Prettynice.defineRouter
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Prettynice.Init Model {}
+init env =
+    Init.await HttpClient.initialize <| \httpPerm -> 
+        Prettynice.startRouter
+            { host = "0.0.0.0"
+            , port_ = 3000
+            , env = env
+            , model = { httpPerm = httpPerm }
+            }
+
+
+router : Model -> Request -> Response -> Task Never Response
+router model request response =
+    case request.path of
+        [] ->
+            Response.asHtml viewHome response
+                |> Task.succeed
+
+        [ "users", userId ] ->
+            userId
+                |> String.toInt
+                |> Maybe.withDefault 0
+                |> getUser model.httpPerm
+                |> Task.map (userResultToResponse response)
+                |> Task.onError (queryErrorToResponse response)
+
+        _ ->
+            notFound response
+                |> Task.succeed
+
+
+getUser : 
+    HttpClient.Permission 
+    -> Int 
+    -> Task 
+        (HttpClient.Error (Array User))
+        (HttpClient.Response (Array User))
+getUser httpPerm userId =
+    HttpClient.post "http://localhost:12321/dev"
+        |> HttpClient.withJsonBody (userQuery userId)
+        |> HttpClient.expectJson decodeUserResult
+        |> HttpClient.send httpPerm
+
+
+userQuery : Int -> Encode.Value
+userQuery userId =
+    -- See https://germ.gitbook.io/ws4sqlite/documentation/requests
+    -- We want a request that looks like this:
+    --     { 
+    --         "transaction": [
+    --             {
+    --                 "query": "select * from User where id = ?",
+    --                 "values": [ userId ]
+    --             }
+    --         ]
+    --     }
+    Encode.object
+        [ { key = "transaction"
+          , value = Encode.array Encode.object
+            [ [ { key = "query"
+                , value = Encode.string "select * from User where id = ?"
+                }
+              , { key = "values"
+                , value = Encode.array Encode.int [ userId ]
+                }
+              ]
+            ]
+          }
+        ]
+
+
+decodeUserResult : Decode.Decoder (Array User)
+decodeUserResult =
+    -- See https://germ.gitbook.io/ws4sqlite/documentation/responses
+    -- We will get a response that looks like this:
+    --     {
+    --         "results": [
+    --             {
+    --                 ...
+    --                 "resultSet": [
+    --                     { "id": 1, "name": "Justin" }
+    --                 ]
+    --             }
+    --          ]
+    --     }
+    Decode.map Array.flatten <|
+        Decode.field "results" <|
+            Decode.array <|
+                Decode.field "resultSet" <|
+                    Decode.array <|
+                        Decode.map2 makeUser
+                            (Decode.field "id" Decode.int)
+                            (Decode.field "name" Decode.string)
+
+
+makeUser : Int -> String -> User
+makeUser id name =
+    { id = id, name = name }
+
+
+userResultToResponse : Response -> HttpClient.Response (Array User) -> Response
+userResultToResponse response result =
+    case result.data of
+        [ user ] ->
+            Response.asHtml (viewUser user) response
+
+        _ ->
+            notFound response
+
+
+queryErrorToResponse : Response -> HttpClient.Error (Array User) -> Task Never Response
+queryErrorToResponse response error =
+    response
+        -- In a real app you'll want a real error message
+        |> Response.asText (Debug.toString error)
+        |> Response.setStatus 500
+        |> Task.succeed
+
+
+viewUser : User -> { title : String, head : Array (Html {}), body : Array (Html {}) }
+viewUser user =
+    { title = "User Details"
+    , head = []
+    , body = 
+        [ H.p []
+            [ H.text (String.fromInt user.id)
+            , H.text ": "
+            , H.text user.name
+            ]
+        , H.p []
+            [ H.a [ A.href "/" ]
+                [ H.text "Home" ]
+            ]
+        ]
+    }
+
+
+viewHome : { title : String, head : Array (Html {}), body : Array (Html {}) }
+viewHome =
+    { title = "Home"
+    , head = []
+    , body =
+        [ H.ul []
+            [ H.li []
+                [ H.a
+                    [ A.href "/users/1" ]
+                    [ H.text "user 1" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/2" ]
+                    [ H.text "user 2" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/3" ]
+                    [ H.text "user 3" ]
+                ]
+            ]
+        ]
+    }
+
+
+notFound : Response -> Response
+notFound response =
+    response
+        |> Response.setStatus 404
+        |> Response.asText "not found"

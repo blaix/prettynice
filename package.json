@@ -1,13 +1,10 @@
 {
   "private": true,
-  "scripts": {
-    "docs": "npx gren-doc-preview"
-  },
   "dependencies": {
     "gren-lang": "^0.4.5",
     "prettynice": "file:cli"
   },
   "devDependencies": {
-    "gren-packages": "^3.2.0"
+    "gren-packages": "^4.0.0"
   }
 }

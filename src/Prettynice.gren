@@ -1,33 +1,18 @@
 module Prettynice exposing 
     ( Program
     , Init
-
-    -- Define your program
-    , defineSimpleRouter
-    , defineRouter
     , defineProgram
-
-    -- Start your program
-    , startSimpleRouter
-    , startRouter
     , startProgram
     )
 
  
 {-| Full stack web framework for Gren.
 
-Programs are defined similar to [regular gren node applications](https://gren-lang.org/book/applications/node/)
-but with the addition of a `router` function that handles requests.
-
-There are three ways to define your program:
-
-* [`defineSimpleRouter`](#defineSimpleRouter): When you only need to respond to requests without any tasks or server-side state.
-* [`defineRouter`](#defineRouter): similar to the above, but lets you resolve server-side tasks before sending a response. So you can interact with the fileystem, network, databases, etc.
-* [`defineProgram`](#defineProgram): similar to the above, but gives you access to the full [Elm Architecture](https://gren-lang.org/book/applications/tea/) with server-side state and event handling.
-
-Migrating your application from one level to another is mostly additive, so choose the version that works for your simplest use case to get started.
-
-(TODO: update examples to include the three types of programs and link to them here.)
+This module mainly provides the functions to define and start your web server.
+Prettynice also has the concept of client-side components, and other APIs for common web needs.
+For an overview of full functionality, see [the project README](https://github.com/blaix/prettynice?tab=readme-ov-file#pretty-nice-framework),
+the [documentation site](https://prettynice.dev),
+or the [examples](https://github.com/blaix/prettynice/tree/main/examples).
 
 -}
 
@@ -58,9 +43,6 @@ type alias Model appModel =
     }
 
 
--- DEFINITIONS
-
-
 {-| The definition of your Prettynice program.
 -}
 type alias Program appModel appMsg =
@@ -73,50 +55,10 @@ type alias Init appModel appMsg =
     Init.Task { model : Model appModel, command : Cmd (Msg appModel appMsg) }
 
 
-{-| Define a simple router for responding to requests.
-
-The router is stateless and cannot trigger effects.
-
-TODO: link to example
--}
-defineSimpleRouter :
-    { init : Environment -> Init {} {}
-    , router : Request -> Response -> Response
-    } -> Program {} {}
-defineSimpleRouter app =
-    let
-        router _ request response =
-            app.router request response
-                |> Task.succeed
-    in
-    defineRouter 
-        { init = app.init
-        , router = router
-        }
-
-
-{-| Define a router that can depend on tasks.
-
-TODO: link to example
--}
-defineRouter :
-    { init : Environment -> Init appModel {}
-    , router : appModel -> Request -> Response -> Task Never Response
-    } -> Program appModel {}
-defineRouter app =
-    Node.defineProgram
-        { init = app.init
-        , update = update { router = app.router, update = Nothing }
-        , subscriptions = subscriptions (\_ -> Sub.none)
-        }
-
-
 {-| Define a Prettynice program.
 
-If you don't need the full model/update/view cycle,
-you probably want a [router](#defineRouter) or [simple router](#defineSimpleRouter) instead.
-
-TODO: link to example
+Programs are defined similar to [regular gren node applications](https://gren-lang.org/book/applications/node/)
+but with the addition of a `router` function that handles requests.
 -}
 defineProgram :
     { init : Environment -> Init appModel appMsg
@@ -132,73 +74,12 @@ defineProgram app =
         }
 
 
--- STARTUP
-
-{-| Start a simple router that was defined with [defineSimpleRouter](#defineSimpleRouter).
-
-This creates the init task you can return from your `init` function.
-
-TODO: link to example
--}
-startSimpleRouter :
-   { host : String
-   , port_ : Int
-   , env : Environment
-   } -> Init {} {}
-startSimpleRouter config =
-    startRouter
-        { host = config.host
-        , port_ = config.port_
-        , env = config.env
-        , model = {}
-        }
-
-{-| Start a router that was defined with [defineRouter](#defineRouter).
+{-| Start a Prettynice program that was defined with [defineProgram](#defineProgram).
 
 This creates the init task you can return from your `init` function.
 
 You can wrap this in an [Init.await/awaitTask](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Init#await)
 if you need to run a task or initialize any subsystems before starting.
-
-TODO: link to example
--}
-startRouter :
-   { host : String
-   , port_ : Int
-   , env : Environment
-   , model : model
-   } -> Init model {}
-startRouter config =
-    Init.await Http.initialize <| \serverPermission ->
-        Init.await FileSystem.initialize <| \fsPermission ->
-            Node.startProgram
-                { model =
-                    { server = Nothing
-                    , stdout = config.env.stdout
-                    , stderr = config.env.stderr
-                    , host = config.host
-                    , port_ = config.port_
-                    , env = config.env
-                    , fsPermission = fsPermission
-                    , appModel = config.model
-                    }
-                , command =
-                    Task.attempt CreateServerResult <|
-                        Http.createServer serverPermission
-                            { host = config.host
-                            , port_ = config.port_
-                            }
-                }
-
-
-{-| Start your program that was defined with [defineProgram](#defineProgram).
-
-This creates the init task you can return from your `init` function.
-
-You can wrap this in an [Init.await/awaitTask](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Init#await)
-if you need to run a task or initialize any subsystems before starting.
-
-TODO: link to example
 -}
 startProgram :
     { host : String

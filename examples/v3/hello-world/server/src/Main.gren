@@ -4,35 +4,54 @@ import Node exposing (Environment)
 import Prettynice
 import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
 
 
-main : Prettynice.Program {} {}
+main : Prettynice.Program Model Msg
 main =
-    Prettynice.defineSimpleRouter
+    Prettynice.defineProgram
         { init = init
+        , update = update
+        , subscriptions = subscriptions
         , router = router
         }
 
 
-init : Environment -> Prettynice.Init {} {}
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model Msg
 init env =
-    Prettynice.startSimpleRouter
-        { host = "0.0.0.0"
+    Prettynice.startProgram
+        { env = env
+        , host = "0.0.0.0"
         , port_ = 3000
-        , env = env
+        , model = {}
+        , command = Cmd.none
         }
 
 
-{-| This router responds to every request with the same static text.
-
-See https://github.com/blaix/prettynice/tree/main/examples/v3/content-types
-for examples of sending other content types like html or json.
-
-Or https://github.com/blaix/prettynice/tree/main/examples/v3/routing
-for examples of sending different responses depending on the request.
-
--}
-router : Request -> Response -> Response
-router request response =
+router : Model -> Request -> Response -> Task Never Response
+router model request response =
     response
         |> Response.asText "Hello!"
+        |> Task.succeed
+
+
+
+type Msg =
+    NoOp
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        NoOp ->
+            { model = model
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

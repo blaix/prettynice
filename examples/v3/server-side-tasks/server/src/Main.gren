@@ -12,24 +12,22 @@ import Transmutable.Html.Attributes as A
 
 main : Prettynice.Program {} {}
 main =
-    Prettynice.defineRouter
+    Prettynice.defineProgram
         { init = init
         , router = router
+        , update = update
+        , subscriptions = subscriptions
         }
 
 
 init : Environment -> Prettynice.Init {} {}
 init env =
-    -- Note: You can initialize subsystems here and pass values to your router via the model if needed.
-    -- See https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Init for details on initializing subsystems.
-    -- But here we're just starting the program with an empty model.
-    -- For an example of initializing a subsystem in a Prettynice router program, see:
-    -- TODO: link to filesystem example that does this.
-    Prettynice.startRouter
+    Prettynice.startProgram
         { env = env
         , host = "127.0.0.1"
         , port_ = 3000
         , model = {}
+        , command = Cmd.none
         }
 
 
@@ -60,3 +58,23 @@ viewTimePage time zone =
         , H.text timeString
         ]
     } 
+
+
+-- No model, update, or subs needed for this example.
+-- See server-side-tea example for an app that uses these.
+
+
+type alias Model = {}
+type alias Msg = {}
+
+
+update : Model -> Msg -> { model : Model, command : Cmd Msg }
+update msg model =
+    { model = model
+    , command = Cmd.none
+    }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

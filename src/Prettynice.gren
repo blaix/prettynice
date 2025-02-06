@@ -2,7 +2,9 @@ module Prettynice exposing
     ( Program
     , Init
     , defineProgram
+    , defineProgramRecord
     , startProgram
+    , startProgramRecord
     )
 
  
@@ -12,7 +14,21 @@ This module mainly provides the functions to define and start your web server.
 Prettynice also has the concept of client-side components, and other APIs for common web needs.
 For an overview of full functionality, see [the project README](https://github.com/blaix/prettynice?tab=readme-ov-file#pretty-nice-framework),
 the [documentation site](https://prettynice.dev),
-or the [examples](https://github.com/blaix/prettynice/tree/main/examples).
+and the [examples](https://github.com/blaix/prettynice/tree/main/examples).
+
+## Define and Start a Prettynice Server
+
+@docs Program, defineProgram, Init, startProgram
+
+## More Control
+
+If you want total control over how your app is defined and started,
+or guarantees that Prettynice only has access to the subsystem permissions you provide,
+you can use these functions and pass the resulting records to
+[Node.defineProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram)
+and [Node.startProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#startProgram) yourself.
+
+@docs defineProgramRecord, startProgramRecord
 
 -}
 
@@ -59,6 +75,10 @@ type alias Init appModel appMsg =
 
 Programs are defined similar to [regular gren node applications](https://gren-lang.org/book/applications/node/)
 but with the addition of a `router` function that handles requests.
+
+If you don't want Prettynice to define your program for you,
+or you want more control over how your program is defined,
+see (Prettynice.defineProgramRecord)[#defineProgramRecord].
 -}
 defineProgram :
     { init : Environment -> Init appModel appMsg
@@ -67,11 +87,39 @@ defineProgram :
     , router : appModel -> Request -> Response -> Task Never Response
     } -> Program appModel appMsg
 defineProgram app =
-    Node.defineProgram
-        { init = app.init
-        , update = update { router = app.router, update = Just app.update }
-        , subscriptions = subscriptions app.subscriptions
-        }
+    Node.defineProgram <|
+        defineProgramRecord app
+
+
+{-| Create a record that can be passed to [Node.defineProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram)
+to define a Prettynice program. For example:
+
+    main =
+        Node.defineProgram <|
+            Prettynice.defineProgramRecord
+                { init = init
+                , update = update
+                , subscriptions = subscriptions
+                , router = router
+                }
+
+This is a more explicit alternative to (Prettynice.defineProgram)[#defineProgram].
+-}
+defineProgramRecord :    
+    { init : Environment -> Init appModel appMsg
+    , update : appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
+    , subscriptions : appModel -> Sub appMsg
+    , router : appModel -> Request -> Response -> Task Never Response
+    } -> 
+    { init : Environment -> Init appModel appMsg
+    , update : Msg appModel appMsg -> Model appModel -> { model : Model appModel, command : Cmd (Msg appModel appMsg) }
+    , subscriptions : Model appModel -> Sub (Msg appModel appMsg)
+    }
+defineProgramRecord app =
+    { init = app.init
+    , update = update { router = app.router, update = Just app.update }
+    , subscriptions = subscriptions app.subscriptions
+    }
 
 
 {-| Start a Prettynice program that was defined with [defineProgram](#defineProgram).
@@ -80,6 +128,10 @@ This creates the init task you can return from your `init` function.
 
 You can wrap this in an [Init.await/awaitTask](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Init#await)
 if you need to run a task or initialize any subsystems before starting.
+
+If you don't want Prettynice to start your program for you,
+or you want more control over how your program is started,
+see (Prettynice.startProgramRecord)[#startProgramRecord].
 -}
 startProgram :
     { host : String
@@ -90,28 +142,80 @@ startProgram :
     } -> Init appModel appMsg
 startProgram config =
     Init.await Http.initialize <| \serverPermission ->
-        Init.await FileSystem.initialize <| \fsPermission ->
-            Node.startProgram
-                { model =
-                    { server = Nothing
-                    , stdout = config.env.stdout
-                    , stderr = config.env.stderr
-                    , host = config.host
-                    , port_ = config.port_
-                    , env = config.env
-                    , appModel = config.model
-                    , fsPermission = fsPermission
+    Init.await FileSystem.initialize <| \fsPermission ->
+        Node.startProgram <|
+            startProgramRecord
+                { env = config.env
+                , host = config.host
+                , port_ = config.port_
+                , model = config.model
+                , command = config.command
+                , permissions =
+                    { fileSystem = fsPermission
+                    , server = serverPermission
                     }
-                , command =
-                    Cmd.batch
-                        [ Cmd.map MsgToApp config.command
-                        , Task.attempt CreateServerResult <|
-                            Http.createServer serverPermission
-                                { host = config.host
-                                , port_ = config.port_
-                                }
-                        ]
                 }
+
+
+{-| Create a record that can be passed to [Node.startProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#startProgram)
+to start a Prettynice program. For example:
+
+
+    init env =
+        Init.await FilesSystem.initialize <| \fsPermission ->
+        Init.await HttpServer.initialize <| \serverPermission ->
+            Node.startProgram <|
+                Prettynice.startProgramRecord
+                    { env = env
+                    , host = "localhost"
+                    , port_ = 3000
+                    , model = {}
+                    , command = Cmd.none
+                    , permissions =
+                        { server = serverPermission
+                        , fileSystem = fsPermission
+                        }
+                    }
+
+
+This is a more explicit alternative to (Prettynice.startProgram)[#startProgram]
+and a way to guarantee Prettynice only has access to the subsystems you are explicitly providing.
+-}
+startProgramRecord :
+    { host : String
+    , port_ : Int
+    , env : Environment
+    , model : appModel
+    , command : Cmd appMsg
+    , permissions :
+        { fileSystem : FileSystem.Permission
+        , server : Http.Permission
+        }
+    } ->
+    { model : Model appModel
+    , command : Cmd (Msg appModel appMsg)
+    }
+startProgramRecord config =
+    { model =
+        { server = Nothing
+        , stdout = config.env.stdout
+        , stderr = config.env.stderr
+        , host = config.host
+        , port_ = config.port_
+        , env = config.env
+        , appModel = config.model
+        , fsPermission = config.permissions.fileSystem
+        }
+    , command =
+        Cmd.batch
+            [ Cmd.map MsgToApp config.command
+            , Task.attempt CreateServerResult <|
+                Http.createServer config.permissions.server
+                    { host = config.host
+                    , port_ = config.port_
+                    }
+            ]
+    }
 
 
 -- UPDATE

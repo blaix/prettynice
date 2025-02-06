@@ -9,6 +9,9 @@ example NAME:
 examples:
   for example in `ls examples/v3`; do just example $example; done
 
+docs:
+  npx gren-doc-preview
+
 cli CMD="" OPT="":
   rm -rf node_modules/prettynice
   just build-cli

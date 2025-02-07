@@ -47,9 +47,9 @@ fromString body =
     body
         |> String.split "&"
         |> Array.map (String.split "=")
-        |> Array.filterMap
+        |> Array.mapAndKeepJust
             (\field ->
-                case field of
+                when field is
                     [ name, value ] ->
                         decode name value
 

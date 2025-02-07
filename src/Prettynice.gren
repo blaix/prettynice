@@ -32,6 +32,7 @@ and [Node.startProgram](https://packages.gren-lang.org/package/gren-lang/node/ve
 
 -}
 
+import Bytes exposing (Bytes)
 import FileSystem
 import HttpServer as Http exposing (ServerError(..), Method(..))
 import HttpServer.Response as HttpResponse 
@@ -40,7 +41,7 @@ import Node exposing (Environment, Program)
 import Prettynice.Request exposing (Request)
 import Prettynice.Response exposing (Response)
 import Server.Static as Static exposing (Mode(..))
-import Stream exposing (Stream)
+import Stream
 import Task exposing (Task)
 import Transmutable.Html as H
 import Transmutable.Html.Attributes as A
@@ -49,8 +50,8 @@ import Url exposing (Url)
 
 type alias Model appModel =
     { server : Maybe Http.Server
-    , stdout : Stream
-    , stderr : Stream
+    , stdout : Stream.Writable Bytes
+    , stderr : Stream.Writable Bytes
     , host : String
     , port_ : Int
     , env : Environment
@@ -223,9 +224,17 @@ startProgramRecord config =
 
 type Msg appModel appMsg
     = CreateServerResult (Result Http.ServerError Http.Server)
-    | GotRequest Http.Request HttpResponse.Response
+    | GotRequest { request : Http.Request, response : HttpResponse.Response }
     | ResponseReady Response
     | MsgToApp appMsg
+
+
+makeGotRequestMsg : Http.Request -> HttpResponse.Response -> Msg appModel appMsg
+makeGotRequestMsg request response =
+    GotRequest
+        { request = request
+        , response = response
+        }
 
 
 type alias AppUpdate appModel appMsg =
@@ -240,25 +249,23 @@ update :
     -> Model appModel
     -> { model : Model appModel, command : Cmd (Msg appModel appMsg) }
 update appUpdate msg model =
-    case msg of
+    when msg is
         CreateServerResult result ->
-            case result of
+            when result is
                 Ok server ->
                     { model = { model | server = Just server }
                     , command = 
-                        Task.execute <|
-                            Stream.sendLine model.stdout <|
-                                "Server started on http://" ++ model.host ++ ":" ++ String.fromInt model.port_
+                        print model.stdout <|
+                            "Server started on http://" ++ model.host ++ ":" ++ String.fromInt model.port_
                     }
-                Err (ServerError code message) ->
+                Err (ServerError { code, message }) ->
                     { model = model
                     , command = 
-                        Task.execute <|
-                            Stream.sendLine model.stderr <|
-                                "Server failed to start: " ++ code ++ "\n" ++ message
+                        print model.stderr <|
+                            "Server failed to start: " ++ code ++ "\n" ++ message
                     }
         
-        GotRequest req res ->
+        GotRequest { request = req, response = res } ->
             let
                 request = 
                     Prettynice.Request.new req
@@ -297,7 +304,7 @@ update appUpdate msg model =
             }
 
         MsgToApp appMsg ->
-            case appUpdate.update of
+            when appUpdate.update is
                 Nothing ->
                     -- non-programs can't receive messages
                     { model = model
@@ -316,12 +323,15 @@ update appUpdate msg model =
 
 {-| Log a request with a custom message if task succeeds.
 -}
-logSuccess : Stream -> Http.Request -> String -> Task x a -> Task x a
+logSuccess : Stream.Writable Bytes -> Http.Request -> String -> Task x a -> Task x a
 logSuccess stream request message task =
     let
-        printMsg =
+        fullMessage =
             Http.requestInfo request ++ " : " ++ message
-                |> Stream.sendLine stream
+
+        printMsg =
+            Stream.writeLineAsBytes fullMessage stream
+                |> Task.onError (\_ -> Task.succeed stream)
     in
     task
         |> Task.andThen
@@ -336,12 +346,22 @@ logSuccess stream request message task =
 
 subscriptions : (appModel -> Sub appMsg) -> Model appModel -> Sub (Msg appModel appMsg)
 subscriptions appSubs model =
-    case model.server of
+    when model.server is
         Just server ->
             Sub.batch
-                [ Http.onRequest server GotRequest
+                [ Http.onRequest server makeGotRequestMsg
                 , Sub.map MsgToApp <| appSubs model.appModel
                 ]
 
         Nothing ->
             Sub.none
+
+
+-- UTIL
+
+
+print : Stream.Writable Bytes -> String -> Cmd (Msg appModel appMsg)
+print stream string =
+    Stream.writeLineAsBytes string stream
+        |> Task.onError (\_ -> Task.succeed stream)
+        |> Task.execute

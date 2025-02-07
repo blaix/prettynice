@@ -94,7 +94,7 @@ addFieldSig name fieldType sigs =
 
 fieldTypeToString : FieldType -> String
 fieldTypeToString fieldType =
-    case fieldType of
+    when fieldType is
         IntType ->
             "Int"
 
@@ -150,7 +150,7 @@ addFieldEncoder name fieldType encoders =
 
 fieldTypeToEncoder : FieldType -> String
 fieldTypeToEncoder fieldType =
-    case fieldType of
+    when fieldType is
         IntType ->
             "Encode.int"
 

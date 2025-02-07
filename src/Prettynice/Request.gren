@@ -46,7 +46,7 @@ new request =
     , path = 
         request.url.path
             |> String.split "/"
-            |> Array.filter (\s -> s /= "")
+            |> Array.keepIf (\s -> s /= "")
     }
 
 

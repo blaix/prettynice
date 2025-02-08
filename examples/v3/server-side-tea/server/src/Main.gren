@@ -85,7 +85,7 @@ type Msg
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
-    case msg of
+    when msg is
         GotTime time ->
             { model = { model | time = time }
             , command = Cmd.none

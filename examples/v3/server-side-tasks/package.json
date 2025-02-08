@@ -13,7 +13,7 @@
     ]
   },
   "dependencies": {
-    "gren-lang": "^0.4.5",
+    "gren-lang": "^0.5.2",
     "prettynice": "file:../../../cli"
   },
   "devDependencies": {

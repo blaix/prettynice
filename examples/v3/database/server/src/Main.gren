@@ -26,26 +26,29 @@ type alias User =
 
 main : Prettynice.Program Model {}
 main =
-    Prettynice.defineRouter
+    Prettynice.defineProgram
         { init = init
         , router = router
+        , update = update
+        , subscriptions = subscriptions
         }
 
 
 init : Environment -> Prettynice.Init Model {}
 init env =
     Init.await HttpClient.initialize <| \httpPerm -> 
-        Prettynice.startRouter
+        Prettynice.startProgram
             { host = "0.0.0.0"
             , port_ = 3000
             , env = env
             , model = { httpPerm = httpPerm }
+            , command = Cmd.none
             }
 
 
 router : Model -> Request -> Response -> Task Never Response
 router model request response =
-    case request.path of
+    when request.path is
         [] ->
             Response.asHtml viewHome response
                 |> Task.succeed
@@ -134,7 +137,7 @@ makeUser id name =
 
 userResultToResponse : Response -> HttpClient.Response (Array User) -> Response
 userResultToResponse response result =
-    case result.data of
+    when result.data is
         [ user ] ->
             Response.asHtml (viewUser user) response
 
@@ -200,3 +203,18 @@ notFound response =
     response
         |> Response.setStatus 404
         |> Response.asText "not found"
+
+
+type alias Msg = {}
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    { model = model
+    , command = Cmd.none
+    }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

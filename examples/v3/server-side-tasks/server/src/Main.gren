@@ -10,7 +10,7 @@ import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
 
 
-main : Prettynice.Program {} {}
+main : Prettynice.Program Model Msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -20,7 +20,7 @@ main =
         }
 
 
-init : Environment -> Prettynice.Init {} {}
+init : Environment -> Prettynice.Init Model Msg
 init env =
     Prettynice.startProgram
         { env = env
@@ -31,7 +31,7 @@ init env =
         }
 
 
-router : {} -> Request -> Response -> Task Never Response
+router : Model -> Request -> Response -> Task Never Response
 router _ request response =
     Task.await Time.now <| \time ->
     Task.await Time.here <| \zone ->
@@ -39,7 +39,7 @@ router _ request response =
             Response.asHtml (viewTimePage time zone) response
 
 
-viewTimePage : Time.Posix -> Time.Zone -> { title : String, head : Array (Html {}), body :Array (Html {}) }
+viewTimePage : Time.Posix -> Time.Zone -> { title : String, head : Array (Html Msg), body :Array (Html Msg) }
 viewTimePage time zone =
     let
         timeString =

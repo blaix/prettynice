@@ -3,7 +3,7 @@ green := '\033[0;32m'
 nc := '\033[0m' # No Color
 
 example NAME:
-  @just header "RUNNING EXAMPLE: next/{{NAME}}"
+  @just header "RUNNING EXAMPLE: v3/{{NAME}}"
   cd examples/v3/{{NAME}} && npm install && npm run dev
 
 examples:
@@ -21,7 +21,7 @@ cli CMD="" OPT="":
 build-cli:
   cd cli && npm install && npx gren make src/Main.gren --optimize --output=bin/main.js
   # Force a reinstall in examples
-  for example in `ls examples/next`; do rm -rf examples/next/$example/node_modules; done
+  for example in `ls examples/v3`; do rm -rf examples/v3/$example/node_modules; done
 
 build-cli-debug:
   cd cli && npx gren make src/Main.gren --output=bin/main.js

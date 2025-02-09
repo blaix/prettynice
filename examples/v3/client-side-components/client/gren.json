@@ -11,8 +11,8 @@
             "gren-lang/browser": "5.0.0",
             "gren-lang/core": "6.0.1",
             "gren-lang/url": "5.0.0",
-            "icidasset/html-gren": "local:../../../../../html-gren/html-gren",
-            "icidasset/html-virtualdom-gren": "local:../../../../../html-gren/html-virtualdom-gren"
+            "icidasset/html-gren": "5.0.0",
+            "icidasset/html-virtualdom-gren": "1.1.1"
         },
         "indirect": {
             "gren-lang/parser": "5.0.0"

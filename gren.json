@@ -18,7 +18,7 @@
         "gren-lang/node": "5.0.0 <= v < 6.0.0",
         "gren-lang/parser": "5.0.0 <= v < 6.0.0",
         "gren-lang/url": "5.0.0 <= v < 6.0.0",
-        "icidasset/html-gren": "4.2.0 <= v < 5.0.0",
+        "icidasset/html-gren": "5.0.0 <= v < 6.0.0",
         "joeybright/gren-static-serve": "3.0.0 <= v < 4.0.0"
     }
 }

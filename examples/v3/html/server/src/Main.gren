@@ -1,0 +1,69 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , router = router
+        }
+
+
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startProgram
+        { env = env
+        , host = "0.0.0.0"
+        , port_ = 3000
+        , model = {}
+        , command = Cmd.none
+        }
+
+
+router : Model -> Request -> Response -> Task Never Response
+router model request response =
+    response
+        |> viewHome
+        |> Task.succeed
+
+
+viewHome : Response -> Response
+viewHome =
+    Response.asHtml
+        { title = "My Website"
+        , head = []
+        , body =
+            [ H.h1 [] [ H.text "Welcome" ]
+            , H.p [] [ H.text "It's a website!" ]
+            ]
+        }
+
+
+type Msg =
+    NoOp
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        NoOp ->
+            { model = model
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

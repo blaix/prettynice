@@ -1,0 +1,22 @@
+{
+    "type": "application",
+    "platform": "node",
+    "source-directories": [
+        "src",
+        ".prettynice"
+    ],
+    "gren-version": "0.5.2",
+    "dependencies": {
+        "direct": {
+            "blaix/prettynice": "local:../../../..",
+            "gren-lang/core": "6.0.1",
+            "gren-lang/node": "5.0.0",
+            "icidasset/html-gren": "5.0.0"
+        },
+        "indirect": {
+            "gren-lang/parser": "5.0.0",
+            "gren-lang/url": "5.0.0",
+            "joeybright/gren-static-serve": "3.0.0"
+        }
+    }
+}

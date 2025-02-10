@@ -1,0 +1,124 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H
+import Transmutable.Html.Attributes as A
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , router = router
+        }
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startProgram
+        { env = env
+        , host = "0.0.0.0"
+        , port_ = 3000
+        , model = {}
+        , command = Cmd.none
+        }
+
+
+router : Model -> Request -> Response -> Task Never Response
+router model request response =
+    response
+        |> routeRequest request
+        |> Task.succeed
+
+
+routeRequest : Request -> Response -> Response
+routeRequest request =
+    when request.path is
+        [] ->
+            viewHome
+
+        [ "about" ] ->
+            viewAbout
+            
+        [ "users", userId ] -> 
+            viewUser userId
+
+        _ ->
+            viewNotFound
+
+
+viewHome : Response -> Response
+viewHome =
+    Response.asHtml
+        { title = "Home"
+        , head = []
+        , body =
+            [ H.h1 [] [ H.text "Home" ]
+            , H.ul []
+                [ H.li [] [ H.a [ A.href "/about" ] [ H.text "About" ] ]
+                , H.li [] [ H.a [ A.href "/users/123" ] [ H.text "View User" ] ]
+                ]
+            ]
+        }
+
+
+viewAbout : Response -> Response
+viewAbout =
+    Response.asHtml
+        { title = "About"
+        , head = []
+        , body =
+            [ H.p [] [ H.text "It's a website." ]
+            , H.a [ A.href "/" ] [ H.text "Home" ]
+            ]
+        }
+
+
+viewUser : String -> Response -> Response
+viewUser userId =
+    Response.asHtml
+        { title = "User"
+        , head = []
+        , body =
+            [ H.p [] [ H.text ("User id: " ++ userId) ]
+            , H.a [ A.href "/" ] [ H.text "Home" ]
+            ]
+        }
+
+
+viewNotFound : Response -> Response
+viewNotFound response =
+    response
+        |> Response.setStatus 404
+        |> Response.asText "Not Found"
+
+
+-- Model/Update/Subscriptions are not needed for this example.
+-- See the server-side-tea example for a program that uses those.
+
+
+type alias Model = {}
+
+
+type Msg =
+    NoOp
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        NoOp ->
+            { model = model
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

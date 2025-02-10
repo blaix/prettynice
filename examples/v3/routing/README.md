@@ -1,4 +1,4 @@
-# Bare Bones Example
+# Example routing URL paths on the server
 
 See [`server/src/Main.gren`](server/src/Main.gren).
 

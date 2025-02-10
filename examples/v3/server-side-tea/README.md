@@ -2,7 +2,8 @@
 
 This is an example of using the full [Elm Architecture](https://gren-lang.org/book/applications/tea/) with Prettynice.
 
-Instead of just routing requests, it also gets the existingt time zone, and has a subscription to update the server-side model with the current time.
+Instead of just routing requests, it also gets the existing time zone,
+and has a subscription to update the server-side model with the current time every second.
 
 See [`server/src/Main.gren`](server/src/Main.gren)
 

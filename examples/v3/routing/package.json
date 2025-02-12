@@ -2,11 +2,12 @@
   "private": true,
   "scripts": {
     "dev": "npx nodemon",
-    "build": "npx prettynice build --optimize",
+    "build:dev": "npx prettynice build",
+    "build:prod": "npx prettynice build --optimize",
     "start": "node dist/server/index.js"
   },
   "nodemonConfig": {
-    "exec": "npx prettynice build && npm start",
+    "exec": "npm run build:dev && npm start",
     "ext": "js,gren",
     "watch": [
       "{client,server}/src/**/*"

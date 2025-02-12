@@ -1,0 +1,67 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+
+main : Prettynice.Program Model {}
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        , update = (\_ model -> { model = model, command = Cmd.none })
+        , subscriptions = (\_ -> Sub.none)
+        }
+
+
+init : Environment -> Prettynice.Init Model {}
+init env =
+    Prettynice.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        , model = {}
+        , command = Cmd.none
+        }
+
+
+type alias Model = {}
+
+
+router : Model -> Request -> Response -> Task Never Response
+router model request response =
+    response
+        |> Response.asHtml
+            { title = "Static asset example"
+            , head = head
+            , body = body
+            }
+        |> Task.succeed
+
+
+head : Array (Html msg)
+head =
+    [ H.link 
+        [ A.rel "stylesheet", A.href "/css/pico.min.css" ]
+    ]
+
+body : Array (Html msg)
+body =
+    [ H.main_ [ A.class "container" ]
+        [ H.h1 [] [ H.text "Welcome to my styled website" ]
+        , H.article []
+            [ H.header [] [ H.text "My Essay on George Washington" ]
+            , H.figure []
+                [ H.img [ A.src "/img/george-in-tub.jpeg" ] []
+                , H.figcaption [] [ H.text "Photo taken in Berkeley Springs, WV" ]
+                ]
+            , H.footer [] [ H.text "In conclusion, the end." ]
+            ]
+        ]
+    ]

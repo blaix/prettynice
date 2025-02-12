@@ -9,20 +9,20 @@ import Task exposing (Task)
 import Transmutable.Html as H
 
 
-main : Prettynice.Program Model Msg
+main : Prettynice.Program Model {}
 main =
     Prettynice.defineProgram
         { init = init
-        , update = update
-        , subscriptions = subscriptions
         , router = router
+        , update = (\_ model -> { model = model, command = Cmd.none })
+        , subscriptions = (\_ -> Sub.none)
         }
 
 
 type alias Model = {}
 
 
-init : Environment -> Prettynice.Init Model Msg
+init : Environment -> Prettynice.Init Model {}
 init env =
     Prettynice.startProgram
         { env = env
@@ -39,21 +39,3 @@ router model request response =
         |> Response.asJson
             (Encode.array Encode.int [1, 2, 3])
         |> Task.succeed
-
-
-type Msg =
-    NoOp
-
-
-update : Msg -> Model -> { model : Model, command : Cmd Msg }
-update msg model =
-    when msg is
-        NoOp ->
-            { model = model
-            , command = Cmd.none
-            }
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none

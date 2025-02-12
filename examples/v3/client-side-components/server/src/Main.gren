@@ -12,17 +12,20 @@ import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
 
 
-main : Prettynice.Program Model Msg
+main : Prettynice.Program Model {}
 main =
     Prettynice.defineProgram
         { init = init
         , router = router
-        , update = update
-        , subscriptions = subscriptions
+        , update = (\_ model -> { model = model, command = Cmd.none })
+        , subscriptions = (\_ -> Sub.none)
         }
 
 
-init : Environment -> Prettynice.Init Model Msg
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model {}
 init env =
     Prettynice.startProgram
         { host = "127.0.0.1"
@@ -56,22 +59,3 @@ router model request response =
                 ]
             }
         |> Task.succeed
-
-
--- model/update/subs not needed for this example
-
-
-type alias Model = {}
-type alias Msg = {}
-
-
-update : Msg -> Model -> { model : Model, command : Cmd Msg }
-update msg model =
-    { model = model
-    , command = Cmd.none
-    }
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none

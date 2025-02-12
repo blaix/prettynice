@@ -10,17 +10,20 @@ import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
 
 
-main : Prettynice.Program Model Msg
+main : Prettynice.Program Model {}
 main =
     Prettynice.defineProgram
         { init = init
         , router = router
-        , update = update
-        , subscriptions = subscriptions
+        , update = (\_ model -> { model = model, command = Cmd.none })
+        , subscriptions = (\_ -> Sub.none)
         }
 
 
-init : Environment -> Prettynice.Init Model Msg
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model {}
 init env =
     Prettynice.startProgram
         { env = env
@@ -39,7 +42,7 @@ router _ request response =
             Response.asHtml (viewTimePage time zone) response
 
 
-viewTimePage : Time.Posix -> Time.Zone -> { title : String, head : Array (Html Msg), body :Array (Html Msg) }
+viewTimePage : Time.Posix -> Time.Zone -> { title : String, head : Array (Html {}), body : Array (Html {}) }
 viewTimePage time zone =
     let
         timeString =
@@ -58,23 +61,3 @@ viewTimePage time zone =
         , H.text timeString
         ]
     } 
-
-
--- No model, update, or subs needed for this example.
--- See server-side-tea example for an app that uses these.
-
-
-type alias Model = {}
-type alias Msg = {}
-
-
-update : Model -> Msg -> { model : Model, command : Cmd Msg }
-update msg model =
-    { model = model
-    , command = Cmd.none
-    }
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none

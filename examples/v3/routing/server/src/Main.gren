@@ -9,17 +9,20 @@ import Transmutable.Html as H
 import Transmutable.Html.Attributes as A
 
 
-main : Prettynice.Program Model Msg
+main : Prettynice.Program Model {}
 main =
     Prettynice.defineProgram
         { init = init
-        , update = update
-        , subscriptions = subscriptions
         , router = router
+        , update = (\_ model -> { model = model, command = Cmd.none })
+        , subscriptions = (\_ -> Sub.none)
         }
 
 
-init : Environment -> Prettynice.Init Model Msg
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model {}
 init env =
     Prettynice.startProgram
         { env = env
@@ -97,28 +100,3 @@ viewNotFound response =
     response
         |> Response.setStatus 404
         |> Response.asText "Not Found"
-
-
--- Model/Update/Subscriptions are not needed for this example.
--- See the server-side-tea example for a program that uses those.
-
-
-type alias Model = {}
-
-
-type Msg =
-    NoOp
-
-
-update : Msg -> Model -> { model : Model, command : Cmd Msg }
-update msg model =
-    when msg is
-        NoOp ->
-            { model = model
-            , command = Cmd.none
-            }
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none

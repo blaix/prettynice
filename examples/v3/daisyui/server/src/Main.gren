@@ -1,0 +1,62 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+
+main : Prettynice.Program Model {}
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        , update = (\_ model -> { model = model, command = Cmd.none })
+        , subscriptions = (\_ -> Sub.none)
+        }
+
+
+init : Environment -> Prettynice.Init Model {}
+init env =
+    Prettynice.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        , model = {}
+        , command = Cmd.none
+        }
+
+
+type alias Model = {}
+
+
+router : Model -> Request -> Response -> Task Never Response
+router model request response =
+    response
+        |> Response.asHtml
+            { title = "Static asset example"
+            , head = head
+            , body = body
+            }
+        |> Task.succeed
+
+
+head : Array (Html msg)
+head =
+    [ H.link 
+        [ A.rel "stylesheet", A.href "/styles.css" ]
+    ]
+
+body : Array (Html msg)
+body =
+    [ H.div [ A.class "hero min-h-screen" ]
+        [ H.div [ A.class "hero-content text-center" ]
+            [ H.button [ A.class "btn btn-primary" ]
+                [ H.text "A button that does nothing!" ]
+            ]
+        ]
+    ]

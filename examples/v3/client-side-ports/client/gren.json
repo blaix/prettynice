@@ -5,7 +5,7 @@
         "src",
         ".prettynice"
     ],
-    "gren-version": "0.5.2",
+    "gren-version": "0.5.3",
     "dependencies": {
         "direct": {
             "gren-lang/browser": "5.0.0",

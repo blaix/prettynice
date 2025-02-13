@@ -18,10 +18,11 @@ cli CMD="" OPT="":
   npm install
   npx prettynice {{CMD}} {{OPT}}
 
-build-cli:
+build-cli: clean-npm
   cd cli && npm install && npx gren make src/Main.gren --optimize --output=bin/main.js
-  # Force a reinstall in examples
-  for example in `ls examples/v3`; do rm -rf examples/v3/$example/node_modules; done
+
+clean-npm:
+  for example in `ls examples/v3`; do rm -rf examples/v3/$example/node_modules && rm examples/v3/$example/package-lock.json; done
 
 build-cli-debug:
   cd cli && npx gren make src/Main.gren --output=bin/main.js

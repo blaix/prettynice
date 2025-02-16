@@ -153,7 +153,7 @@ defineFullProgramRecord :
     }
 defineFullProgramRecord app =
     { init = app.init
-    , update = update { router = app.router, update = Just app.update }
+    , update = update { router = app.router, update = app.update }
     , subscriptions = subscriptions app.subscriptions
     }
 
@@ -330,7 +330,7 @@ type alias AppUpdate appModel appMsg =
 
 update : 
     { router : appModel -> Request -> Response -> Task Never Response
-    , update : Maybe (AppUpdate appModel appMsg)
+    , update : AppUpdate appModel appMsg
     }
     -> Msg appModel appMsg
     -> Model appModel
@@ -391,21 +391,13 @@ update appUpdate msg model =
             }
 
         MsgToApp appMsg ->
-            when appUpdate.update is
-                Nothing ->
-                    -- non-programs can't receive messages
-                    { model = model
-                    , command = Cmd.none
-                    }
-
-                Just up ->
-                    let
-                        appUpdateReturn =
-                            up appMsg model.appModel
-                    in
-                    { model = { model | appModel = appUpdateReturn.model }
-                    , command = Cmd.map MsgToApp appUpdateReturn.command
-                    }
+            let
+                appUpdateReturn =
+                    appUpdate.update appMsg model.appModel
+            in
+            { model = { model | appModel = appUpdateReturn.model }
+            , command = Cmd.map MsgToApp appUpdateReturn.command
+            }
 
 
 {-| Log a request with a custom message if task succeeds.

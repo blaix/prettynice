@@ -14,7 +14,7 @@ import Transmutable.Html as H
 
 main : Prettynice.Program Model Msg
 main =
-    Prettynice.defineProgram
+    Prettynice.defineFullProgram
         { init = init
         , router = router
         , update = update
@@ -30,7 +30,7 @@ type alias Model =
 init : Environment -> Prettynice.Init Model Msg
 init env =
     Init.await FileSystem.initialize <| \fsPermission ->
-        Prettynice.startProgram
+        Prettynice.startFullProgram
             { env = env
             , host = "0.0.0.0"
             , port_ = 3000

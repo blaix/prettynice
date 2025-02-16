@@ -2,33 +2,37 @@ module Prettynice exposing
     ( Program
     , Init
     , defineProgram
-    , defineProgramRecord
+    , defineFullProgram
+    , defineFullProgramRecord
     , startProgram
-    , startProgramRecord
+    , startFullProgram
+    , startFullProgramRecord
     )
 
  
-{-| Full stack web framework for Gren.
-
-This module mainly provides the functions to define and start your web server.
-Prettynice also has the concept of client-side components, and other APIs for common web needs.
-For an overview of full functionality, see [the project README](https://github.com/blaix/prettynice?tab=readme-ov-file#pretty-nice-framework),
-the [documentation site](https://prettynice.dev),
-and the [examples](https://github.com/blaix/prettynice/tree/main/examples).
-
-## Define and Start a Prettynice Server
+{-| Define and start a Prettynice web server.
 
 @docs Program, defineProgram, Init, startProgram
+
+## Messages, Commands, and Subscriptions
+
+Sometimes `init` and `router` are not enough.
+Maybe you need access to [commands](https://gren-lang.org/book/applications/commands/)
+or [ports](https://gren-lang.org/book/applications/ports/#node-ports) on the server side.
+If so, you can use these functions to create a program that includes `update` and `subscriptions`.
+
+@docs defineFullProgram, startFullProgram
 
 ## More Control
 
 If you want total control over how your app is defined and started,
 or guarantees that Prettynice only has access to the subsystem permissions you provide,
-you can use these functions and pass the resulting records to
+you can use these functions to define your own records to pass to
 [Node.defineProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram)
-and [Node.startProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#startProgram) yourself.
+and [Node.startProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#startProgram)
+yourself.
 
-@docs defineProgramRecord, startProgramRecord
+@docs defineFullProgramRecord, startFullProgramRecord
 
 -}
 
@@ -71,42 +75,73 @@ type alias Program appModel appMsg =
 type alias Init appModel appMsg =
     Init.Task { model : Model appModel, command : Cmd (Msg appModel appMsg) }
 
+{-| Define a Prettynice web server.
 
-{-| Define a Prettynice program.
+Servers are defined with two functions:
 
-Programs are defined similar to [regular gren node applications](https://gren-lang.org/book/applications/node/)
-but with the addition of a `router` function that handles requests.
+* `init`: Will be passed [`Node.Environment`](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#Environment)
+  and should return an [init task](#Init) created with [`startProgram`](#startProgram) or [`startFullProgram`](#startFullProgram).
+* `router`: Will be called for every HTTP request. It will be passed the model you
+  initiated in `init`, a [request](Prettynice.Request#Request),
+  and a [response](#Prettynice.Response#Response). It should return a task always
+  resolved to a response. See the [Response module](Response) for how you can
+  customize the response.
 
-If you don't want Prettynice to define your program for you,
-or you want more control over how your program is defined,
-see (Prettynice.defineProgramRecord)[#defineProgramRecord].
+See the [examples folder](https://github.com/blaix/prettynice/tree/main/examples)
+for usage examples.
 -}
 defineProgram :
+    { init : Environment -> Init appModel appMsg
+    , router : appModel -> Request -> Response -> Task Never Response
+    } -> Program appModel appMsg
+defineProgram app =
+    Node.defineProgram <|
+        defineFullProgramRecord <|
+            { init = app.init
+            , router = app.router
+            , update = (\_ model -> { model = model, command = Cmd.none })
+            , subscriptions = (\_ -> Sub.none)
+            }
+
+{-| Define a Prettynice web server that uses the full Elm Architecture.
+
+This is the same as [`defineProgram`](#defineProgram), but with the addition of
+`update` and `subscription` functions. They work just like they do in a normal
+[Gren node program](https://gren-lang.org/book/applications/node/#lets-make-a-web-server).
+
+You should only need this if your server needs access to
+[commands](https://gren-lang.org/book/applications/commands/)
+(e.g. for [server-side ports](https://gren-lang.org/book/applications/ports/#node-ports))
+or [subscriptions](https://gren-lang.org/book/applications/subscriptions/).
+If you don't need them, you probably want [`defineProgram`](#defineProgram).
+-}
+defineFullProgram :
     { init : Environment -> Init appModel appMsg
     , update : appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
     , subscriptions : appModel -> Sub appMsg
     , router : appModel -> Request -> Response -> Task Never Response
     } -> Program appModel appMsg
-defineProgram app =
+defineFullProgram app =
     Node.defineProgram <|
-        defineProgramRecord app
+        defineFullProgramRecord app
 
 
-{-| Create a record that can be passed to [Node.defineProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram)
+{-| Create a record that can be passed to
+[Node.defineProgram](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram)
 to define a Prettynice program. For example:
 
     main =
         Node.defineProgram <|
-            Prettynice.defineProgramRecord
+            Prettynice.defineFullProgramRecord
                 { init = init
                 , update = update
                 , subscriptions = subscriptions
                 , router = router
                 }
 
-This is a more explicit alternative to (Prettynice.defineProgram)[#defineProgram].
+This is a more explicit alternative to (defineFullProgram)[#defineFullProgram].
 -}
-defineProgramRecord :    
+defineFullProgramRecord :    
     { init : Environment -> Init appModel appMsg
     , update : appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
     , subscriptions : appModel -> Sub appMsg
@@ -116,36 +151,87 @@ defineProgramRecord :
     , update : Msg appModel appMsg -> Model appModel -> { model : Model appModel, command : Cmd (Msg appModel appMsg) }
     , subscriptions : Model appModel -> Sub (Msg appModel appMsg)
     }
-defineProgramRecord app =
+defineFullProgramRecord app =
     { init = app.init
     , update = update { router = app.router, update = Just app.update }
     , subscriptions = subscriptions app.subscriptions
     }
 
 
-{-| Start a Prettynice program that was defined with [defineProgram](#defineProgram).
+{-| Start a Prettynice web server.
 
-This creates the init task you can return from your `init` function.
+This creates the init task that you return from your `init` function.
 
-You can wrap this in an [Init.await/awaitTask](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Init#await)
+It takes a record with the following fields:
+
+* env: The [Node.Environment](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#Environment)
+  that is passed to your `init` function. (Prettynice needs this for the stdio streams).
+* host: The name of the host to start your server on (e.g. "localhost").
+* port_: The port number to start your server on
+  (you should usually choose an integer over 1024, e.g. 3000).
+* model: The initial value for your model. This will be passed to your `router` on every request.
+  And if you are using `defineFullProgram`, it will be passed to your `update` function as well.
+  If you don't need it, just set it to `{}`.
+
+Example:
+
+    init env =
+        startProgram
+            { env = env
+            , host = "localhost"
+            , port_ = 3000
+            , model = {}
+            }
+
+You can wrap `startProgram` in one or more calls to
+[Init.await/awaitTask](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Init#await)
 if you need to run a task or initialize any subsystems before starting.
+For example, maybe you need a
+[`HttpClient.Permission`](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/HttpClient#Permission)
+to save to your model so your router can make HTTP calls to a remote database
+([example](https://github.com/blaix/prettynice/tree/v3/examples/v3/database)).
+
+If you are using [`defineFullProgram`](#defineFullProgram) and want to include a
+command as part of your init, you can use [`startFullProgram`](#startFullProgram)
+instead.
 
 If you don't want Prettynice to start your program for you,
 or you want more control over how your program is started,
-see (Prettynice.startProgramRecord)[#startProgramRecord].
+see (`startFullProgramRecord`)[#startFullProgramRecord].
 -}
 startProgram :
-    { host : String
+    { env : Environment
+    , host : String
     , port_ : Int
-    , env : Environment
+    , model : appModel
+    } -> Init appModel appMsg
+startProgram config =
+    startFullProgram
+        { host = config.host
+        , port_ = config.port_
+        , env = config.env
+        , model = config.model
+        , command = Cmd.none
+        }
+
+
+{-| Start a Prettynice web server that includes an init command.
+
+This works just like [`startProgram`](#startProgram) with the addition of a command
+field to send a [command](https://gren-lang.org/book/applications/commands/) on init.
+-}
+startFullProgram :
+    { env : Environment
+    , host : String
+    , port_ : Int
     , model : appModel
     , command : Cmd appMsg
     } -> Init appModel appMsg
-startProgram config =
+startFullProgram  config =
     Init.await Http.initialize <| \serverPermission ->
     Init.await FileSystem.initialize <| \fsPermission ->
         Node.startProgram <|
-            startProgramRecord
+            startFullProgramRecord
                 { env = config.env
                 , host = config.host
                 , port_ = config.port_
@@ -166,7 +252,7 @@ to start a Prettynice program. For example:
         Init.await FilesSystem.initialize <| \fsPermission ->
         Init.await HttpServer.initialize <| \serverPermission ->
             Node.startProgram <|
-                Prettynice.startProgramRecord
+                Prettynice.startFullProgramRecord
                     { env = env
                     , host = "localhost"
                     , port_ = 3000
@@ -179,10 +265,11 @@ to start a Prettynice program. For example:
                     }
 
 
-This is a more explicit alternative to (Prettynice.startProgram)[#startProgram]
-and a way to guarantee Prettynice only has access to the subsystems you are explicitly providing.
+This is a more explicit alternative to (startFullProgram)[#startFullProgram]
+and a way to guarantee Prettynice only has access to the subsystems you are
+explicitly providing.
 -}
-startProgramRecord :
+startFullProgramRecord :
     { host : String
     , port_ : Int
     , env : Environment
@@ -196,7 +283,7 @@ startProgramRecord :
     { model : Model appModel
     , command : Cmd (Msg appModel appMsg)
     }
-startProgramRecord config =
+startFullProgramRecord config =
     { model =
         { server = Nothing
         , stdout = config.env.stdout

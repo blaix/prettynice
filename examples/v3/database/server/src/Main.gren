@@ -29,8 +29,6 @@ main =
     Prettynice.defineProgram
         { init = init
         , router = router
-        , update = (\_ model -> { model = model, command = Cmd.none })
-        , subscriptions = (\_ -> Sub.none)
         }
 
 
@@ -42,7 +40,6 @@ init env =
             , port_ = 3000
             , env = env
             , model = { httpPerm = httpPerm }
-            , command = Cmd.none
             }
 
 

@@ -13,7 +13,7 @@ import Transmutable.Html.Attributes as A
 
 main : Prettynice.Program Model Msg
 main =
-    Prettynice.defineProgram
+    Prettynice.defineFullProgram
         { init = init
         , router = router
         , update = update
@@ -40,7 +40,6 @@ init env =
             , host = "127.0.0.1"
             , port_ = 3000
             , model = { time = time, zone = zone }
-            , command = Cmd.none
             }
 
 

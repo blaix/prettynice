@@ -110,7 +110,7 @@ You can create client-side components for [islands](https://www.patterns.dev/van
 They are initialized on the server, so you can pass in data without needing a client-side fetch
 (and all the loading state / error handling that goes along with it).
 
-Under the hood, components wrap [`Browser.element`](https://packages.gren-lang.org/package/gren-lang/browser/version/3.0.0/module/Browser#element).
+Under the hood, components wrap [`Browser.element`](https://packages.gren-lang.org/package/gren-lang/browser/version/latest/module/Browser#element).
 They follow the [Elm Architecture](https://gren-lang.org/book/applications/tea/) (Model/View/Update).
 
 ```elm

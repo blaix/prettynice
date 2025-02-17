@@ -43,7 +43,7 @@ init env =
             }
 
 
-router : Model -> Request -> Response -> Task Never Response
+router : Model -> Request -> Response msg -> Task Never (Response msg)
 router model request response =
     when request.path is
         [] ->
@@ -132,7 +132,7 @@ makeUser id name =
     { id = id, name = name }
 
 
-userResultToResponse : Response -> HttpClient.Response (Array User) -> Response
+userResultToResponse : Response msg -> HttpClient.Response (Array User) -> Response msg
 userResultToResponse response result =
     when result.data is
         [ user ] ->
@@ -142,7 +142,7 @@ userResultToResponse response result =
             notFound response
 
 
-queryErrorToResponse : Response -> HttpClient.Error (Array User) -> Task Never Response
+queryErrorToResponse : Response msg -> HttpClient.Error (Array User) -> Task Never (Response msg)
 queryErrorToResponse response error =
     response
         -- In a real app you'll want a real error message
@@ -195,7 +195,7 @@ viewHome =
     }
 
 
-notFound : Response -> Response
+notFound : Response msg -> Response msg
 notFound response =
     response
         |> Response.setStatus 404

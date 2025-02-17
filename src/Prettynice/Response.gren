@@ -14,6 +14,9 @@ module Prettynice.Response exposing
     -- Setting headers and status
     , setHeader
     , setStatus
+
+    -- Events
+    , onSend
     ) 
 
 
@@ -29,6 +32,10 @@ module Prettynice.Response exposing
 
 @docs setHeader, setStatus
 
+## Event Messages
+
+@docs onSend
+
 ## Raw HTTP Responses
 
 Use these functions to work with a raw
@@ -41,6 +48,7 @@ weird and cool I'm not going to stop you.
 
 import Bytes exposing (Bytes)
 import HttpServer.Response as Http
+import Prettynice.Internal.Response as Internal
 import Prettynice.Request exposing (Request)
 import Json.Encode
 import Task exposing (Task)
@@ -50,8 +58,8 @@ import Transmutable.Html.Attributes as A
 
 {-| An HTTP response value.
 -}
-type Response
-    = Response Http.Response
+type alias Response appMsg =
+    Internal.Response appMsg
 
 
 {-| Custom type for response bodies.
@@ -80,9 +88,12 @@ into a Prettynice Response.
 You shouldn't need this in your normal application code.
 The response you get in a Prettynice request message is already a Prettynice Response.
 -}
-new : Http.Response -> Response
+new : Http.Response -> Response appMsg
 new httpResponse =
-    Response httpResponse
+    Internal.Response
+        { httpResponse = httpResponse
+        , appMsg = Nothing
+        }
 
 
 {-| Turn a Prettynice Response int a normal [Http.Response](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/HttpServer.Response#Response)
@@ -90,16 +101,23 @@ new httpResponse =
 You shouldn't need this in a typical Prettynice program.
 But it's here if you want to do anything weird and cool.
 -}
-unwrap : Response -> Http.Response
-unwrap (Response httpResponse) =
+unwrap : Response appMsg -> Http.Response
+unwrap (Internal.Response { httpResponse }) =
     httpResponse
+
+
+{-| internal use
+-}
+unwrapFull : Response appMsg -> { httpResponse : Http.Response, appMsg : Maybe appMsg }
+unwrapFull (Internal.Response record) =
+    record
 
 
 {-| Update a response to send raw bytes.
 
 Use this to send binary data like files, images, etc.
 -}
-asBytes : { contentType : String, body : Bytes } -> Response -> Response
+asBytes : { contentType : String, body : Bytes } -> Response appMsg -> Response appMsg
 asBytes { contentType, body } response =
     response
         |> withBody (BytesBody body)
@@ -108,14 +126,14 @@ asBytes { contentType, body } response =
 
 {-| Update a response to send plain text.
 -}
-asText : String -> Response -> Response
+asText : String -> Response appMsg -> Response appMsg
 asText text =
     withBody (TextBody text)
 
 
 {-| Update a response to send json.
 -}
-asJson : Json.Encode.Value -> Response -> Response
+asJson : Json.Encode.Value -> Response appMsg -> Response appMsg
 asJson json =
     withBody (JsonBody json)
 
@@ -131,15 +149,15 @@ not from gren-lang/browser. The API is the same, but html-gren is needed because
 -}
 asHtml :
     { title : String, head : Array (Html msg), body : Array (Html msg) } 
-    -> Response 
-    -> Response
+    -> Response appMsg
+    -> Response appMsg
 asHtml html =
     withBody (HtmlBody html)
 
 
 {-| Update a response to send the specified body.
 -}
-withBody : Body msg -> Response -> Response
+withBody : Body msg -> Response appMsg -> Response appMsg
 withBody bodyVariant response =
     let
         { contentType, rawBody } =
@@ -196,32 +214,55 @@ withBody bodyVariant response =
                     { contentType = "application/octet-stream"
                     , rawBody = RawBodyBytes bytes
                     }
+        
+        { httpResponse, appMsg } =
+            unwrapFull response
     in
-    response
-        |> unwrap
-        |> Http.setHeader "Content-type" contentType
-        |> ( when rawBody is
-                RawBodyString body ->
-                    Http.setBody body
-                RawBodyBytes body ->
-                    Http.setBodyAsBytes body
-            )
-        |> new
+    Internal.Response
+        { appMsg = appMsg
+        , httpResponse =
+            httpResponse
+                |> Http.setHeader "Content-type" contentType
+                |> ( when rawBody is
+                        RawBodyString body ->
+                            Http.setBody body
+                        RawBodyBytes body ->
+                            Http.setBodyAsBytes body
+                    )
+        }
 
 
 {-| Add a header to the response.
 -}
-setHeader : String -> String -> Response -> Response
-setHeader key val (Response httpResponse) =
-    httpResponse
-        |> Http.setHeader key val
-        |> Response
-    
+setHeader : String -> String -> Response appMsg -> Response appMsg
+setHeader key val (Internal.Response { httpResponse, appMsg }) =
+    Internal.Response
+        { appMsg = appMsg
+        , httpResponse =
+            Http.setHeader key val httpResponse
+        }
+
 
 {-| Set the status of the response.
 -}
-setStatus : Int -> Response -> Response
-setStatus status (Response httpResponse) =
-    httpResponse
-        |> Http.setStatus status
-        |> Response
+setStatus : Int -> Response appMsg -> Response appMsg
+setStatus status (Internal.Response { httpResponse, appMsg }) =
+    Internal.Response
+        { appMsg = appMsg
+        , httpResponse =
+            Http.setStatus status httpResponse
+        }
+
+{-| Send a message to your `update` function when a response is sent.
+
+If you used [`Prettynice.defineFullProgram`](Prettynice#defineFullProgram) to define
+your server, you can send messages to your `update` function with this.
+See the [websocket example](https://github.com/blaix/prettynice/tree/main/examples/v3/html)
+for an example of this being used in a working application.
+-}
+onSend : appMsg -> Response appMsg -> Response appMsg
+onSend appMsg (Internal.Response { httpResponse }) =
+    Internal.Response
+        { httpResponse = httpResponse
+        , appMsg = Just appMsg
+        }

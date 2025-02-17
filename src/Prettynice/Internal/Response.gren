@@ -1,0 +1,13 @@
+module Prettynice.Internal.Response exposing
+    ( Response(..)
+    )
+
+
+import HttpServer.Response as Http
+
+
+type Response appMsg
+    = Response
+        { httpResponse : Http.Response
+        , appMsg : Maybe appMsg
+        }

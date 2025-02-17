@@ -31,7 +31,7 @@ init env =
 type alias Model = {}
 
 
-router : Model -> Request -> Response -> Task Never Response
+router : Model -> Request -> Response msg -> Task Never (Response msg)
 router model request response =
     response
         |> Response.asHtml

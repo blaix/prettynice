@@ -42,6 +42,7 @@ import HttpServer as Http exposing (ServerError(..), Method(..))
 import HttpServer.Response as HttpResponse 
 import Init
 import Node exposing (Environment, Program)
+import Prettynice.Internal.Response as Internal
 import Prettynice.Request exposing (Request)
 import Prettynice.Response exposing (Response)
 import Server.Static as Static exposing (Mode(..))
@@ -92,7 +93,7 @@ for usage examples.
 -}
 defineProgram :
     { init : Environment -> Init appModel appMsg
-    , router : appModel -> Request -> Response -> Task Never Response
+    , router : appModel -> Request -> Response appMsg -> Task Never (Response appMsg)
     } -> Program appModel appMsg
 defineProgram app =
     Node.defineProgram <|
@@ -119,7 +120,7 @@ defineFullProgram :
     { init : Environment -> Init appModel appMsg
     , update : appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
     , subscriptions : appModel -> Sub appMsg
-    , router : appModel -> Request -> Response -> Task Never Response
+    , router : appModel -> Request -> Response appMsg -> Task Never (Response appMsg)
     } -> Program appModel appMsg
 defineFullProgram app =
     Node.defineProgram <|
@@ -145,7 +146,7 @@ defineFullProgramRecord :
     { init : Environment -> Init appModel appMsg
     , update : appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
     , subscriptions : appModel -> Sub appMsg
-    , router : appModel -> Request -> Response -> Task Never Response
+    , router : appModel -> Request -> Response appMsg -> Task Never (Response appMsg)
     } -> 
     { init : Environment -> Init appModel appMsg
     , update : Msg appModel appMsg -> Model appModel -> { model : Model appModel, command : Cmd (Msg appModel appMsg) }
@@ -189,7 +190,7 @@ if you need to run a task or initialize any subsystems before starting.
 For example, maybe you need a
 [`HttpClient.Permission`](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/HttpClient#Permission)
 to save to your model so your router can make HTTP calls to a remote database
-([example](https://github.com/blaix/prettynice/tree/v3/examples/v3/database)).
+([example](https://github.com/blaix/prettynice/tree/main/examples/v3/database)).
 
 If you are using [`defineFullProgram`](#defineFullProgram) and want to include a
 command as part of your init, you can use [`startFullProgram`](#startFullProgram)
@@ -312,7 +313,7 @@ startFullProgramRecord config =
 type Msg appModel appMsg
     = CreateServerResult (Result Http.ServerError Http.Server)
     | GotRequest { request : Http.Request, response : HttpResponse.Response }
-    | ResponseReady Response
+    | ResponseReady (Response appMsg)
     | MsgToApp appMsg
 
 
@@ -329,7 +330,7 @@ type alias AppUpdate appModel appMsg =
 
 
 update : 
-    { router : appModel -> Request -> Response -> Task Never Response
+    { router : appModel -> Request -> Response appMsg -> Task Never (Response appMsg)
     , update : AppUpdate appModel appMsg
     }
     -> Msg appModel appMsg
@@ -383,11 +384,25 @@ update appUpdate msg model =
             }
 
         ResponseReady response ->
+            let
+                (Internal.Response { httpResponse, appMsg }) =
+                    response
+
+                msgToApp =
+                    when appMsg is
+                        Just m ->
+                            Task.succeed m
+                                |> Task.perform MsgToApp
+
+                        Nothing ->
+                            Cmd.none
+            in
             { model = model
             , command = 
-                response
-                    |> Prettynice.Response.unwrap
-                    |> HttpResponse.send
+                Cmd.batch
+                    [ HttpResponse.send httpResponse
+                    , msgToApp
+                    ]
             }
 
         MsgToApp appMsg ->

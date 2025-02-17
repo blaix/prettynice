@@ -46,7 +46,7 @@ init env =
 -- ROUTER
 
 
-router : Model -> Request -> Response -> Task Never Response
+router : Model -> Request -> Response Msg -> Task Never (Response Msg)
 router model request response =
     response
         |> Response.asHtml (viewTimePage model)

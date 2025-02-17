@@ -31,14 +31,14 @@ init env =
         }
 
 
-router : Model -> Request -> Response -> Task Never Response
+router : Model -> Request -> Response msg -> Task Never (Response msg)
 router model request response =
     response
         |> viewHome
         |> Task.succeed
 
 
-viewHome : Response -> Response
+viewHome : Response msg -> Response msg
 viewHome =
     Response.asHtml
         { title = "Alert"

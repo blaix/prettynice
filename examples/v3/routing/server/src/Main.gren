@@ -30,14 +30,14 @@ init env =
         }
 
 
-router : Model -> Request -> Response -> Task Never Response
+router : Model -> Request -> Response msg -> Task Never (Response msg)
 router model request response =
     response
         |> routeRequest request
         |> Task.succeed
 
 
-routeRequest : Request -> Response -> Response
+routeRequest : Request -> Response msg -> Response msg
 routeRequest request =
     when request.path is
         [] ->
@@ -53,7 +53,7 @@ routeRequest request =
             viewNotFound
 
 
-viewHome : Response -> Response
+viewHome : Response msg -> Response msg
 viewHome =
     Response.asHtml
         { title = "Home"
@@ -68,7 +68,7 @@ viewHome =
         }
 
 
-viewAbout : Response -> Response
+viewAbout : Response msg -> Response msg
 viewAbout =
     Response.asHtml
         { title = "About"
@@ -80,7 +80,7 @@ viewAbout =
         }
 
 
-viewUser : String -> Response -> Response
+viewUser : String -> Response msg -> Response msg
 viewUser userId =
     Response.asHtml
         { title = "User"
@@ -92,7 +92,7 @@ viewUser userId =
         }
 
 
-viewNotFound : Response -> Response
+viewNotFound : Response msg -> Response msg
 viewNotFound response =
     response
         |> Response.setStatus 404

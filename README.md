@@ -16,25 +16,20 @@ channel on the Gren [Discord][] for updates or to ask for help.
 
 ## Table of Contents
 
-<!-- vim-markdown-toc GFM -->
-
 * [Installation and Usage](#installation-and-usage)
 * [Basic Example](#basic-example)
 * [Server-side HTML](#server-side-html)
 * [Client-side Components](#client-side-components)
 * [Forms](#forms)
 * [Static assets](#static-assets)
-* [Customizing `<head>`](#customizing-head)
 * [Javascript Interop in the Browser](#javascript-interop-in-the-browser)
-* [More Control](#more-control)
 * [Javascript Interop in Node](#javascript-interop-in-node)
 * [Databases](#databases)
 * [Deployment](#deployment)
 * [Goals](#goals)
 * [Inspiration](#inspiration)
+* [More Info](#more-info)
 * [Working on the Framework Locally](#working-on-the-framework-locally)
-
-<!-- vim-markdown-toc -->
 
 ## Installation and Usage
 
@@ -50,64 +45,55 @@ npx prettynice init
 
 Then you can run the dev server with: `npm run dev`
 
-See [Deployment](#deployment) for deployment information.
-
 ## Basic Example
+
+A basic Prettynice website needs a `main` entry point, an `init` function to start your server, and a `router` function to handle requests:
 
 ```elm
 module Main exposing (main)
 
 import Node exposing (Environment)
-import Prettynice.SimpleRouter as Router
+import Prettynice
 import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
 
-
-main : Router.Program
+main : Prettynice.Program Model {}
 main =
-    Router.defineProgram
+    Prettynice.defineProgram
         { init = init
         , router = router
         }
 
+-- You can use Model to hold in-memory, server-side state.
+-- But we don't need that here, so we're leaving it empty.
+type alias Model = {}
 
-init : Environment -> Router.Init
+init : Environment -> Prettynice.Init Model {}
 init env =
-    Router.startProgram
-        { host = "127.0.0.1"
+    Prettynice.startProgram
+        { env = env
+        , host = "127.0.0.1"
         , port_ = 3000
-        , env = env
+        , model = {}
         }
 
-
-router : Request -> Response -> Cmd msg
-router request response =
-    case request.path of
-    
-        [] ->
-            Response.sendText "Hello!" response
-            -- You can also sendHtml, sendJson, and sendBytes
-            -- see examples/[version]/content-types
-            
-        [ "hello", name ] ->
-            Response.sendText ("Hello, " ++ name) response
-
-        _ ->
-            response
-                |> Response.setStatus 404
-                |> Response.sendText "Oops!"
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+router model request response =
+    response
+        |> Response.asText "Hello!"
+        |> Task.succeed
 ```
 
-See [examples/v2/routing/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/routing/server/src/Main.gren).
+See [the examples folder](https://github.com/blaix/prettynice/tree/main/examples)
+for more complex examples including routing, styling, interacting with databases, and more.
 
 ## Server-side HTML
 
 [html-gren](https://packages.gren-lang.org/package/icidasset/html-gren) is used to render HTML on the server.
 
-For example:
-
 ```elm
-Response.sendHtml
+Response.asHtml
     { title = "Home"
     , head = []
     , body =
@@ -117,15 +103,17 @@ Response.sendHtml
     }
 ```
 
-See [examples/v2/content-types/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/content-types/server/src/Main.gren).
+See [examples/v3/html/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v3/html/server/src/Main.gren)
+for a full working example.
 
 ## Client-side Components
 
-You can create client-side components for [islands](https://www.patterns.dev/vanilla/islands-architecture/) of interactivity.
+You can create client-side components for [islands](https://www.patterns.dev/vanilla/islands-architecture/) of client-side interactivity.
+They are initialized on the server, so you can pass in data without needing a client-side fetch
+(and all the loading state / error handling that goes along with it).
 
 Under the hood, components wrap [`Browser.element`](https://packages.gren-lang.org/package/gren-lang/browser/version/3.0.0/module/Browser#element).
-They follow the [Elm Architecture](https://guide.elm-lang.org/architecture/) (Model/View/Update).
-If you aren't familiar, you can read [this guide](https://elmprogramming.com/model-view-update-part-1.html), which applies to gren as well.
+They follow the [Elm Architecture](https://gren-lang.org/book/applications/tea/) (Model/View/Update).
 
 ```elm
 -- client/src/Components/Counter.gren
@@ -166,11 +154,12 @@ type Msg
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
-    case msg of
+    when msg is
         Increment ->
             { model = { model | count = model.count + 1 }
             , command = Cmd.none
             }
+            
         Decrement ->
             { model = { model | count = model.count - 1 }
             , command = Cmd.none
@@ -193,7 +182,7 @@ subscriptions _ =
     Sub.none
 ```
 
-See [examples/v2/client-side-components/client/src/Components/Counter.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-components/client/src/Components/Counter.gren).
+See [examples/v3/client-side-components/client/src/Components/Counter.gren](https://github.com/blaix/prettynice/tree/main/examples/v3/client-side-components/client/src/Components/Counter.gren).
 
 Dropping a component in `client/src/Components/` makes it available to embed in
 your server-side HTML:
@@ -204,7 +193,7 @@ your server-side HTML:
 import Gen.Components.Counter as Counter
 
 myResponse =
-    Response.sendHtml
+    Response.asHtml
         { title = "Component Example"
         , head = []
         , body =
@@ -222,14 +211,6 @@ myResponse =
 ```
 
 See [examples/v2/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-components/server/src/Main.gren).
-
-Because you can initialize your client-side components with data from the
-server, **you don't need loading states or encoders, and the data will be
-type-checked at compile time.**
-
-Note: This is still a work-in-progress, and only works with certain types. See
-[examples/v2/client-side-components/README.md](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-components/README.md)
-for details.
 
 ## Forms
 
@@ -285,43 +266,23 @@ viewResult request =
         name ++ " likes: " ++ hobbies
 ``` 
 
-See [examples/v2/forms](https://github.com/blaix/prettynice/tree/main/examples/v2/forms) for a full working example.
+See [examples/v3/forms](https://github.com/blaix/prettynice/tree/main/examples/v3/forms) for a full working example.
 
 ## Static assets
 
 Any files in `public/` will be copied to `dist/client` and available at the
-root url path.
+root url path. Images, stylesheets, etc. can then be added to the `head`
+and `body` fields of
+[`asHtml`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Response#asHtml).
 
-See [examples/v2/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v2/static-assets) for a full working example.
-
-## Customizing `<head>`
-
-If you want to add style sheets or other tags to head, `sendHtml` accepts an
-array of `Html` elements that will be added to the `<head>` tag
-alongside the built-in Prettynice head tags:
-
-```elm
-Response.sendHtml
-    { title = title
-    , body = body
-    , head =
-        [ Html.link 
-            [ Attributes.rel "stylesheet"
-            , Attributes.href "/css/my-styles.css"
-            ]
-        ]
-    }
-```
-
-See [examples/v2/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v2/static-assets) for a full working example.
+See [examples/v3/static-assets](https://github.com/blaix/prettynice/tree/main/examples/v3/static-assets) for a full working example.
 
 ## Javascript Interop in the Browser
 
 You can drop a js file with the same base name as a component
 in `client/src/Components` and it will be automatically imported.
-If you export an `init` function it will be called with the initialized component, allowing you to connect ports.
-
-If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
+If you export an `init` function it will be called with the initialized
+component, allowing you to connect [ports](https://gren-lang.org/book/applications/ports/#browser-ports).
 
 ```js
 // client/src/Components/Alert.js
@@ -339,100 +300,30 @@ export function init(component) {
 port sendAlert : String -> Cmd msg
 
 update msg model =
-    case msg of
+    when msg is
         ClickedAlert ->
             { model = model
             , command = sendAlert "Danger! High voltage!"
             }
 ```
 
-See [examples/v2/client-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-ports) for a full working example.
-
-## More Control
-
-The examples above use `Prettynice.SimpleRouter` to define a router, and let the framework handle wiring it up to a full program.
-If you need more control over the app, you can define a full program instead of a router:
-
-```elm
-main =
-    Prettynice.defineProgram
-        { init = init
-        , update = update
-        , subscriptions = subscriptions
-        , onRequest = GotRequest
-        }
-```
-
-This gives you more control over the msg/update cycle, so you can do side-effecty things, like read files for example:
-
-```elm
-update msg model =
-    case msg of
-        GotRequest request response ->
-            { model = model
-            , command =
-                open model.fsPermission "./test.txt"
-                    |> Task.andThen read
-                    |> Task.andThen decode
-                    |> Task.attempt (GotReadResult response)
-            }
-
-        GotReadResult response (Ok fileContents) ->
-            { model = model
-            , command =
-                response
-                    |> Response.sendText
-                        ("File contents: " ++ fileContents)
-            }
-
-        GotReadResult response (Err e) ->
-            { model = model
-            , command =
-                response
-                    |> Response.setStatus 500
-                    |> Response.sendText
-                        ("Failed to read file: " ++ Debug.toString e)
-```
-
-See:
-
-* [examples/v2/running-tasks](/examples/v2/running-tasks)
-* [examples/v2/running-commands](/examples/v2/running-commands)
-* [examples/v2/server-side-state](/examples/v2/server-side-state)
-* [examples/v2/server-side-ports](/examples/v2/server-side-ports)
-* [examples/v2/database-ports](/examples/v2/database-ports)
+See [examples/v3/client-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v3/client-side-ports) for a full working example.
 
 ## Javascript Interop in Node
 
 You can drop a `ports.js` file in `server/src` and export an `init` function to
-connect ports between node and your gren program,
+connect server-side [ports](https://gren-lang.org/book/applications/ports/#node-ports),
 giving you a type-safe interface to the entire node ecosystem.
 
-If you aren't familiar with ports, you can read [this section of the elm guide](https://guide.elm-lang.org/interop/ports), which also applies to gren.
-
-See:
-
-* [examples/v2/server-side-ports](https://github.com/blaix/prettynice/tree/main/examples/v2/server-side-ports).
-* [examples/v2/database-ports](https://github.com/blaix/prettynice/tree/main/examples/v2/database-ports).
-
-**Note:** due to the async and decoupled nature of ports, if you are triggering
-a port on a request, and your response depends on the result of that port,
-you'll need to map requests to responses on your model so you can respond in a
-separate update cycle when you get the result through a separate port, making
-extra-sure to handle errors in your js so you dno't leave dangling requests.
-The examples above show how to do that. Future versions of prettynice and/or
-gren will have a way to call js and act on the results in a Task-like,
-composable way, but until then you'll have to live with this extra complexity.
+Look at [the websockets example](https://github.com/blaix/prettynice/tree/main/examples/v3/websockets)
+to see this in action.
 
 ## Databases
 
 Gren does not (yet) have a way to natively connect to a database.
 So you need to use ports or some form of db-over-http.
 
-See:
-
-* [examples/v2/database-http](/examples/v2/database-http) (recommended)
-* [examples/v2/database-ports](/examples/v2/database-ports)
+See [examples/v2/database](https://github.com/blaix/prettynice/tree/main/examples/v3/database)
 
 ## Deployment
 
@@ -509,13 +400,17 @@ Goals and anti-goals are driven by the DX and UX of this project.
 * [Rails](https://rubyonrails.org/): Developer happiness. Batteries included.
 * [Elm Land](https://elm.land/): The good parts of Rails (guides & conventions, beginner-friendliness, batteries included) applied to a type-safe, purely functional language.
 
+## More Info
+
+For more details on using Prettynice, see:
+
+* [https://prettynice.dev](https://prettynice.dev)
+* [API docs](https://packages.gren-lang.org/package/blaix/prettynice)
+
 ## Working on the Framework Locally
 
-If you're using nix, there's a [`shell.nix`](/shell.nix) to start a nix shell with everything you need.
-
-Otherwise, you'll need to manually [install gren](https://gren-lang.org/install),
-and then look at the `buildInputs` list in `shell.nix` for other things you'll need
-(you can ignore `bashInteractive`),
+This project uses [devbox](https://www.jetify.com/devbox).
+If you don't want to use devbox, see `devbox.json` for the dependencies you will need to install.
 
 ### Important Directories
 

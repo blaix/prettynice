@@ -212,9 +212,11 @@ See [examples/v3/client-side-components/server/src/Main.gren](https://github.com
 
 ## Forms
 
-Normal `<form>` elements with `action="post"` will have the data available at `request.formData`:
+Normal `<form>` elements with `action="post"` will have the data available at
+[`request.formData`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Request#Request):
 
-It is a `FormData` value which is a mapping of field names to arrays of values.
+It is a [`FormData`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.FormData)
+value which is a mapping of field names to arrays of values.
 
 You can use `get` to get a `Maybe String` of the first value associated with a field name,
 or `getAll` to get an `Array String` of all values associated with the field name.

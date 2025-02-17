@@ -5,18 +5,18 @@
         "src",
         ".prettynice"
     ],
-    "gren-version": "0.4.5",
+    "gren-version": "0.5.3",
     "dependencies": {
         "direct": {
-            "blaix/prettynice": "2.0.1",
-            "gren-lang/core": "5.0.2",
-            "gren-lang/node": "4.1.1",
-            "icidasset/html-gren": "4.2.0"
+            "blaix/prettynice": "3.0.0",
+            "gren-lang/core": "6.0.1",
+            "gren-lang/node": "5.0.2",
+            "icidasset/html-gren": "5.0.0"
         },
         "indirect": {
-            "gren-lang/parser": "4.0.0",
-            "gren-lang/url": "4.0.0",
-            "joeybright/gren-static-serve": "2.0.4"
+            "gren-lang/parser": "5.0.0",
+            "gren-lang/url": "5.0.0",
+            "joeybright/gren-static-serve": "3.0.0"
         }
     }
 }

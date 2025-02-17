@@ -61,7 +61,7 @@ type Msg
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
-    case msg of
+    when msg is
         Increment ->
             { model = { model | count = model.count + 1 }
             , command = Cmd.none

@@ -2,38 +2,50 @@ module Main exposing (main)
 
 import Gen.Components.Counter
 import Node exposing (Environment)
-import Prettynice.SimpleRouter as Router
+import Prettynice
 import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
 import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
 
 
-main : Router.Program
+main : Prettynice.Program Model {}
 main =
-    Router.defineProgram
+    Prettynice.defineProgram
         { init = init
         , router = router
         }
 
 
-init : Environment -> Router.Init
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model {}
 init env =
-    Router.startProgram
-        { host = "0.0.0.0"
+    Prettynice.startProgram
+        { env = env
+        , host = "localhost"
         , port_ = 3000
-        , env = env
+        , model = {}
         }
 
 
-router : Request -> Response -> Cmd msg
-router request response =
-    case request.path of
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+router model request response =
+    response
+        |> routeRequest request
+        |> Task.succeed
+
+
+routeRequest : Request -> Response msg -> Response msg
+routeRequest request response =
+    when request.path is
 
         -- Root path: /
         [] -> 
             response
-                |> Response.sendHtml
+                |> Response.asHtml
                     { title = "My Website"
                     , head = [ linkStylesheet ]
                     , body = viewHomePage
@@ -42,13 +54,13 @@ router request response =
         -- /hello/justin
         [ "hello", name ] ->
             response
-                |> Response.sendText ("Hello, " ++ name)
+                |> Response.asText ("Hello, " ++ name)
 
         -- all other paths
         _ ->
             response
                 |> Response.setStatus 404
-                |> Response.sendText "Not found"
+                |> Response.asText "Not found"
 
 
 viewHomePage : Array (Html msg)

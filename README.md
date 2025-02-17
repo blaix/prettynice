@@ -331,7 +331,7 @@ Prettynice should work on any host that supports nodejs services (serverless is 
 
 If you generated your project with `prettynice init` or cloned one of the [examples](/examples), the basic steps for running in production are:
 
-1. Build: `npm run build` (runs `npx prettynice build --optimize` under the hood). This generates a `dist` folder. `dist/server` holds your node server. `dist/client` holds your static assets.
+1. Build: `npm run build:prod` (runs `npx prettynice build --optimize` under the hood). This generates a `dist` folder. `dist/server` holds your node server. `dist/client` holds your static assets.
 2. Run with: `npm start` (runs `node dist/server/index.js` under the hood).
 
 Below are some recommendations for hosts that work well with prettynice.

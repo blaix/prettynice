@@ -208,7 +208,7 @@ myResponse =
     }
 ```
 
-See [examples/v2/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v2/client-side-components/server/src/Main.gren).
+See [examples/v3/client-side-components/server/src/Main.gren](https://github.com/blaix/prettynice/tree/main/examples/v3/client-side-components/server/src/Main.gren).
 
 ## Forms
 
@@ -321,7 +321,7 @@ to see this in action.
 Gren does not (yet) have a way to natively connect to a database.
 So you need to use ports or some form of db-over-http.
 
-See [examples/v2/database](https://github.com/blaix/prettynice/tree/main/examples/v3/database)
+See [examples/v3/database](https://github.com/blaix/prettynice/tree/main/examples/v3/database)
 
 ## Deployment
 

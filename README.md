@@ -320,10 +320,10 @@ to see this in action.
 
 ## Databases
 
-Gren does not (yet) have a way to natively connect to a database.
-So you need to use ports or some form of db-over-http.
-
-See [examples/v3/database](https://github.com/blaix/prettynice/tree/main/examples/v3/database)
+Until Gren gets native database connection support, you can use ports to connect to a db in node,
+or some form of db-over-http to keep all your database code in Gren. See 
+[examples/v3/database](https://github.com/blaix/prettynice/tree/main/examples/v3/database)
+for an example of doing this with [ws4sql](https://github.com/proofrock/ws4sqlite).
 
 ## Deployment
 

@@ -65,8 +65,6 @@ main =
         , router = router
         }
 
--- You can use Model to hold in-memory, server-side state.
--- But we don't need that here, so we're leaving it empty.
 type alias Model = {}
 
 init : Environment -> Prettynice.Init Model {}

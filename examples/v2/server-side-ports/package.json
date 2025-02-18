@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "gren-lang": "^0.4.5",
-    "prettynice": "file:../../../cli"
+    "prettynice": "^2.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

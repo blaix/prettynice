@@ -6,8 +6,12 @@ example NAME:
   @just header "RUNNING EXAMPLE: v3/{{NAME}}"
   cd examples/v3/{{NAME}} && npm install && npm run dev
 
-examples:
-  for example in `ls examples/v3`; do just example $example; done
+v2-example NAME:
+  @just header "RUNNING EXAMPLE: v2/{{NAME}}"
+  cd examples/v2/{{NAME}} && npm install && npm run dev
+
+v2-examples:
+  for example in `ls examples/v2`; do just v2-example $example; done
 
 docs:
   npx gren-doc-preview

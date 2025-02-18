@@ -9,7 +9,7 @@ import Transmutable.Html as H
 import Transmutable.Html.Attributes as A
 
 
-main : Prettynice.Program Model {}
+main : Prettynice.Program Model msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -20,7 +20,7 @@ main =
 type alias Model = {}
 
 
-init : Environment -> Prettynice.Init Model {}
+init : Environment -> Prettynice.Init Model msg
 init env =
     Prettynice.startProgram
         { env = env

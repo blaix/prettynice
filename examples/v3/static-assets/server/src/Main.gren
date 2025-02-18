@@ -10,7 +10,7 @@ import Transmutable.Html.Attributes as A
 
 
 
-main : Prettynice.Program Model {}
+main : Prettynice.Program Model msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -18,7 +18,10 @@ main =
         }
 
 
-init : Environment -> Prettynice.Init Model {}
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model msg
 init env =
     Prettynice.startProgram
         { host = "127.0.0.1"
@@ -26,9 +29,6 @@ init env =
         , env = env
         , model = {}
         }
-
-
-type alias Model = {}
 
 
 router : Model -> Request -> Response msg -> Task Never (Response msg)

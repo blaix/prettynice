@@ -9,7 +9,7 @@ import Task exposing (Task)
 import Transmutable.Html as H
 
 
-main : Prettynice.Program Model {}
+main : Prettynice.Program Model msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -20,7 +20,7 @@ main =
 type alias Model = {}
 
 
-init : Environment -> Prettynice.Init Model {}
+init : Environment -> Prettynice.Init Model msg
 init env =
     Prettynice.startProgram
         { env = env

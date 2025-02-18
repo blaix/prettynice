@@ -12,7 +12,7 @@ import Prettynice.Request exposing (Request)
 import Prettynice.Response as Response exposing (Response)
 
 
-main : Prettynice.Program Model {}
+main : Prettynice.Program Model msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -23,7 +23,7 @@ main =
 type alias Model = {}
 
 
-init : Environment -> Prettynice.Init Model {}
+init : Environment -> Prettynice.Init Model msg
 init env =
     Prettynice.startProgram
         { host = "127.0.0.1"

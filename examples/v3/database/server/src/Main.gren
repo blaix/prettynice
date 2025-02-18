@@ -24,7 +24,7 @@ type alias User =
     }
 
 
-main : Prettynice.Program Model {}
+main : Prettynice.Program Model msg
 main =
     Prettynice.defineProgram
         { init = init
@@ -32,7 +32,7 @@ main =
         }
 
 
-init : Environment -> Prettynice.Init Model {}
+init : Environment -> Prettynice.Init Model msg
 init env =
     Init.await HttpClient.initialize <| \httpPerm -> 
         Prettynice.startProgram

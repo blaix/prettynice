@@ -1,6 +1,0 @@
-.gren
-.prettynice
-build
-dist
-node_modules
-prisma/dev.db

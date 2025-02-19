@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.0 (2025-02-19)
+
+* Update project generator for prettynice v3
+* Fix bug in project generator that left an unhidden gitignore file in your project (See [#5](https://github.com/blaix/prettynice/issues/5))
+
 ## 2.0.3 (2025-01-03)
 
 * Fix https://github.com/blaix/prettynice/issues/5

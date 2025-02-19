@@ -5,9 +5,24 @@ module Prettynice.Internal.Response exposing
 
 import HttpServer.Response as Http
 
+{-| TODO: js tasks...
+
+- [ ] one outgoing and one incoming port for js tasks, managed by prettynice.
+- [ ] generate functions based on app's js that will attach jsTasks to the Response.
+- [ ] modify response handling to save responses and send after getting the results of running the js function specified in the response's jsTask
+
+-}
 
 type Response appMsg
     = Response
         { httpResponse : Http.Response
         , appMsg : Maybe appMsg
+        , jsTasks : Array JsTask
         }
+
+
+type alias JsTask =
+    { name : String
+    , data : String
+    -- TODO: encoding/decoding js task outgoing/incoming data (assume Strings for now)
+    }

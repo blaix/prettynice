@@ -1,0 +1,15 @@
+---
+title: Cookies
+description: Using cookies with the prettynice framework.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note">
+  This page needs to be fleshed out.
+  But in short, you can set cookies using [Prettynice.Response.setHeader](https://packages.gren-lang.org/package/blaix/prettynice/version/2/module/Prettynice.Response#setHeader)
+  to send the [`Set-Cookie`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) header.
+  And get cookies using [Prettynice.Request.headers](https://packages.gren-lang.org/package/blaix/prettynice/version/2/module/Prettynice.Request#Request)
+  to get the [`Cookie`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie) header.
+  Future versions of Prettynice may have some helpers for this.
+</Aside>

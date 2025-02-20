@@ -3,18 +3,25 @@ green := '\033[0;32m'
 nc := '\033[0m' # No Color
 
 example NAME:
-  @just header "RUNNING EXAMPLE: v3/{{NAME}}"
-  cd examples/v3/{{NAME}} && npm install && npm run dev
+  @just header "RUNNING EXAMPLE: next/{{NAME}}"
+  cd examples/next/{{NAME}} && npm install && npm run dev
 
 v2-example NAME:
   @just header "RUNNING EXAMPLE: v2/{{NAME}}"
   cd examples/v2/{{NAME}} && npm install && npm run dev
 
+v3-example NAME:
+  @just header "RUNNING EXAMPLE: v3/{{NAME}}"
+  cd examples/v3/{{NAME}} && npm install && npm run dev
+
 examples:
-  for example in `ls examples/v3`; do just example $example; done
+  for example in `ls examples/next`; do just example $example; done
 
 v2-examples:
   for example in `ls examples/v2`; do just v2-example $example; done
+
+v3-examples:
+  for example in `ls examples/v3`; do just v3-example $example; done
 
 docs:
   npx gren-doc-preview
@@ -29,7 +36,7 @@ build-cli: clean-npm
   cd cli && npm install && npx gren make src/Main.gren --optimize --output=bin/main.js
 
 clean-npm:
-  for example in `ls examples/v3`; do rm -rf examples/v3/$example/node_modules && rm examples/v3/$example/package-lock.json; done
+  for example in `ls examples/next`; do rm -rf examples/next/$example/node_modules && rm examples/next/$example/package-lock.json; done
 
 build-cli-debug:
   cd cli && npx gren make src/Main.gren --output=bin/main.js

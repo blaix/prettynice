@@ -1,0 +1,113 @@
+module Main exposing (main)
+
+import Node exposing (Environment)
+import Prettynice.FormData as FormData exposing (FormData)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import HttpServer exposing (Method(..))
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+main : Prettynice.Program Model msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model msg
+init env =
+    Prettynice.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        , model = {}
+        }
+
+
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+router model request response =
+    response
+        |> routeRequest request
+        |> Task.succeed
+
+
+routeRequest : Request -> Response msg -> Response msg
+routeRequest request =
+    when request is
+        { method = POST, path = [ "submission" ] } ->
+            Response.asHtml
+                { title = "Form Submitted"
+                , head = []
+                , body = [ viewResult request.formData ]
+                }
+        
+        _ -> 
+            Response.asHtml
+                { title = "Form example"
+                , head = []
+                , body = [ viewForm ]
+                }
+
+
+viewResult : FormData -> Html msg
+viewResult form =
+    let
+        name =
+            FormData.get "name" form
+                |> Maybe.withDefault "Mr. E"
+
+        hobbies =
+            FormData.getAll "hobbies" form
+                |> String.join ", "
+    in
+    H.text <|
+        name ++ " likes: " ++ hobbies
+
+
+viewForm : Html msg
+viewForm =
+    H.form 
+        [ A.method "post", A.action "/submission" ]
+        [ H.div []
+            [ H.label [] 
+                [ H.text "Name: " 
+                , H.input [ A.type_ "text", A.name "name" ] []
+                ]
+            ]
+        , H.div []
+            [ H.text "Hobbies: "
+            , H.label []
+                [ H.text "Clocks"
+                , checkbox "hobbies" "clocks"
+                ]
+            , H.label []
+                [ H.text "Empathy"
+                , checkbox "hobbies" "empathy"
+                ]
+            , H.label []
+                [ H.text "Bugs"
+                , checkbox "hobbies" "bugs"
+                ]
+            ]
+        , H.div []
+            [ H.input [ A.type_ "submit", A.value "Submit" ] []
+            ]
+        ]
+
+
+checkbox : String -> String -> Html msg
+checkbox name value =
+    H.input
+        [ A.type_ "checkbox"
+        , A.name name
+        , A.value value
+        ]
+        []

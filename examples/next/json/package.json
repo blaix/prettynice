@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npx nodemon",
+    "build:dev": "npx prettynice build",
+    "build:prod": "npx prettynice build --optimize",
+    "start": "node dist/server/index.js"
+  },
+  "nodemonConfig": {
+    "exec": "npm run build:dev && npm start",
+    "ext": "js,gren",
+    "watch": [
+      "{client,server}/src/**/*"
+    ]
+  },
+  "dependencies": {
+    "gren-lang": "^0.5.2",
+    "prettynice": "file:../../../cli"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

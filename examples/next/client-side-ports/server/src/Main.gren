@@ -1,0 +1,60 @@
+module Main exposing (main)
+
+import Gen.Components.Alert as Alert
+import Gen.Components.Nested.Counter as Counter
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H
+
+
+main : Prettynice.Program Model msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model msg
+init env =
+    Prettynice.startProgram
+        { host = "127.0.0.1"
+        , port_ = 3000
+        , env = env
+        , model = {}
+        }
+
+
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+router model request response =
+    response
+        |> viewHome
+        |> Task.succeed
+
+
+viewHome : Response msg -> Response msg
+viewHome =
+    Response.asHtml
+        { title = "Alert"
+        , head = []
+        , body = 
+            [ H.p []
+                [ H.text "Message 1: "
+                , Alert.init { message = "A message from the server." }
+                ]
+            , H.p []
+                [ H.text "Message 2: "
+                , Alert.init { message = "A different message from the server." }
+                ]
+            , H.p []
+                [ H.text "Nested component that logs to the console: "
+                , Counter.init { start = 0 }
+                ]
+            ]
+        }

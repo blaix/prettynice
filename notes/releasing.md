@@ -1,14 +1,15 @@
-# Upgrading any version
-
-* [ ] Search repo for `prettynice/version` to update links to package docs (e.g. link to `FieldType` for support Prop types).
-
 # Upgrading major versions
 
-* [ ] bump and publish gren package version
+* [ ] bump gren package version
+* [ ] check gren docs
+* [ ] gren package validate
+* [ ] tag and publish new version
+
 * [ ] `cp -r examples/next examples/v[n]`
 * [ ] update gren.json in `examples/v[n]` to use published package
 * [ ] update example code in [README.md](/README.md)
 * [ ] update links to examples in [README.md](/README.md)
+
 * [ ] `cp -r website/next website/v[n]`
 * [ ] update links to examples in `website/v[n]`
 * [ ] update links to website in `examples/v[n]`
@@ -16,5 +17,6 @@
 * [ ] `flyctl deploy` and point `v[n].prettynice.dev` subdomain at `prettynice-v[n]`
 * [ ] change `prettynice.dev` redirect to `v[n]` subdomain
 * [ ] add banner to old version of website pointing to main domain for redirect to latest version
+
 * [ ] blog post
 * [ ] announce the release

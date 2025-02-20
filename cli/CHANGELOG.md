@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1 (2025-02-20)
+
+* Remove custom routing from project generator (no longer helpful since router logic is more complex now)
+
 ## 3.0.0 (2025-02-19)
 
 * Update project generator for prettynice v3

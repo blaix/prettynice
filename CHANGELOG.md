@@ -1,11 +1,11 @@
 # Changelog
 
-## 3.0.0 (coming soon)
+## 3.0.0 (2025-02-20)
 
 * Upgrade to gren 0.5 and associated packages
 * New architecture for defining programs (See [#14](https://github.com/blaix/prettynice/issues/14)):
     * Remove `SimpleRouter`.
-    * Move request handling from `onRequest` msg in `update` to a dedicated `router` function.
+    * Move Program's request handling from `onRequest` msg in `update` to a dedicated `router` function.
     * Modify `defineProgram` to just need `init` and `router`.
     * Add `defineFullProgram` for full TEA.
     * Modify `router` to return a task that must resolve to a `Response`.

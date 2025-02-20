@@ -13,7 +13,7 @@ It is a [`FormData`](#FormData) value which is a mapping of field names to array
 You can use [`get`](#get) to get a `Maybe String` of the first value associated with a
 field name, or [`getAll`](#getAll) to get an `Array String` of all values associated with the field name.
 
-See [`examples/next/forms`](https://github.com/blaix/prettynice/tree/main/examples/next/forms) for the full working example.
+See [`examples/v3/forms`](https://github.com/blaix/prettynice/tree/main/examples/v3/forms) for a full working example.
 
 ## Querying form data
 

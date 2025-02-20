@@ -58,8 +58,8 @@ import Transmutable.Html.Attributes as A
 
 {-| An HTTP response value.
 -}
-type alias Response appMsg =
-    Internal.Response appMsg
+type alias Response msg =
+    Internal.Response msg
 
 
 {-| Custom type for response bodies.
@@ -88,7 +88,7 @@ into a Prettynice Response.
 You shouldn't need this in your normal application code.
 The response you get in a Prettynice request message is already a Prettynice Response.
 -}
-new : Http.Response -> Response appMsg
+new : Http.Response -> Response msg
 new httpResponse =
     Internal.Response
         { httpResponse = httpResponse
@@ -96,19 +96,19 @@ new httpResponse =
         }
 
 
-{-| Turn a Prettynice Response int a normal [Http.Response](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/HttpServer.Response#Response)
+{-| Turn a Prettynice Response back into a normal [Node HttpServer Response](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/HttpServer.Response#Response)
 
 You shouldn't need this in a typical Prettynice program.
 But it's here if you want to do anything weird and cool.
 -}
-unwrap : Response appMsg -> Http.Response
+unwrap : Response msg -> Http.Response
 unwrap (Internal.Response { httpResponse }) =
     httpResponse
 
 
 {-| internal use
 -}
-unwrapFull : Response appMsg -> { httpResponse : Http.Response, appMsg : Maybe appMsg }
+unwrapFull : Response msg -> { httpResponse : Http.Response, appMsg : Maybe msg }
 unwrapFull (Internal.Response record) =
     record
 
@@ -116,8 +116,9 @@ unwrapFull (Internal.Response record) =
 {-| Update a response to send raw bytes.
 
 Use this to send binary data like files, images, etc.
+See [the bytes example](https://github.com/blaix/prettynice/tree/main/examples/v3/bytes) for a working usage example.
 -}
-asBytes : { contentType : String, body : Bytes } -> Response appMsg -> Response appMsg
+asBytes : { contentType : String, body : Bytes } -> Response msg -> Response msg
 asBytes { contentType, body } response =
     response
         |> withBody (BytesBody body)
@@ -125,15 +126,19 @@ asBytes { contentType, body } response =
 
 
 {-| Update a response to send plain text.
+
+See [the hello world example](https://github.com/blaix/prettynice/tree/main/examples/v3/hello-world) for a working usage example.
 -}
-asText : String -> Response appMsg -> Response appMsg
+asText : String -> Response msg -> Response msg
 asText text =
     withBody (TextBody text)
 
 
 {-| Update a response to send json.
+
+See [the json example](https://github.com/blaix/prettynice/tree/main/examples/v3/json) for a working usage example.
 -}
-asJson : Json.Encode.Value -> Response appMsg -> Response appMsg
+asJson : Json.Encode.Value -> Response msg -> Response msg
 asJson json =
     withBody (JsonBody json)
 
@@ -146,18 +151,20 @@ and `body` will go into the `<body>` tag.
 
 Note that Prettynice uses and expects Html from [icidasset/html-gren](https://packages.gren-lang.org/package/icidasset/html-gren),
 not from gren-lang/browser. The API is the same, but html-gren is needed because it supports server-side rendering.
+
+See [the html example](https://github.com/blaix/prettynice/tree/main/examples/v3/html) for a working usage example.
 -}
 asHtml :
     { title : String, head : Array (Html msg), body : Array (Html msg) } 
-    -> Response appMsg
-    -> Response appMsg
+    -> Response msg
+    -> Response msg
 asHtml html =
     withBody (HtmlBody html)
 
 
 {-| Update a response to send the specified body.
 -}
-withBody : Body msg -> Response appMsg -> Response appMsg
+withBody : Body msg -> Response msg -> Response msg
 withBody bodyVariant response =
     let
         { contentType, rawBody } =
@@ -234,7 +241,7 @@ withBody bodyVariant response =
 
 {-| Add a header to the response.
 -}
-setHeader : String -> String -> Response appMsg -> Response appMsg
+setHeader : String -> String -> Response msg -> Response msg
 setHeader key val (Internal.Response { httpResponse, appMsg }) =
     Internal.Response
         { appMsg = appMsg
@@ -245,7 +252,7 @@ setHeader key val (Internal.Response { httpResponse, appMsg }) =
 
 {-| Set the status of the response.
 -}
-setStatus : Int -> Response appMsg -> Response appMsg
+setStatus : Int -> Response msg -> Response msg
 setStatus status (Internal.Response { httpResponse, appMsg }) =
     Internal.Response
         { appMsg = appMsg
@@ -255,12 +262,10 @@ setStatus status (Internal.Response { httpResponse, appMsg }) =
 
 {-| Send a message to your `update` function when a response is sent.
 
-If you used [`Prettynice.defineFullProgram`](Prettynice#defineFullProgram) to define
-your server, you can send messages to your `update` function with this.
 See the [websocket example](https://github.com/blaix/prettynice/tree/main/examples/v3/html)
-for an example of this being used in a working application.
+for a working usage example.
 -}
-onSend : appMsg -> Response appMsg -> Response appMsg
+onSend : msg -> Response msg -> Response msg
 onSend appMsg (Internal.Response { httpResponse }) =
     Internal.Response
         { httpResponse = httpResponse

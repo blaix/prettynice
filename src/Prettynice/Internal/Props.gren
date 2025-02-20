@@ -10,7 +10,7 @@ module Prettynice.Internal.Props exposing
 {-| Extract and encode Prettynice component props.
 
 Props define the shape of the data passed into your component when you embed it in your server-side HTML.
-They are similar to [flags in elm](https://guide.elm-lang.org/interop/flags).
+They are similar to [flags](https://gren-lang.org/book/applications/flags/).
 
 **This module is used internally by the framework. It is not intended to be used in your application code.**
 
@@ -50,7 +50,7 @@ type alias Props =
 
 {-| Represents the type of a prop field.
 
-Support prop field types are:
+Supported prop field types are:
 
 * Int
 * Float
@@ -58,6 +58,9 @@ Support prop field types are:
 * Bool
 * Array
 * Maybe
+
+If you define props using an unsupported type,
+Prettynice will give you an error on the build step.
 
 -}
 type FieldType

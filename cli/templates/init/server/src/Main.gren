@@ -34,43 +34,23 @@ init env =
 router : Model -> Request -> Response msg -> Task Never (Response msg)
 router model request response =
     response
-        |> routeRequest request
+        |> viewHome
         |> Task.succeed
 
 
-routeRequest : Request -> Response msg -> Response msg
-routeRequest request response =
-    when request.path is
-
-        -- Root path: /
-        [] -> 
-            response
-                |> Response.asHtml
-                    { title = "My Website"
-                    , head = [ linkStylesheet ]
-                    , body = viewHomePage
-                    }
-
-        -- /hello/justin
-        [ "hello", name ] ->
-            response
-                |> Response.asText ("Hello, " ++ name)
-
-        -- all other paths
-        _ ->
-            response
-                |> Response.setStatus 404
-                |> Response.asText "Not found"
-
-
-viewHomePage : Array (Html msg)
-viewHomePage =
-    [ H.h1 [] [ H.text "Welcome to my website!" ]
-    , H.p [] [ H.text "I made this counter just for you." ]
-    -- This is generated during the prettynice build step from the
-    -- component defined in `client/src/Counter.gren`.
-    , Gen.Components.Counter.init { start = 0 }
-    ]
+viewHome : Response msg -> Response msg
+viewHome =
+    Response.asHtml
+        { title = "My Website"
+        , head = [ linkStylesheet ]
+        , body =
+            [ H.h1 [] [ H.text "Welcome to my website!" ]
+            , H.p [] [ H.text "I made this counter just for you." ]
+            -- This is generated during the prettynice build step from the
+            -- component defined in `client/src/Counter.gren`.
+            , Gen.Components.Counter.init { start = 0 }
+            ]
+        }
 
 
 linkStylesheet : Html msg

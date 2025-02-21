@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.2 (2025-02-21)
+
+* Restore custom routing to project generator (initial project isn't helpful enough without it)
+
 ## 3.0.1 (2025-02-20)
 
 * Remove custom routing from project generator (no longer helpful since router logic is more complex now)

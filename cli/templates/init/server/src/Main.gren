@@ -33,9 +33,28 @@ init env =
 
 router : Model -> Request -> Response msg -> Task Never (Response msg)
 router model request response =
-    response
-        |> viewHome
-        |> Task.succeed
+    when request.path is
+
+        -- root path: /
+        [] ->
+            response
+                |> viewHome
+                |> Task.succeed
+        
+        -- paths like: /hello/mary
+        [ "hello", name ] ->
+            response
+                |> Response.asText ("Hello, " ++ name)
+                |> Task.succeed
+
+        -- all other paths 404
+        _ ->
+            response
+                |> Response.setStatus 404
+                |> Response.asText "not found"
+                |> Task.succeed
+
+
 
 
 viewHome : Response msg -> Response msg

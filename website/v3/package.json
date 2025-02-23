@@ -1,0 +1,24 @@
+{
+  "name": "website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.5.9",
+    "@astrojs/starlight": "^0.21.1",
+    "@expressive-code/plugin-line-numbers": "^0.40.2",
+    "astro": "^4.3.5",
+    "rehype-external-links": "^3.0.0",
+    "sharp": "^0.32.5",
+    "typescript": "^5.4.2"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.4"
+  }
+}

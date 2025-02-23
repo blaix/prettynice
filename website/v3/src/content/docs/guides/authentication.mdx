@@ -1,0 +1,25 @@
+---
+title: Authentication
+description: Handling authentication in the prettynice framework.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note">
+  This page needs to be fleshed out.
+</Aside>
+
+There are no built-in mechanisms for handling authentication in Prettynice yet.
+But the basics of what you need to roll your own are all there:
+That's going to be [forms](/basics/forms/),
+Gren's [Crypto](https://packages.gren-lang.org/package/gren-lang/core/version/6/module/Crypto) module,
+[Prettynice.Response.setHeader](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Response#setHeader),
+and [Prettynice.Request.Request.headers](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Request#Request).
+
+You can use a [database](https://github.com/blaix/prettynice/tree/main/examples/v3/database)
+or interact with 3rd party APIs using Gren's [HttpClient](https://packages.gren-lang.org/package/gren-lang/node/version/5/module/HttpClient)
+on the server.
+
+Alternatively, you can get [HTTP Basic Auth](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)
+set up by [generating a token](https://www.debugbear.com/basic-auth-header-generator) for a username/pass of your choice
+and passing it as an Authorization header with [Prettynice.Response.setHeader](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Response#setHeader).

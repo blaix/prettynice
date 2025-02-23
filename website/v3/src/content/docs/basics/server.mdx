@@ -1,0 +1,337 @@
+---
+title: The Server
+description: Responding to HTTP requests in Pretty Nice
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Every request to your site begins in `server/src/Main.gren`.
+If you generated your project with `prettynice init`, it will look something like this:
+
+```elm title="server/src/Main.gren"
+module Main exposing (main)
+
+import Gen.Components.Counter
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+main : Prettynice.Program Model {}
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+type alias Model = {}
+
+
+init : Environment -> Prettynice.Init Model {}
+init env =
+    Prettynice.startProgram
+        { env = env
+        , host = "localhost"
+        , port_ = 3000
+        , model = {}
+        }
+
+
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+router model request response =
+    when request.path is
+
+        [] ->
+            response
+                |> viewHome
+                |> Task.succeed
+        
+        [ "hello", name ] ->
+            response
+                |> Response.asText ("Hello, " ++ name)
+                |> Task.succeed
+
+        _ ->
+            response
+                |> Response.setStatus 404
+                |> Response.asText "not found"
+                |> Task.succeed
+
+
+
+
+viewHome : Response msg -> Response msg
+viewHome =
+    Response.asHtml
+        { title = "My Website"
+        , head = [ linkStylesheet ]
+        , body =
+            [ H.h1 [] [ H.text "Welcome to my website!" ]
+            , H.p [] [ H.text "I made this counter just for you." ]
+            , Gen.Components.Counter.init { start = 0 }
+            ]
+        }
+
+
+linkStylesheet : Html msg
+linkStylesheet =
+    H.link [ A.rel "stylesheet", A.href "/styles.css" ]
+```
+
+If you aren't familiar with Gren, it would be a good idea to read through [the book](https://gren-lang.org/book/) first.
+The rest of this guide will assume basic familiarity with Gren and focus on the parts specific to Prettynice.
+
+## Imports
+
+```elm title="server/src/Main.gren"
+module Main exposing (main)
+
+import Gen.Components.Counter
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+```
+
+We start with the usual [module definition](https://gren-lang.org/book/syntax/modules/)
+followed by [imports](https://gren-lang.org/book/syntax/modules/#imports) for the modules we'll need for our server.
+
+We're aliasing the `Html` module as `H` and the `Html.Attributes` module as `A` make them easier to write, since they will be used often.
+The rest of these docs will be using those aliases, but you can call them whatever you want in your own code.
+See [the imports section of the Gren book](https://gren-lang.org/book/syntax/modules/#imports)
+for more information on importing and aliasing modules.
+
+<Aside>
+    Prettynice expects [Transmutable.Html](https://packages.gren-lang.org/package/icidasset/html-gren/version/5/module/Transmutable.Html),
+    which has the same API as the normal [Html from the browser package](https://packages.gren-lang.org/package/gren-lang/browser/version/5/module/Html),
+    except that it can be rendered server-side.
+</Aside>
+
+## Defining your Program
+
+We start with a `main` function that defines a [`Program`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice#Program).
+using [`defineProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice#defineProgram):
+
+```elm startLineNumber=13 title="server/src/Main.gren"
+main : Prettynice.Program Model {}
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        }
+```
+
+This will look similar to the `main` definition of a
+[Gren node program](https://gren-lang.org/book/applications/node/#lets-make-a-web-server).
+That's because a Prettynice server is a Gren node program!
+But instead of `update` and `subscription` functions, it takes a `router`.
+The router is a function dedicated to handling HTTP requests (we'll cover it in detail later),
+and for most situations, that's all you'll need for a Prettynice server.
+But if you do want `update` and `subscriptions`, take a look at
+[`defineFullProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice#defineFullProgram),
+which gives you the full power of a Gren node program, and the
+[server-side-tea example](https://github.com/blaix/prettynice/tree/main/examples/v3/server-side-tea)
+to see it in action.
+
+## Defining your Model
+
+Next we define a [type alias](https://gren-lang.org/book/syntax/types/#type-aliases) for our model:
+
+```elm title="server/src/Main.gren" startLineNumber=21
+type alias Model = {}
+```
+
+The model is used to hold server-side, runtime state.
+That's not something we need for this example, so we're leaving it empty.
+See the [server-side-tea](https://github.com/blaix/prettynice/tree/main/examples/v3/server-side-tea)
+and [websockets](https://github.com/blaix/prettynice/tree/main/examples/v3/websockets)
+examples for apps that use this feature.
+
+## Starting your Program
+
+Your `init` function should call [`startProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice#startProgram).
+This is where you define the host and port the server will listen on:
+
+```elm title="server/src/Main.gren" startLineNumber=24
+init : Environment -> Prettynice.Init Model {}
+init env =
+    Prettynice.startProgram
+        { env = env
+        , host = "localhost"
+        , port_ = 3000
+        , model = {}
+        }
+```
+
+Here we're starting a server that will be available on http://localhost:3000.
+This is also where we define our initial model value.
+But again, we're not using that here, so we set it to an empty record.
+
+If we wanted to do something like read or write to the file system on each request,
+we might wrap this in a call in
+[FileSystem.initialize](https://packages.gren-lang.org/package/gren-lang/node/version/5/module/FileSystem#initialize)
+and save the resulting
+[Permission](https://packages.gren-lang.org/package/gren-lang/node/version/5/module/FileSystem#Permission)
+value to our model so it can be used in our [router](#routing-requests).
+See the [bytes example](https://github.com/blaix/prettynice/tree/main/examples/v3/bytes)
+for an app that does that.
+
+## Routing Requests
+
+The heart of your server is the router function.
+Every request to your site will call this function,
+with the model you defined in [init](#starting-your-program),
+a [request](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Request)
+holding information about the request, and a
+[response](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Response)
+that you can use to respond to the request:
+
+```elm title="server/src/Main.gren" startLineNumber=34
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+router model request response =
+    when request.path is
+        [] ->
+            response
+                |> viewHome
+                |> Task.succeed
+
+
+        [ "hello", name ] ->
+            response
+                |> Response.asText ("Hello, " ++ name)
+                |> Task.succeed
+
+
+        _ ->
+            response
+                |> Response.setStatus 404
+                |> Response.asText "not found"
+                |> Task.succeed
+```
+
+To route the request, we're [pattern matching](https://gren-lang.org/book/syntax/pattern_matching/)
+and [destructuring](https://gren-lang.org/book/syntax/destructuring/) the request's path.
+`request.path` is an array of strings. It holds the path portion of the URL split on `/`.
+For example, requesting `http://localhost:3000/bowties/are/cool`
+would have a `request.path` of `["bowties", "are", "cool"]`.
+Requesting the root path would have an empty array (`[]`).
+
+For the root path (`[]`) we are deferring to a `viewHome` function that we'll cover later.
+
+For paths like `/hello/mary` or `/hello/sam` we capture the second part of the path in a `name` variable,
+and respond with plain text.
+
+For all other paths (the `_` catchall) we respond with a 404 error.
+
+<Aside>
+    You can also match on other things, like the [HTTP method](https://packages.gren-lang.org/package/gren-lang/node/version/4/module/HttpServer#Method):
+
+    ```elm
+        when request is
+            { method = POST, path = "/login" } -> 
+    ```
+
+    Take a look at the [Request](https://packages.gren-lang.org/package/blaix/prettynice/version/2/module/Prettynice.Request#Request)
+    record definition to see what's available. And the [forms example](https://github.com/blaix/prettynice/tree/main/examples/v3/forms)
+    for an app that does this.
+</Aside>
+
+You can see that the router returns a `Task`:
+
+```elm title="server/src/Main.gren" startLineNumber=34
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+```
+
+A [task](https://gren-lang.org/book/applications/tasks/)
+is how Gren describes an asynchronous operation that can possibly fail.
+This includes things like hitting the filesystem or an HTTP API.
+Prettynice expects a task from the router so you can do things like this as part of your request/response handling.
+Since we don't need anything like that for this example, we just use
+[`Task.succeed`](https://packages.gren-lang.org/package/gren-lang/core/version/6/module/Task#succeed).
+
+Tasks describe both the error type that is possible, and the type of value that the task resolves to if there is no error.
+The router's return type is `Task Never (Response msg)` which says an error should never be possible, and the router always
+resolves to a response. This means if you are using tasks that can fail, you'll need to handle those errors so it still resolves to a response (e.g. a 500 error response).
+See [the database example](https://github.com/blaix/prettynice/blob/ae360ee82406240a47e41633bdc0954a14a486fc/examples/v3/database/server/src/Main.gren#L53)
+for an app that does this.
+
+The `Response` type has an associated `msg` [type variable](https://gren-lang.org/book/syntax/custom_types/#type-variables).
+This would be relevant if we were using [`Prettynice.defineFullProgram`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice#defineFullProgram),
+in which case we'd have a proper `Msg` type and an `update` function, but we don't need that for this example,
+so you can safely ignore it.
+
+See [`Prettynice.Response`](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Response)
+for all the things you can do with a response.
+
+## Responding with HTML
+
+For the homepage, we're using [Response.asHtml](https://packages.gren-lang.org/package/blaix/prettynice/version/3/module/Prettynice.Response#asHtml)
+to render HTML:
+
+```elm title="server/src/Main.gren" startLineNumber=57
+viewHome : Response msg -> Response msg
+viewHome =
+    Response.asHtml
+        { title = "My Website"
+        , head = [ linkStylesheet ]
+        , body =
+            [ H.h1 [] [ H.text "Welcome to my website!" ]
+            , H.p [] [ H.text "I made this counter just for you." ]
+            , Gen.Components.Counter.init { start = 0 }
+            ]
+        }
+```
+
+Because prettynice needs some control over the `<head>` and `<body>` tags, you can't specify them directly,
+but you have some fields to inject what you need into the page:
+
+* `title`: Sets the `<title>` tag. Here we're rendering `<title>My Website</title>`
+* `head`: An array of HTML that will be injected into the `<head>` tag. Here we're deferring to a `linkStylesheet` function to link to a stylesheet. That will be covered in a later section. In a real app you might also want to specify some [meta tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta) here.
+* `body`: An array of HTML to make up the `<body>` of your page. Here we're rendering a header, a paragraph tag, and a component that we will cover in the next section.
+
+## Initialize Components
+
+The `viewHome` function is referencing a component module:
+
+```elm title="server/src/Main.gren" startLineNumber=65
+    , Gen.Components.Counter.init { start = 0 }
+```
+
+Where did this come from?
+
+When you ran `prettynice init`, it created an example [component](/basics/client/) at `client/src/Components/Counter.gren`.
+Take a look at that file. It works just like a normal [`Browser.element`](https://gren-lang.org/book/applications/browser/#browserelement),
+but it has a special `Props` record.
+When you run `build`, prettynice looks at all the `.gren` files in your
+`client/src/Components` directory and generates corresponding modules that will be available in your server code at
+`Gen.Components.[ComponentName]`. The module will have an `init` function that takes an argument matching your `Props` definition
+and returns the HTML and Javascript needed to run your component in the browser.
+
+This means you can create mini [browser apps](https://gren-lang.org/book/applications/browser/)
+that can be embedded in your server-rendered HTML, loaded and ready with server-side data instead of fetching it client-side.
+
+See the [client-side-components example](https://github.com/blaix/prettynice/tree/main/examples/v3/client-side-components)
+or the [skip ahead](/basics/client/) to learn more about client-side components.
+
+## Assets and Styling
+
+In the `linkStylesheet` function we're linking to `/styles.css`:
+
+```elm title="server/src/Main.gren" startLineNumber=70
+linkStylesheet : Html msg
+linkStylesheet =
+    H.link [ A.rel "stylesheet", A.href "/styles.css" ]
+```
+
+`styles.css` was created by `prettynice init` and placed in the `public/` directory.
+Any files in `public/` will be accessible at the root url path.
+So you can put other things there like images, fonts, etc. and reference them in your HTML anywhere you need them.
+

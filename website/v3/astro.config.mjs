@@ -8,11 +8,6 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Pretty Nice',
-            expressiveCode: {
-              plugins: [
-                pluginLineNumbers()
-              ],
-            },
             customCss: [
               './src/styles/custom.css',
             ],

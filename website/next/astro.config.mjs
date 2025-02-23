@@ -1,15 +1,21 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import rehypeExternalLinks from 'rehype-external-links';
+import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Pretty Nice',
-      customCss: [
-        './src/styles/custom.css',
-      ],
+            expressiveCode: {
+              plugins: [
+                pluginLineNumbers()
+              ],
+            },
+            customCss: [
+              './src/styles/custom.css',
+            ],
 			social: {
 				github: 'https://github.com/blaix/prettynice',
 				mastodon: 'https://hachyderm.io/@blaix',
@@ -36,7 +42,7 @@ export default defineConfig({
 				},
 			  {
 					label: 'Guides',
-          autogenerate: { directory: 'guides' },
+                    autogenerate: { directory: 'guides' },
 				},
 			],
 		}),

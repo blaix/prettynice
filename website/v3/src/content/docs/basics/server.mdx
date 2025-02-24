@@ -175,12 +175,9 @@ Here we're starting a server that will be available on http://localhost:3000.
 This is also where we define our initial model value.
 But again, we're not using that here, so we set it to an empty record.
 
-If we wanted to do something like read or write to the file system on each request,
-we might wrap this in a call in
-[FileSystem.initialize](https://packages.gren-lang.org/package/gren-lang/node/version/5/module/FileSystem#initialize)
-and save the resulting
-[Permission](https://packages.gren-lang.org/package/gren-lang/node/version/5/module/FileSystem#Permission)
-value to our model so it can be used in our [router](#routing-requests).
+For a more complex program, we might need to
+[initialize some subsystems](https://packages.gren-lang.org/package/gren-lang/node/version/5/module/Init)
+here and save subsystem permissions to our model so they can be used in the router.
 See the [bytes example](https://github.com/blaix/prettynice/tree/main/examples/v3/bytes)
 for an app that does that.
 

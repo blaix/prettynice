@@ -1,6 +1,6 @@
 # Pretty Nice Framework
 
-[#prettynice]: https://discord.gg/PuStSFDTch
+[#prettynice]: https://discord.gg/TQbw6CcTXG
 [Discord]: https://discord.gg/J8aaGMfz
 
 A purely functional, fully type-safe, full-stack web framework for [Gren](https://gren-lang.org/).

@@ -8,6 +8,7 @@
     "gren-version": "0.5.3",
     "dependencies": {
         "direct": {
+            "blaix/gren-ws4sql": "1.0.1",
             "blaix/prettynice": "local:../../../..",
             "gren-lang/core": "6.0.1",
             "gren-lang/node": "5.0.0",

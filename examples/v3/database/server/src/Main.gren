@@ -1,9 +1,10 @@
 module Main exposing (main)
 
+import Db
+import Db.Encode as Encode
+import Db.Decode as Decode
 import HttpClient
 import Init
-import Json.Encode as Encode
-import Json.Decode as Decode
 import Node exposing (Environment)
 import Prettynice
 import Prettynice.Request exposing (Request)
@@ -14,7 +15,7 @@ import Transmutable.Html.Attributes as A
 
 
 type alias Model =
-    { httpPerm : HttpClient.Permission
+    { db : Db.Connection
     }
 
 
@@ -39,7 +40,7 @@ init env =
             { host = "0.0.0.0"
             , port_ = 3000
             , env = env
-            , model = { httpPerm = httpPerm }
+            , model = { db = Db.init httpPerm "http://localhost:12321/dev" }
             }
 
 
@@ -54,9 +55,9 @@ router model request response =
             userId
                 |> String.toInt
                 |> Maybe.withDefault 0
-                |> getUser model.httpPerm
-                |> Task.map (userResultToResponse response)
-                |> Task.onError (queryErrorToResponse response)
+                |> getUser model.db
+                |> Task.map (userToResponse response)
+                |> Task.onError (errorToResponse response)
 
         _ ->
             notFound response
@@ -64,94 +65,42 @@ router model request response =
 
 
 getUser : 
-    HttpClient.Permission 
+    Db.Connection
     -> Int 
-    -> Task 
-        (HttpClient.Error (Array User))
-        (HttpClient.Response (Array User))
-getUser httpPerm userId =
-    HttpClient.post "http://localhost:12321/dev"
-        |> HttpClient.withJsonBody (userQuery userId)
-        |> HttpClient.expectJson decodeUserResult
-        |> HttpClient.send httpPerm
+    -> Task Db.Error User
+getUser db userId =
+    Db.getOne db
+        { query = "select * from User where id = :id"
+        , parameters = [ Encode.int "id" userId ]
+        , decoder =
+            Decode.map2
+                (Decode.int "id")
+                (Decode.string "name")
+                (\id name -> { id = id, name = name })
+        }
 
 
-userQuery : Int -> Encode.Value
-userQuery userId =
-    -- See https://germ.gitbook.io/ws4sqlite/documentation/requests
-    -- We want a request that looks like this:
-    --     { 
-    --         "transaction": [
-    --             {
-    --                 "query": "select * from User where id = ?",
-    --                 "values": [ userId ]
-    --             }
-    --         ]
-    --     }
-    Encode.object
-        [ { key = "transaction"
-          , value = Encode.array Encode.object
-            [ [ { key = "query"
-                , value = Encode.string "select * from User where id = ?"
-                }
-              , { key = "values"
-                , value = Encode.array Encode.int [ userId ]
-                }
-              ]
-            ]
-          }
-        ]
+userToResponse : Response msg -> User -> Response msg
+userToResponse response user =
+    Response.asHtml (viewUser user) response
 
 
-decodeUserResult : Decode.Decoder (Array User)
-decodeUserResult =
-    -- See https://germ.gitbook.io/ws4sqlite/documentation/responses
-    -- We will get a response that looks like this:
-    --     {
-    --         "results": [
-    --             {
-    --                 ...
-    --                 "resultSet": [
-    --                     { "id": 1, "name": "Justin" }
-    --                 ]
-    --             }
-    --          ]
-    --     }
-    Decode.map Array.flatten <|
-        Decode.field "results" <|
-            Decode.array <|
-                Decode.field "resultSet" <|
-                    Decode.array <|
-                        Decode.map2 makeUser
-                            (Decode.field "id" Decode.int)
-                            (Decode.field "name" Decode.string)
-
-
-makeUser : Int -> String -> User
-makeUser id name =
-    { id = id, name = name }
-
-
-userResultToResponse : Response msg -> HttpClient.Response (Array User) -> Response msg
-userResultToResponse response result =
-    when result.data is
-        [ user ] ->
-            Response.asHtml (viewUser user) response
+errorToResponse : Response msg -> Db.Error -> Task Never (Response msg)
+errorToResponse response error =
+    when error is
+        Db.NoResultError ->
+            notFound response
+                |> Task.succeed
 
         _ ->
-            notFound response
+            response
+                -- In a real app you'll want a real error message
+                |> Response.asText (Debug.toString error)
+                |> Response.setStatus 500
+                |> Task.succeed
 
 
-queryErrorToResponse : Response msg -> HttpClient.Error (Array User) -> Task Never (Response msg)
-queryErrorToResponse response error =
-    response
-        -- In a real app you'll want a real error message
-        |> Response.asText (Debug.toString error)
-        |> Response.setStatus 500
-        |> Task.succeed
-
-
-viewUser : User -> { title : String, head : Array (Html {}), body : Array (Html {}) }
+viewUser : User -> { title : String, head : Array (Html msg), body : Array (Html msg) }
 viewUser user =
     { title = "User Details"
     , head = []
@@ -169,7 +118,7 @@ viewUser user =
     }
 
 
-viewHome : { title : String, head : Array (Html {}), body : Array (Html {}) }
+viewHome : { title : String, head : Array (Html msg), body : Array (Html msg) }
 viewHome =
     { title = "Home"
     , head = []

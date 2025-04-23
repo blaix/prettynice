@@ -1,11 +1,14 @@
 # Database Example
 
-Gren does not have native database support (yet).
-For now it is recommended to use some form of db-over-http.
-In this example I am using [ws4sqlite](https://github.com/proofrock/ws4sqlite)
-to query sqlite over HTTP on the backend.
+This is an example of using an sqlite database with prettynice.
 
-See [`server/src/Main.gren`](server/src/Main.gren).
+For migrations, it uses [dbmate](https://github.com/amacneil/dbmate).
+
+For communicating with the database, it uses [gren-ws4sql](https://github.com/blaix/gren-ws4sql).
+
+See [package.json](package.json) for how this is orchestrated.
+
+See [`server/src/Main.gren`](server/src/Main.gren) for the relevant code.
 
 ## Running this example project (dev)
 

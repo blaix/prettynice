@@ -1,6 +1,6 @@
 # Database Example
 
-This is an example of using an sqlite database with prettynice.
+This is an example of using an sqlite database with [prettynice](https://github.com/blaix/prettynice).
 
 For migrations, it uses [dbmate](https://github.com/amacneil/dbmate).
 

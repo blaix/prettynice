@@ -13,5 +13,5 @@ Take a look at `server/src/Main.gren` and `client/src/Counter.gren`.
 
 See the [examples](https://github.com/blaix/prettynice/tree/main/examples)
 
-Create an optimized production build with `npm run build`
+Create an optimized production build with `npm run build:prod`
 and start the server with `npm start`.

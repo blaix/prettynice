@@ -1,7 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "gren-lang": "^0.5.2",
+    "gren-lang": "^0.5.4",
     "prettynice": "file:cli"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "prettynice",
-  "version": "3.0.3",
+  "version": "3.0.5",
   "description": "CLI for the Prettynice Gren framework.",
   "bin": {
     "prettynice": "bin/index.js"

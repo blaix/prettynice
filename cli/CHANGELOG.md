@@ -1,6 +1,15 @@
 # Changelog
 
-## 3.0.3 (2025-05-25)
+## 3.0.5 (2025-05-16)
+
+* Specify 0.5.3 in project generator template gren.json files.
+  This is to get around a bug in the version checks of 0.5.4
+
+## 3.0.4 (2025-05-16)
+
+* Do not include package-lock.json in project generator template
+
+## 3.0.3 (2025-05-16)
 
 * Bump gren to 0.5.4 in project generator tempalte's package.json
 

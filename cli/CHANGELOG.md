@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3 (2025-05-25)
+
+* Bump gren to 0.5.4 in project generator tempalte's package.json
+
 ## 3.0.2 (2025-02-21)
 
 * Restore custom routing to project generator (initial project isn't helpful enough without it)

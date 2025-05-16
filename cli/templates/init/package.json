@@ -14,7 +14,7 @@
     ]
   },
   "dependencies": {
-    "gren-lang": "^0.5.3",
+    "gren-lang": "^0.5.4",
     "prettynice": "^3.0.0"
   },
   "devDependencies": {

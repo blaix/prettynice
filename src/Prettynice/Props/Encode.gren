@@ -13,10 +13,10 @@ encoder sourceCode =
                     generateEncoder propsType typeDefs
 
                 Nothing ->
-                    "-- No Props type found"
+                    "-- No Props type found in: " ++ Debug.toString typeDefs
 
-        Err _ ->
-            "-- Parse error"
+        Err deadEnds ->
+            "-- Parse error: " ++ Debug.toString deadEnds
 
 
 generateEncoder : TypeDefinition -> Array TypeDefinition -> String

@@ -10,6 +10,7 @@ module Prettynice.Props.Parser exposing
     )
 
 import Parser exposing (..)
+import Parser exposing (Step(..))
 import Set
 
 
@@ -58,6 +59,7 @@ parseTypeDefinitions source =
 manyTypeDefinitions : Parser (Array TypeDefinition)
 manyTypeDefinitions =
     succeed identity
+        |. spaces
         |= parseTypeDefinitionsRecursive []
 
 
@@ -65,6 +67,7 @@ parseTypeDefinitionsRecursive : Array TypeDefinition -> Parser (Array TypeDefini
 parseTypeDefinitionsRecursive acc =
     oneOf
         [ succeed (\def -> parseTypeDefinitionsRecursive (Array.pushLast def acc))
+            |. spaces
             |= typeDefinitionParser
             |> andThen identity
         , succeed acc
@@ -74,7 +77,7 @@ parseTypeDefinitionsRecursive acc =
 typeDefinitionParser : Parser TypeDefinition
 typeDefinitionParser =
     oneOf
-        [ typeAliasParser
+        [ typeAliasParser |> backtrackable
         , customTypeDefinitionParser
         ]
 
@@ -166,26 +169,42 @@ fieldTypeParserHelper =
 
 customTypeVariantsParser : Parser (Array CustomVariant)
 customTypeVariantsParser =
-    sequence
-        { start = ""
-        , separator = "|"
-        , end = ""
-        , spaces = spaces
-        , item = customVariantParser
-        , trailing = Forbidden
-        }
+    succeed (\first rest -> Array.pushFirst first rest)
+        |. spaces
+        |= customVariantParser
+        |= parseRestVariants []
+
+
+parseRestVariants : Array CustomVariant -> Parser (Array CustomVariant)
+parseRestVariants acc =
+    oneOf
+        [ succeed (\variant -> parseRestVariants (Array.pushLast variant acc))
+            |. chompWhile (\c -> c == ' ' || c == '\t')
+            |. symbol "|"
+            |. spaces
+            |= customVariantParser
+            |> andThen identity
+        , succeed acc
+        ]
 
 
 customVariantParser : Parser CustomVariant
 customVariantParser =
     succeed (\name argument -> { name = name, argument = argument })
         |= variable { start = Char.isAlpha, inner = \c -> Char.isAlphaNum c || c == '_', reserved = Set.empty }
-        |= oneOf
-            [ succeed Nothing
-            , succeed Just
-                |. spaces
-                |= fieldTypeParser
-            ]
+        |= parseOptionalArgument
+
+
+parseOptionalArgument : Parser (Maybe FieldType)
+parseOptionalArgument =
+    oneOf
+        [ succeed Just
+            |. chompIf (\c -> c == ' ' || c == '\t')
+            |. chompWhile (\c -> c == ' ' || c == '\t')
+            |= fieldTypeParser
+            |> backtrackable
+        , succeed Nothing
+        ]
 
 
 findPropsType : Array TypeDefinition -> Maybe TypeDefinition

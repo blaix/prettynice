@@ -1,7 +1,7 @@
 module Prettynice.Props.Encode exposing (encoder)
 
 import Json.Encode
-import Prettynice.Props.Parser as Parser exposing (TypeDefinition, TypeDefKind(..), RecordType, RecordField, CustomVariant, FieldType(..))
+import Prettynice.Props.Parser as Parser exposing (ParsedType, TypeDefinition(..), RecordField, CustomVariant, FieldType(..))
 
 
 encoder : String -> String
@@ -19,15 +19,15 @@ encoder sourceCode =
             "-- Parse error: " ++ Debug.toString deadEnds
 
 
-generateEncoder : TypeDefinition -> Array TypeDefinition -> String
+generateEncoder : ParsedType -> Array ParsedType -> String
 generateEncoder propsType allTypes =
     let
         encoderName = "encodeProps"
         
         encoderBody = 
             when propsType.definition is
-                TypeAlias recordType ->
-                    generateRecordEncoder "props" recordType allTypes
+                RecordAlias fields ->
+                    generateRecordEncoder "props" fields allTypes
                 
                 CustomType variants ->
                     generateCustomTypeEncoder "props" variants allTypes
@@ -37,10 +37,10 @@ generateEncoder propsType allTypes =
     "    " ++ encoderBody
 
 
-generateRecordEncoder : String -> RecordType -> Array TypeDefinition -> String
-generateRecordEncoder varName recordType allTypes =
+generateRecordEncoder : String -> Array RecordField -> Array ParsedType -> String
+generateRecordEncoder varName fields allTypes =
     let
-        fieldEncoders = Array.map (generateFieldEncoder varName allTypes) recordType.fields
+        fieldEncoders = Array.map (generateFieldEncoder varName allTypes) fields
         
         fieldPairs = Array.map (\encoder_ ->
             "        " ++ encoder_
@@ -53,7 +53,7 @@ generateRecordEncoder varName recordType allTypes =
     "        ]"
 
 
-generateFieldEncoder : String -> Array TypeDefinition -> RecordField -> String
+generateFieldEncoder : String -> Array ParsedType -> RecordField -> String
 generateFieldEncoder parentVar allTypes field =
     let
         fieldAccess = parentVar ++ "." ++ field.name
@@ -62,7 +62,7 @@ generateFieldEncoder parentVar allTypes field =
     "{ key = \"" ++ field.name ++ "\", value = " ++ encoder_ ++ " }"
 
 
-generateTypeEncoder : String -> FieldType -> Array TypeDefinition -> String
+generateTypeEncoder : String -> FieldType -> Array ParsedType -> String
 generateTypeEncoder varName fieldType allTypes =
     when fieldType is
         StringType ->
@@ -84,8 +84,8 @@ generateTypeEncoder varName fieldType allTypes =
             when Array.findFirst (\def -> def.name == typeName) allTypes is
                 Just { value = typeDef } ->
                     when typeDef.definition is
-                        TypeAlias recordType ->
-                            generateRecordEncoder varName recordType allTypes
+                        RecordAlias fields ->
+                            generateRecordEncoder varName fields allTypes
                         
                         CustomType _ ->
                             "encode" ++ typeName ++ " " ++ varName
@@ -94,10 +94,10 @@ generateTypeEncoder varName fieldType allTypes =
                     "encode" ++ typeName ++ " " ++ varName
         
         Parser.RecordType fields ->
-            generateRecordEncoder varName { fields = fields } allTypes
+            generateRecordEncoder varName fields allTypes
 
 
-generateCustomTypeEncoder : String -> Array CustomVariant -> Array TypeDefinition -> String
+generateCustomTypeEncoder : String -> Array CustomVariant -> Array ParsedType -> String
 generateCustomTypeEncoder varName variants allTypes =
     let
         cases = Array.map (generateVariantCase allTypes) variants
@@ -107,7 +107,7 @@ generateCustomTypeEncoder varName variants allTypes =
     "when " ++ varName ++ " is\n" ++ joinedCases
 
 
-generateVariantCase : Array TypeDefinition -> CustomVariant -> String
+generateVariantCase : Array ParsedType -> CustomVariant -> String
 generateVariantCase allTypes variant =
     when variant.argument is
         Nothing ->

@@ -1,0 +1,122 @@
+module Prettynice.Props.Encode exposing (encoder)
+
+import Json.Encode
+import Prettynice.Props.Parser as Parser exposing (TypeDefinition, TypeDefKind(..), RecordType, RecordField, CustomVariant, FieldType(..))
+
+
+encoder : String -> String
+encoder sourceCode =
+    when Parser.parseTypeDefinitions sourceCode is
+        Ok typeDefs ->
+            when Parser.findPropsType typeDefs is
+                Just propsType ->
+                    generateEncoder propsType typeDefs
+
+                Nothing ->
+                    "-- No Props type found"
+
+        Err _ ->
+            "-- Parse error"
+
+
+generateEncoder : TypeDefinition -> Array TypeDefinition -> String
+generateEncoder propsType allTypes =
+    let
+        encoderName = "encodeProps"
+        
+        encoderBody = 
+            when propsType.definition is
+                TypeAlias recordType ->
+                    generateRecordEncoder "props" recordType allTypes
+                
+                CustomType variants ->
+                    generateCustomTypeEncoder "props" variants allTypes
+    in
+    encoderName ++ " : Props -> Json.Encode.Value\n" ++
+    encoderName ++ " props =\n" ++
+    "    " ++ encoderBody
+
+
+generateRecordEncoder : String -> RecordType -> Array TypeDefinition -> String
+generateRecordEncoder varName recordType allTypes =
+    let
+        fieldEncoders = Array.map (generateFieldEncoder varName allTypes) recordType.fields
+        
+        fieldPairs = Array.map (\encoder_ ->
+            "        " ++ encoder_
+        ) fieldEncoders
+        
+        joinedFields = String.join ",\n" fieldPairs
+    in
+    "Json.Encode.object\n" ++
+    "        [\n" ++ joinedFields ++ "\n" ++
+    "        ]"
+
+
+generateFieldEncoder : String -> Array TypeDefinition -> RecordField -> String
+generateFieldEncoder parentVar allTypes field =
+    let
+        fieldAccess = parentVar ++ "." ++ field.name
+        encoder_ = generateTypeEncoder fieldAccess field.fieldType allTypes
+    in
+    "{ key = \"" ++ field.name ++ "\", value = " ++ encoder_ ++ " }"
+
+
+generateTypeEncoder : String -> FieldType -> Array TypeDefinition -> String
+generateTypeEncoder varName fieldType allTypes =
+    when fieldType is
+        StringType ->
+            "Json.Encode.string " ++ varName
+        
+        IntType ->
+            "Json.Encode.int " ++ varName
+        
+        FloatType ->
+            "Json.Encode.float " ++ varName
+        
+        BoolType ->
+            "Json.Encode.bool " ++ varName
+        
+        ArrayType innerType ->
+            "Json.Encode.array (" ++ generateTypeEncoder "item" innerType allTypes ++ ") " ++ varName
+        
+        Parser.CustomFieldType typeName ->
+            when Array.findFirst (\def -> def.name == typeName) allTypes is
+                Just { value = typeDef } ->
+                    when typeDef.definition is
+                        TypeAlias recordType ->
+                            generateRecordEncoder varName recordType allTypes
+                        
+                        CustomType _ ->
+                            "encode" ++ typeName ++ " " ++ varName
+                
+                Nothing ->
+                    "encode" ++ typeName ++ " " ++ varName
+        
+        Parser.RecordType fields ->
+            generateRecordEncoder varName { fields = fields } allTypes
+
+
+generateCustomTypeEncoder : String -> Array CustomVariant -> Array TypeDefinition -> String
+generateCustomTypeEncoder varName variants allTypes =
+    let
+        cases = Array.map (generateVariantCase allTypes) variants
+        caseStrings = Array.map (\caseStr -> "        " ++ caseStr) cases
+        joinedCases = String.join "\n" caseStrings
+    in
+    "when " ++ varName ++ " is\n" ++ joinedCases
+
+
+generateVariantCase : Array TypeDefinition -> CustomVariant -> String
+generateVariantCase allTypes variant =
+    when variant.argument is
+        Nothing ->
+            variant.name ++ " ->\n" ++
+            "            Json.Encode.string \"" ++ variant.name ++ "\""
+        
+        Just argType ->
+            variant.name ++ " arg ->\n" ++
+            "            Json.Encode.object\n" ++
+            "                [ { key = \"tag\", value = Json.Encode.string \"" ++ variant.name ++ "\" }\n" ++
+            "                , { key = \"value\", value = " ++ generateTypeEncoder "arg" argType allTypes ++ " }\n" ++
+            "                ]"

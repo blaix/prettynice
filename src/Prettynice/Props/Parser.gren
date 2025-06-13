@@ -1,0 +1,194 @@
+module Prettynice.Props.Parser exposing 
+    ( TypeDefinition
+    , TypeDefKind(..)
+    , RecordType
+    , RecordField
+    , CustomVariant
+    , FieldType(..)
+    , parseTypeDefinitions
+    , findPropsType
+    )
+
+import Parser exposing (..)
+import Set
+
+
+type alias TypeDefinition =
+    { name : String
+    , definition : TypeDefKind
+    }
+
+
+type TypeDefKind
+    = TypeAlias RecordType
+    | CustomType (Array CustomVariant)
+
+
+type alias RecordType =
+    { fields : Array RecordField }
+
+
+type alias RecordField =
+    { name : String
+    , fieldType : FieldType
+    }
+
+
+type alias CustomVariant =
+    { name : String
+    , argument : Maybe FieldType
+    }
+
+
+type FieldType
+    = StringType
+    | IntType
+    | FloatType
+    | BoolType
+    | ArrayType FieldType
+    | CustomFieldType String
+    | RecordType (Array RecordField)
+
+
+parseTypeDefinitions : String -> Result (Array DeadEnd) (Array TypeDefinition)
+parseTypeDefinitions source =
+    run manyTypeDefinitions source
+
+
+manyTypeDefinitions : Parser (Array TypeDefinition)
+manyTypeDefinitions =
+    succeed identity
+        |= parseTypeDefinitionsRecursive []
+
+
+parseTypeDefinitionsRecursive : Array TypeDefinition -> Parser (Array TypeDefinition)  
+parseTypeDefinitionsRecursive acc =
+    oneOf
+        [ succeed (\def -> parseTypeDefinitionsRecursive (Array.pushLast def acc))
+            |= typeDefinitionParser
+            |> andThen identity
+        , succeed acc
+        ]
+
+
+typeDefinitionParser : Parser TypeDefinition
+typeDefinitionParser =
+    oneOf
+        [ typeAliasParser
+        , customTypeDefinitionParser
+        ]
+
+
+typeAliasParser : Parser TypeDefinition
+typeAliasParser =
+    succeed (\name recordType -> { name = name, definition = TypeAlias recordType })
+        |. spaces
+        |. keyword "type"
+        |. spaces
+        |. keyword "alias"
+        |. spaces
+        |= variable { start = Char.isAlpha, inner = \c -> Char.isAlphaNum c || c == '_', reserved = Set.empty }
+        |. spaces
+        |. symbol "="
+        |. spaces
+        |= recordTypeParser
+
+
+customTypeDefinitionParser : Parser TypeDefinition
+customTypeDefinitionParser =
+    succeed (\name variants -> { name = name, definition = CustomType variants })
+        |. spaces
+        |. keyword "type"
+        |. spaces
+        |= variable { start = Char.isAlpha, inner = \c -> Char.isAlphaNum c || c == '_', reserved = Set.empty }
+        |. spaces
+        |. symbol "="
+        |. spaces
+        |= customTypeVariantsParser
+
+
+recordTypeParser : Parser RecordType
+recordTypeParser =
+    succeed (\fields -> { fields = fields })
+        |. symbol "{"
+        |. spaces
+        |= sequence
+            { start = ""
+            , separator = ","
+            , end = "}"
+            , spaces = spaces
+            , item = recordFieldParser
+            , trailing = Optional
+            }
+
+
+recordFieldParser : Parser RecordField
+recordFieldParser =
+    succeed (\name fieldType -> { name = name, fieldType = fieldType })
+        |= variable { start = Char.isAlpha, inner = \c -> Char.isAlphaNum c || c == '_', reserved = Set.empty }
+        |. spaces
+        |. symbol ":"
+        |. spaces
+        |= fieldTypeParser
+
+
+fieldTypeParser : Parser FieldType
+fieldTypeParser =
+    lazy (\_ -> fieldTypeParserHelper)
+
+
+fieldTypeParserHelper : Parser FieldType
+fieldTypeParserHelper =
+    oneOf
+        [ succeed StringType |. keyword "String"
+        , succeed IntType |. keyword "Int"
+        , succeed FloatType |. keyword "Float"
+        , succeed BoolType |. keyword "Bool"
+        , succeed ArrayType
+            |. keyword "Array"
+            |. spaces
+            |= fieldTypeParser
+        , succeed (\fields -> RecordType fields)
+            |. symbol "{"
+            |. spaces
+            |= sequence
+                { start = ""
+                , separator = ","
+                , end = "}"
+                , spaces = spaces
+                , item = recordFieldParser
+                , trailing = Optional
+                }
+        , succeed CustomFieldType
+            |= variable { start = Char.isAlpha, inner = \c -> Char.isAlphaNum c || c == '_', reserved = Set.empty }
+        ]
+
+
+customTypeVariantsParser : Parser (Array CustomVariant)
+customTypeVariantsParser =
+    sequence
+        { start = ""
+        , separator = "|"
+        , end = ""
+        , spaces = spaces
+        , item = customVariantParser
+        , trailing = Forbidden
+        }
+
+
+customVariantParser : Parser CustomVariant
+customVariantParser =
+    succeed (\name argument -> { name = name, argument = argument })
+        |= variable { start = Char.isAlpha, inner = \c -> Char.isAlphaNum c || c == '_', reserved = Set.empty }
+        |= oneOf
+            [ succeed Nothing
+            , succeed Just
+                |. spaces
+                |= fieldTypeParser
+            ]
+
+
+findPropsType : Array TypeDefinition -> Maybe TypeDefinition
+findPropsType typeDefs =
+    Array.findFirst (\def -> def.name == "Props") typeDefs
+        |> Maybe.map .value

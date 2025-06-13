@@ -20,7 +20,8 @@ type alias ParsedType =
 
 
 type TypeDefinition
-    = RecordAlias (Array RecordField)
+    = TypeAlias FieldType
+    | RecordAlias (Array RecordField)
     | CustomType (Array CustomVariant)
 
 
@@ -73,6 +74,7 @@ typeDefinitionParser : Parser ParsedType
 typeDefinitionParser =
     oneOf
         [ recordAliasParser |> backtrackable
+        , typeAliasParser |> backtrackable
         , customTypeDefinitionParser
         ]
 
@@ -90,6 +92,21 @@ recordAliasParser =
         |. symbol "="
         |. spaces
         |= recordFieldsParser
+
+
+typeAliasParser : Parser ParsedType
+typeAliasParser =
+    succeed (\name fieldType -> { name = name, definition = TypeAlias fieldType })
+        |. spaces
+        |. keyword "type"
+        |. spaces
+        |. keyword "alias"
+        |. spaces
+        |= variable { start = Char.isAlpha, inner = \c -> Char.isAlphaNum c || c == '_', reserved = Set.empty }
+        |. spaces
+        |. symbol "="
+        |. spaces
+        |= fieldTypeParser
 
 
 customTypeDefinitionParser : Parser ParsedType

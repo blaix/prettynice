@@ -26,6 +26,9 @@ generateEncoder propsType allTypes =
         
         encoderBody = 
             when propsType.definition is
+                TypeAlias aliasedType ->
+                    generateTypeEncoder "props" aliasedType allTypes
+                
                 RecordAlias fields ->
                     generateRecordEncoder "props" fields allTypes
                 
@@ -84,6 +87,9 @@ generateTypeEncoder varName fieldType allTypes =
             when Array.findFirst (\def -> def.name == typeName) allTypes is
                 Just { value = typeDef } ->
                     when typeDef.definition is
+                        TypeAlias aliasedType ->
+                            generateTypeEncoder varName aliasedType allTypes
+                        
                         RecordAlias fields ->
                             generateRecordEncoder varName fields allTypes
                         

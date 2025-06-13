@@ -10,7 +10,12 @@ encoder sourceCode =
         Ok typeDefs ->
             when Parser.findPropsType typeDefs is
                 Just propsType ->
-                    generateEncoder propsType typeDefs
+                    let
+                        referencedTypes = findReferencedTypes propsType.definition typeDefs
+                        allEncoders = Array.map (generateEncoder_ typeDefs) (Array.pushFirst propsType referencedTypes)
+                        encoderStrings = Array.map (\encoder_ -> encoder_ ++ "\n\n") allEncoders
+                    in
+                    String.join "" encoderStrings
 
                 Nothing ->
                     "-- No Props type found in: " ++ Debug.toString typeDefs
@@ -19,25 +24,73 @@ encoder sourceCode =
             "-- Parse error: " ++ Debug.toString deadEnds
 
 
-generateEncoder : ParsedType -> Array ParsedType -> String
-generateEncoder propsType allTypes =
+generateEncoder_ : Array ParsedType -> ParsedType -> String
+generateEncoder_ allTypes typeDefinition =
     let
-        encoderName = "encodeProps"
+        encoderName = "encode" ++ typeDefinition.name
+        typeName = typeDefinition.name
         
         encoderBody = 
-            when propsType.definition is
+            when typeDefinition.definition is
                 TypeAlias aliasedType ->
-                    generateTypeEncoder "props" aliasedType allTypes
+                    generateTypeEncoder (String.toLower typeName) aliasedType allTypes
                 
                 RecordAlias fields ->
-                    generateRecordEncoder "props" fields allTypes
+                    generateRecordEncoder (String.toLower typeName) fields allTypes
                 
                 CustomType variants ->
-                    generateCustomTypeEncoder "props" variants allTypes
+                    generateCustomTypeEncoder (String.toLower typeName) variants allTypes
     in
-    encoderName ++ " : Props -> Json.Encode.Value\n" ++
-    encoderName ++ " props =\n" ++
+    encoderName ++ " : " ++ typeName ++ " -> Json.Encode.Value\n" ++
+    encoderName ++ " " ++ String.toLower typeName ++ " =\n" ++
     "    " ++ encoderBody
+
+
+findReferencedTypes : TypeDefinition -> Array ParsedType -> Array ParsedType
+findReferencedTypes typeDefinition allTypes =
+    let
+        referencedTypeNames = collectTypeNames typeDefinition
+        findTypeByName name = Array.findFirst (\def -> def.name == name) allTypes |> Maybe.map .value
+    in
+    Array.foldl (\name acc ->
+        when findTypeByName name is
+            Just foundType -> Array.pushLast foundType acc
+            Nothing -> acc
+    ) [] referencedTypeNames
+
+
+collectTypeNames : TypeDefinition -> Array String
+collectTypeNames typeDefinition =
+    when typeDefinition is
+        TypeAlias fieldType ->
+            collectFieldTypeNames fieldType
+        
+        RecordAlias fields ->
+            Array.foldl (\field acc -> 
+                Array.append acc (collectFieldTypeNames field.fieldType)
+            ) [] fields
+        
+        CustomType variants ->
+            Array.foldl (\variant acc ->
+                when variant.argument is
+                    Just argType -> Array.append acc (collectFieldTypeNames argType)
+                    Nothing -> acc
+            ) [] variants
+
+
+collectFieldTypeNames : Parser.FieldType -> Array String
+collectFieldTypeNames fieldType =
+    when fieldType is
+        Parser.StringType -> []
+        Parser.IntType -> []
+        Parser.FloatType -> []
+        Parser.BoolType -> []
+        Parser.ArrayType innerType -> collectFieldTypeNames innerType
+        Parser.CustomFieldType typeName -> [typeName]
+        Parser.RecordType fields -> 
+            Array.foldl (\field acc -> 
+                Array.append acc (collectFieldTypeNames field.fieldType)
+            ) [] fields
 
 
 generateRecordEncoder : String -> Array RecordField -> Array ParsedType -> String

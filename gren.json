@@ -10,7 +10,8 @@
         "Prettynice.FormData",
         "Prettynice.Internal.Props",
         "Prettynice.Request",
-        "Prettynice.Response"
+        "Prettynice.Response",
+        "Prettynice.Props.Encode"
     ],
     "gren-version": "0.5.0 <= v < 0.6.0",
     "dependencies": {

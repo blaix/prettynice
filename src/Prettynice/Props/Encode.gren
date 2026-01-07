@@ -1,12 +1,12 @@
 module Prettynice.Props.Encode exposing (encoder)
 
 import Json.Encode
-import Prettynice.Props.Parser as Parser exposing (ParsedType, TypeDefinition(..), RecordField, CustomVariant, FieldType(..))
+import Prettynice.Props.Parser as Parser exposing (ParsedType, TypeDefinition(..), RecordField, CustomVariant)
 
 
 encoder : String -> String
 encoder sourceCode =
-    when Parser.parseTypeDefinitions sourceCode is
+    when Parser.parseTypes sourceCode is
         Ok typeDefs ->
             when Parser.findPropsType typeDefs is
                 Just propsType ->
@@ -25,21 +25,21 @@ encoder sourceCode =
 
 
 generateEncoder_ : Array ParsedType -> ParsedType -> String
-generateEncoder_ allTypes typeDefinition =
+generateEncoder_ allTypes parsedType =
     let
-        encoderName = "encode" ++ typeDefinition.name
-        typeName = typeDefinition.name
+        encoderName = "encode" ++ parsedType.name
+        typeName = parsedType.name
         
         encoderBody = 
-            when typeDefinition.definition is
-                TypeAlias aliasedType ->
-                    generateTypeEncoder (String.toLower typeName) aliasedType allTypes
+            when parsedType.definition is
+                TypeAlias { definition } ->
+                    generateTypeDefinitionEncoder (String.toLower typeName) definition allTypes
                 
-                RecordAlias fields ->
-                    generateRecordEncoder (String.toLower typeName) fields allTypes
-                
-                CustomType variants ->
+                CustomType { variants } ->
                     generateCustomTypeEncoder (String.toLower typeName) variants allTypes
+                
+                _ ->
+                    generateTypeDefinitionEncoder (String.toLower typeName) parsedType.definition allTypes
     in
     encoderName ++ " : " ++ typeName ++ " -> Json.Encode.Value\n" ++
     encoderName ++ " " ++ String.toLower typeName ++ " =\n" ++
@@ -62,35 +62,23 @@ findReferencedTypes typeDefinition allTypes =
 collectTypeNames : TypeDefinition -> Array String
 collectTypeNames typeDefinition =
     when typeDefinition is
-        TypeAlias fieldType ->
-            collectFieldTypeNames fieldType
-        
-        RecordAlias fields ->
+        StringType -> []
+        IntType -> []
+        FloatType -> []
+        BoolType -> []
+        ArrayType innerType -> collectTypeNames innerType
+        RecordType fields ->
             Array.foldl (\field acc -> 
-                Array.append acc (collectFieldTypeNames field.fieldType)
+                Array.append acc (collectTypeNames field.fieldType)
             ) [] fields
-        
-        CustomType variants ->
+        CustomTypeRef typeName -> [typeName]
+        TypeAlias { definition } -> collectTypeNames definition
+        CustomType { variants } ->
             Array.foldl (\variant acc ->
                 when variant.argument is
-                    Just argType -> Array.append acc (collectFieldTypeNames argType)
+                    Just argType -> Array.append acc (collectTypeNames argType)
                     Nothing -> acc
             ) [] variants
-
-
-collectFieldTypeNames : Parser.FieldType -> Array String
-collectFieldTypeNames fieldType =
-    when fieldType is
-        Parser.StringType -> []
-        Parser.IntType -> []
-        Parser.FloatType -> []
-        Parser.BoolType -> []
-        Parser.ArrayType innerType -> collectFieldTypeNames innerType
-        Parser.CustomFieldType typeName -> [typeName]
-        Parser.RecordType fields -> 
-            Array.foldl (\field acc -> 
-                Array.append acc (collectFieldTypeNames field.fieldType)
-            ) [] fields
 
 
 generateRecordEncoder : String -> Array RecordField -> Array ParsedType -> String
@@ -113,14 +101,14 @@ generateFieldEncoder : String -> Array ParsedType -> RecordField -> String
 generateFieldEncoder parentVar allTypes field =
     let
         fieldAccess = parentVar ++ "." ++ field.name
-        encoder_ = generateTypeEncoder fieldAccess field.fieldType allTypes
+        encoder_ = generateTypeDefinitionEncoder fieldAccess field.fieldType allTypes
     in
     "{ key = \"" ++ field.name ++ "\", value = " ++ encoder_ ++ " }"
 
 
-generateTypeEncoder : String -> FieldType -> Array ParsedType -> String
-generateTypeEncoder varName fieldType allTypes =
-    when fieldType is
+generateTypeDefinitionEncoder : String -> TypeDefinition -> Array ParsedType -> String
+generateTypeDefinitionEncoder varName typeDefinition allTypes =
+    when typeDefinition is
         StringType ->
             "Json.Encode.string " ++ varName
         
@@ -134,26 +122,32 @@ generateTypeEncoder varName fieldType allTypes =
             "Json.Encode.bool " ++ varName
         
         ArrayType innerType ->
-            "Json.Encode.array (" ++ generateTypeEncoder "item" innerType allTypes ++ ") " ++ varName
+            "Json.Encode.array (" ++ generateTypeDefinitionEncoder "item" innerType allTypes ++ ") " ++ varName
         
-        Parser.CustomFieldType typeName ->
+        RecordType fields ->
+            generateRecordEncoder varName fields allTypes
+        
+        CustomTypeRef typeName ->
             when Array.findFirst (\def -> def.name == typeName) allTypes is
-                Just { value = typeDef } ->
-                    when typeDef.definition is
-                        TypeAlias aliasedType ->
-                            generateTypeEncoder varName aliasedType allTypes
-                        
-                        RecordAlias fields ->
-                            generateRecordEncoder varName fields allTypes
+                Just { value = parsedType } ->
+                    when parsedType.definition is
+                        TypeAlias { definition } ->
+                            generateTypeDefinitionEncoder varName definition allTypes
                         
                         CustomType _ ->
                             "encode" ++ typeName ++ " " ++ varName
+                        
+                        _ ->
+                            generateTypeDefinitionEncoder varName parsedType.definition allTypes
                 
                 Nothing ->
                     "encode" ++ typeName ++ " " ++ varName
         
-        Parser.RecordType fields ->
-            generateRecordEncoder varName fields allTypes
+        TypeAlias { definition } ->
+            generateTypeDefinitionEncoder varName definition allTypes
+        
+        CustomType _ ->
+            "-- Cannot encode custom type inline"
 
 
 generateCustomTypeEncoder : String -> Array CustomVariant -> Array ParsedType -> String
@@ -177,5 +171,5 @@ generateVariantCase allTypes variant =
             variant.name ++ " arg ->\n" ++
             "            Json.Encode.object\n" ++
             "                [ { key = \"tag\", value = Json.Encode.string \"" ++ variant.name ++ "\" }\n" ++
-            "                , { key = \"value\", value = " ++ generateTypeEncoder "arg" argType allTypes ++ " }\n" ++
+            "                , { key = \"value\", value = " ++ generateTypeDefinitionEncoder "arg" argType allTypes ++ " }\n" ++
             "                ]"

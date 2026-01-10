@@ -33,13 +33,13 @@ cli CMD="" OPT="":
   npx prettynice {{CMD}} {{OPT}}
 
 build-cli: clean-npm
-  cd cli && npm install && npx gren make src/Main.gren --optimize --output=bin/main.js
+  cd cli && npm install && npx gren make Main --optimize --output=bin/main.js
 
 clean-npm:
   for example in `ls examples/next`; do rm -rf examples/next/$example/node_modules && rm examples/next/$example/package-lock.json; done
 
 build-cli-debug:
-  cd cli && npx gren make src/Main.gren --output=bin/main.js
+  cd cli && npx gren make Main --output=bin/main.js
 
 web:
   cd website/v2 && npm install && npm run dev

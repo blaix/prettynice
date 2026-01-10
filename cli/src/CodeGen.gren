@@ -11,6 +11,7 @@ module CodeGen exposing
     , genServerPorts
     , genClientPorts
     , generatedComponentPaths
+    , componentPathToModuleName
     , copyPublicAssets
     )
 
@@ -142,6 +143,14 @@ generatedComponentPaths fsPermission =
         |> Task.mapError mapError
 
 
+componentPathToModuleName : String -> String
+componentPathToModuleName path =
+    path
+        |> String.replace ".prettynice/" ""
+        |> String.replace "/" "."
+        |> String.replace ".gren" ""
+
+
 {-| Generate a new Prettynice project.
 -}
 genProject : FileSystem.Permission -> String -> Task Error Result
@@ -190,7 +199,7 @@ serverComponentsFromBundle bundle =
                             in
                             { def
                                 | content =
-                                    case propsResult of
+                                    when propsResult is
                                         Ok props ->
                                             toServerComponent def props
                                                 |> Bytes.fromString
@@ -201,20 +210,20 @@ serverComponentsFromBundle bundle =
                             }
                         )
                     )
-        
+
         badDef =
             newBundle.compendium
                 |> Array.findFirst
                     (\def -> def.content == Nothing)
     in
-    case badDef of
+    when badDef is
         Nothing ->
             Task.succeed newBundle
-        
-        Just def ->
+
+        Just { value } ->
             Task.fail
                 ( Shikensu.Error.ErrorMessage <|
-                    String.replace "{{COMPONENT}}" (baseName def)
+                    String.replace "{{COMPONENT}}" (baseName value)
                         """
                         Oops! I can't parse props for the {{COMPONENT}} component.
                            I'm looking for a type alias that looks like this:
@@ -408,10 +417,10 @@ tryList fsPermission dirs =
         |> Path.fromPosixString
         |> Shikensu.list fsPermission
         |> Task.onError
-            (\error -> 
-                case error of
-                    Shikensu.Error.PlatformError _ e ->
-                        if FileSystem.errorIsNoSuchFileOrDirectory e then
+            (\error ->
+                when error is
+                    Shikensu.Error.PlatformError e ->
+                        if FileSystem.errorIsNoSuchFileOrDirectory e.err then
                             -- Nothing to process. Ignore.
                             -- (e.g. no components or nothing at public/)
                             Task.succeed 
@@ -447,7 +456,7 @@ mapError error =
 
 errorString : Error -> String
 errorString error =
-    case error of
+    when error is
         PipelineError str ->
             str
 
@@ -473,7 +482,7 @@ moduleName def =
                 |> Maybe.withDefault "."
 
         modulePath =
-            case parentPath of
+            when parentPath is
                 "." ->
                     "Components."
 
@@ -490,4 +499,4 @@ moduleName def =
 baseName : Definition -> String
 baseName def =
     Path.filenameWithExtension def.path
-        |> String.dropRight 5 -- assumed .gren
+        |> String.dropLast 5 -- assumed .gren

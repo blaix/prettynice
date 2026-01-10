@@ -3,14 +3,15 @@ port module Main exposing (main)
 import Args
 import Bytes exposing (Bytes)
 import Bytes.Decode
-import ChildProcess
+import ChildProcess exposing (FailedRun(..))
 import CodeGen
 import Dict
 import FileSystem
 import FileSystem.Path
 import Init
 import Node
-import Stream exposing (Stream)
+import Stream
+import Stream.Log
 import Task exposing (Task)
 
 
@@ -29,11 +30,10 @@ main =
 type alias Model =
     { fsPermission : FileSystem.Permission
     , procPermission : ChildProcess.Permission
-    , stdin : Stream
-    , stdout : Stream
-    , stderr : Stream
+    , stdin : Stream.Readable Bytes
+    , stdout : Stream.Writable Bytes
+    , stderr : Stream.Writable Bytes
     , optimize : Bool
-    , readInput : Maybe (Bytes -> Msg)
     , dirname : Maybe String
     }
 
@@ -43,14 +43,13 @@ init env =
     Init.await FileSystem.initialize <| \fsPermission ->
         Init.await ChildProcess.initialize <| \procPermission ->
             let
-                model = 
+                model =
                     { fsPermission = fsPermission
                     , procPermission = procPermission
                     , stdin = env.stdin
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , optimize = Array.member "--optimize" env.args
-                    , readInput = Nothing
                     , dirname = Nothing
                     }
             in
@@ -78,25 +77,25 @@ run model { args, options } =
         }
 
     else if args == [ "init" ] then
-        { model = { model | readInput = Just GenProject_Confirmation }
-        , command = 
-            Stream.sendString model.stdout
-                "󱚤 Can I turn the current directory into a new Prettynice project (y|n)? "
-                    |> Task.execute
+        { model = model
+        , command =
+            Stream.writeStringAsBytes "󱚤 Can I turn the current directory into a new Prettynice project (y|n)? " model.stdout
+                |> Task.andThen (\_ -> Stream.read model.stdin)
+                |> Task.attempt GenProject_Confirmation
         }
 
     else if args == [] then
         { model = model
         , command = 
-            Stream.sendLine model.stdout help
+            Stream.Log.line model.stdout help
                 |> Task.execute
         }
     
     else
         { model = model
         , command =
-            Stream.sendLine model.stderr "I don't recognize those arguments."
-                |> Task.andThen (\_ -> Stream.sendLine model.stderr help)
+            Stream.Log.line model.stderr "I don't recognize those arguments."
+                |> Task.andThen (\_ -> Stream.Log.line model.stderr help)
                 |> Task.andThen (\_ -> Node.setExitCode 1)
                 |> Task.execute
         }
@@ -145,7 +144,7 @@ type Msg
     | CopiedPublicAssets (Result CodeGen.Error CodeGen.Result)
     | BuiltClientComponents (Result ComponentBuildError ComponentBuildSuccess)
     | BuiltServer (Result ChildProcess.FailedRun ChildProcess.SuccessfulRun)
-    | GenProject_Confirmation Bytes
+    | GenProject_Confirmation (Result Stream.Error Bytes)
     | GenProject_Created (Result CodeGen.Error CodeGen.Result)
     | GenProject_NpmInstalled (Result ChildProcess.FailedRun ChildProcess.SuccessfulRun)
     | GotDirname String
@@ -164,7 +163,7 @@ type ComponentBuildSuccess
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
-    case msg of
+    when msg is
         GotDirname dirname ->
             { model = { model | dirname = Just dirname }
             , command = Cmd.none
@@ -173,14 +172,14 @@ update msg model =
         GotVersion version ->
             { model = model
             , command = 
-                Stream.sendLine model.stdout version
+                Stream.Log.line model.stdout version
                     |> Task.execute
             }
 
         Cleaned result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             [ progress model.stdout "Generating prettynice dependencies"
@@ -195,7 +194,7 @@ update msg model =
         GeneratedDependencies result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             [ progress model.stdout "Generating server components"
@@ -210,7 +209,7 @@ update msg model =
         GeneratedServerComponents result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             [ progress model.stdout "Generating client components"
@@ -225,7 +224,7 @@ update msg model =
         GeneratedClientComponents result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             [ progress model.stdout "Generating server ports"
@@ -240,7 +239,7 @@ update msg model =
         GeneratedServerPorts result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             [ progress model.stdout "Generating client ports"
@@ -255,7 +254,7 @@ update msg model =
         GeneratedClientPorts result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             -- TODO: replace with vite / bundler / something...
@@ -271,7 +270,7 @@ update msg model =
         CopiedPublicAssets result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             [ progress model.stdout "Building client components"
@@ -286,15 +285,15 @@ update msg model =
         BuiltClientComponents result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok success ->
                         Cmd.batch
-                            [ case success of
+                            [ when success is
                                 NoComponents ->
-                                    Stream.sendLine model.stdout "No components to build"
+                                    Stream.Log.line model.stdout "No components to build"
                                         |> Task.execute
                                 ComponentBuildSucceeded s ->
-                                    Stream.send model.stdout s.stdout
+                                    Stream.Log.bytes model.stdout s.stdout
                                         |> Task.execute
                             , progress model.stdout "Building server"
                             , Task.attempt BuiltServer <|
@@ -302,67 +301,82 @@ update msg model =
                             ]
 
                     Err (ComponentBuildFailed failure) ->
-                        failure.stderr
-                            |> Bytes.toString
-                            |> Maybe.withDefault "Unknown error building client components"
-                            |> endWithErrorMessage model.stderr
+                        endWithErrorMessage model.stderr 
+                            { message = "Error building client components"
+                            , failedRun = Just failure
+                            }
 
                     Err (ListComponentsFailed message) ->
-                        endWithErrorMessage model.stderr message
+                        endWithErrorMessage model.stderr 
+                            { message = message
+                            , failedRun = Nothing
+                            }
             }
 
         BuiltServer result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok success ->
-                        Stream.send model.stdout success.stdout
-                            |> Task.andThen (\_ -> Stream.sendLine model.stdout "✅ Done")
+                        Stream.Log.bytes model.stdout success.stdout
+                            |> Task.andThen (\_ -> Stream.Log.line model.stdout "✅ Done")
                             |> Task.execute
 
                     Err error ->
-                        error.stderr
-                            |> Bytes.toString
-                            |> Maybe.withDefault "Unknown error building server"
-                            |> endWithErrorMessage model.stderr
+                        endWithErrorMessage model.stderr <|
+                            { message = "Failed to build server"
+                            , failedRun = Just error
+                            }
             }
 
-        GenProject_Confirmation bytes ->
-            let
-                answer =
-                    bytes
-                        |> Bytes.toString
-                        |> Maybe.withDefault ""
-                        |> String.trim
-            in
-            { model = { model | readInput = Nothing }
-            , command =
-                if answer == "y" || answer == "yes" then
-                    Cmd.batch
-                        [ progress model.stdout "Generating project"
-                        , case model.dirname of
-                            Just dir ->
-                                Task.attempt GenProject_Created <|
-                                    CodeGen.genProject model.fsPermission dir
-                            Nothing ->
-                                endWithErrorMessage 
-                                    model.stderr
-                                    "Can't find path to current executable."
-                        ]
-                else
-                    Cmd.none
-            }
+        GenProject_Confirmation result ->
+            when result is
+                Ok bytes ->
+                    let
+                        answer =
+                            bytes
+                                |> Bytes.toString
+                                |> Maybe.withDefault ""
+                                |> String.trim
+                    in
+                    { model = model
+                    , command =
+                        if answer == "y" || answer == "yes" then
+                            Cmd.batch
+                                [ progress model.stdout "Generating project"
+                                , when model.dirname is
+                                    Just dir ->
+                                        Task.attempt GenProject_Created <|
+                                            CodeGen.genProject model.fsPermission dir
+                                    Nothing ->
+                                        endWithErrorMessage model.stderr
+                                            { message = "Can't find path to current executable."
+                                            , failedRun = Nothing
+                                            }
+                                ]
+                        else
+                            Cmd.none
+                    }
+
+                Err _ ->
+                    { model = model
+                    , command =
+                        endWithErrorMessage model.stderr
+                            { message = "Failed to read input"
+                            , failedRun = Nothing
+                            }
+                    }
 
         GenProject_Created result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
                         Cmd.batch
                             [ progress model.stdout "Installing dependencies"
                             , Task.attempt GenProject_NpmInstalled <|
-                                ChildProcess.runWithDefaultOptions
-                                    model.procPermission "npm" [ "install" ]
+                                ChildProcess.run
+                                    model.procPermission "npm" [ "install" ] ChildProcess.defaultRunOptions
                             ]
 
                     Err e ->
@@ -372,9 +386,9 @@ update msg model =
         GenProject_NpmInstalled result ->
             { model = model
             , command =
-                case result of
+                when result is
                     Ok _ ->
-                        Stream.sendLine model.stdout 
+                        Stream.Log.line model.stdout 
                             """
                             ✅ Done!
                             
@@ -386,10 +400,10 @@ update msg model =
                                 |> Task.execute
 
                     Err error ->
-                        error.stderr
-                            |> Bytes.toString
-                            |> Maybe.withDefault "Unknown error installing dependencies"
-                            |> endWithErrorMessage model.stderr
+                        endWithErrorMessage model.stderr
+                            { message = "Failed to install dependencies"
+                            , failedRun = Just error
+                            }
             }
 
 
@@ -397,10 +411,16 @@ clean : FileSystem.Permission -> Task FileSystem.Error {}
 clean fsPermission =
     let
         remove path =
-            FileSystem.remove
-                fsPermission
-                { recursive = True, ignoreErrors = True }
-                (FileSystem.Path.fromPosixString path)
+            FileSystem.Path.fromPosixString path
+                |> FileSystem.remove fsPermission { recursive = True }
+                |> Task.map (\_ -> {})
+                |> Task.onError 
+                    (\e -> 
+                        if FileSystem.errorIsNoSuchFileOrDirectory e then
+                            Task.succeed {}
+                        else
+                            Task.fail e
+                    )
 
         create path =
             FileSystem.makeDirectory
@@ -463,6 +483,7 @@ buildClientComponents fsPermission procPermission optimize =
     in
     CodeGen.generatedComponentPaths fsPermission
         |> Task.mapError (CodeGen.errorString >> ListComponentsFailed)
+        |> Task.map (Array.map CodeGen.componentPathToModuleName)
         |> Task.map (String.join " ")
         |> Task.andThen buildComponents
 
@@ -477,7 +498,7 @@ buildServer procPermission optimize =
             "./server"
 
         inputPath =
-            "./src/Main.gren"
+            "Main"
 
         outputPath =
             "../dist/server/main.js"
@@ -496,27 +517,50 @@ buildServer procPermission optimize =
         }
 
 
-codeGenError : Stream -> CodeGen.Error -> Cmd Msg
+codeGenError : Stream.Writable Bytes -> CodeGen.Error -> Cmd Msg
 codeGenError stream error =
-    endWithErrorMessage stream (CodeGen.errorString error)
+    endWithErrorMessage stream 
+        { message = CodeGen.errorString error
+        , failedRun = Nothing
+        }
 
 
-fileSystemError : Stream -> FileSystem.Error -> Cmd Msg
+fileSystemError : Stream.Writable Bytes -> FileSystem.Error -> Cmd Msg
 fileSystemError stream error =
-    endWithErrorMessage stream <|
-        FileSystem.errorToString error
+    endWithErrorMessage stream
+        { message = FileSystem.errorToString error
+        , failedRun = Nothing
+        }
 
 
-endWithErrorMessage : Stream -> String -> Cmd Msg
-endWithErrorMessage stream message =
-    Stream.sendLine stream ("🚨 " ++ message ++ "\n")
+endWithErrorMessage : Stream.Writable Bytes -> { message : String, failedRun : Maybe ChildProcess.FailedRun } -> Cmd Msg
+endWithErrorMessage stream { message, failedRun } =
+    let
+        errorStr =
+            when failedRun is
+                Nothing -> ""
+
+                Just (ChildProcess.ProgramError { stderr }) ->
+                    Bytes.toString stderr
+                        |> Maybe.withDefault ""
+                                    
+                Just (InitError { program, arguments, errorCode }) ->
+                    "`" ++ program ++ (String.join " " arguments) ++ "`" ++
+                    " exited with error code: " ++ errorCode
+
+        errorMessage =
+            if errorStr == "" then
+                message
+            else
+                message ++ ":\n" ++ errorStr
+    in
+    Stream.Log.line stream ("🚨 " ++ errorMessage ++ "\n")
         |> Task.andThen (\_ -> Node.setExitCode 1)
         |> Task.execute
-
-
-progress : Stream -> String -> Cmd Msg
+                        
+progress : Stream.Writable Bytes -> String -> Cmd Msg
 progress stream message =
-    Stream.sendLine stream ("🌸 " ++ message ++ "...")
+    Stream.Log.line stream ("🌸 " ++ message ++ "...")
         |> Task.execute
 
 
@@ -534,10 +578,4 @@ subscriptions model =
     Sub.batch
         [ gotDirname GotDirname
         , gotVersion GotVersion
-        , case model.readInput of
-            Just msg ->
-                Stream.listen model.stdin msg
-
-            Nothing ->
-                Sub.none
         ]

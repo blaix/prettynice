@@ -4,20 +4,20 @@
     "source-directories": [
         "src"
     ],
-    "gren-version": "0.4.5",
+    "gren-version": "0.6.3",
     "dependencies": {
         "direct": {
             "blaix/prettynice": "local:..",
-            "gren-lang/core": "5.0.2",
-            "gren-lang/node": "4.1.1",
-            "gren-lang/parser": "4.0.0",
-            "icidasset/shikensu-gren": "6.0.0",
-            "joeybright/gren-args": "2.0.1"
+            "gren-lang/core": "7.3.0",
+            "gren-lang/node": "6.1.0",
+            "gren-lang/parser": "6.2.0",
+            "icidasset/shikensu-gren": "8.0.0",
+            "joeybright/gren-args": "3.0.0"
         },
         "indirect": {
-            "gren-lang/url": "4.0.0",
-            "icidasset/html-gren": "4.2.0",
-            "joeybright/gren-static-serve": "2.0.4"
+            "gren-lang/url": "6.0.0",
+            "icidasset/html-gren": "6.0.0",
+            "joeybright/gren-static-serve": "4.0.0"
         }
     }
 }

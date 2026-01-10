@@ -1,10 +1,10 @@
 {
   "private": true,
   "dependencies": {
-    "gren-lang": "^0.5.4",
+    "gren-lang": "^0.6.3",
     "prettynice": "file:cli"
   },
   "devDependencies": {
-    "gren-packages": "^5.0.1"
+    "gren-packages": "^6.0.1"
   }
 }

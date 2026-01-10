@@ -4,7 +4,7 @@
     "name": "blaix/prettynice",
     "summary": "Full stack web framework for Gren",
     "license": "BSD-3-Clause",
-    "version": "3.0.0",
+    "version": "4.0.0",
     "exposed-modules": [
         "Prettynice",
         "Prettynice.FormData",
@@ -12,13 +12,13 @@
         "Prettynice.Request",
         "Prettynice.Response"
     ],
-    "gren-version": "0.5.0 <= v < 0.6.0",
+    "gren-version": "0.6.0 <= v < 0.7.0",
     "dependencies": {
-        "gren-lang/core": "6.0.0 <= v < 7.0.0",
-        "gren-lang/node": "5.0.0 <= v < 6.0.0",
-        "gren-lang/parser": "5.0.0 <= v < 6.0.0",
-        "gren-lang/url": "5.0.0 <= v < 6.0.0",
-        "icidasset/html-gren": "5.0.0 <= v < 6.0.0",
-        "joeybright/gren-static-serve": "3.0.0 <= v < 4.0.0"
+        "gren-lang/core": "7.0.0 <= v < 8.0.0",
+        "gren-lang/node": "6.0.0 <= v < 7.0.0",
+        "gren-lang/parser": "6.0.0 <= v < 7.0.0",
+        "gren-lang/url": "6.0.0 <= v < 7.0.0",
+        "icidasset/html-gren": "6.0.0 <= v < 7.0.0",
+        "joeybright/gren-static-serve": "4.0.0 <= v < 5.0.0"
     }
 }

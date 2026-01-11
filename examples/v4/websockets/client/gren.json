@@ -1,0 +1,22 @@
+{
+    "type": "application",
+    "platform": "browser",
+    "source-directories": [
+        "src",
+        ".prettynice"
+    ],
+    "gren-version": "0.6.3",
+    "dependencies": {
+        "direct": {
+            "gren-lang/browser": "6.0.2",
+            "gren-lang/core": "7.3.0",
+            "gren-lang/url": "6.0.0",
+            "icidasset/html-gren": "6.0.0",
+            "icidasset/html-virtualdom-gren": "2.0.0"
+        },
+        "indirect": {
+            "gren-lang/parser": "6.2.0"
+        }
+    }
+}
+

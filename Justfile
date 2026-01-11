@@ -3,8 +3,8 @@ green := '\033[0;32m'
 nc := '\033[0m' # No Color
 
 example NAME:
-  @just header "RUNNING EXAMPLE: next/{{NAME}}"
-  cd examples/next/{{NAME}} && npm install && npm run dev
+  @just header "RUNNING EXAMPLE: v4/{{NAME}}"
+  cd examples/v4/{{NAME}} && npm install && npm run dev
 
 v2-example NAME:
   @just header "RUNNING EXAMPLE: v2/{{NAME}}"
@@ -15,7 +15,7 @@ v3-example NAME:
   cd examples/v3/{{NAME}} && npm install && npm run dev
 
 examples:
-  for example in `ls examples/next`; do just example $example; done
+  for example in `ls examples/v4`; do just example $example; done
 
 v2-examples:
   for example in `ls examples/v2`; do just v2-example $example; done

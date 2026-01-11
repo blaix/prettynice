@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npx nodemon",
+    "build:dev": "npx prettynice build && npm run build:css:dev",
+    "build:prod": "npx prettynice build --optimize && npm run build:css:prod",
+    "build:css:dev": "npx tailwindcss -i ./assets/styles.css -o ./dist/client/styles.css",
+    "build:css:prod": "npx tailwindcss -m -i ./assets/styles.css -o ./dist/client/styles.css",
+    "start": "node dist/server/index.js"
+  },
+  "nodemonConfig": {
+    "exec": "npm run build:dev && npm start",
+    "ext": "js,gren",
+    "watch": [
+      "{client,server}/src/**/*"
+    ]
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.0.6",
+    "daisyui": "^5.0.0-beta.7",
+    "gren-lang": "^0.6.3",
+    "prettynice": "file:../../../cli",
+    "tailwindcss": "^4.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

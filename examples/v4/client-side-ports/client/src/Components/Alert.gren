@@ -1,0 +1,56 @@
+port module Components.Alert exposing (component, Model, Msg, Props)
+
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Events as E
+import Prettynice.Component exposing (Component)
+
+
+component : Component Props Model Msg
+component =
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+
+type alias Model =
+    String
+
+
+type alias Props =
+    { message : String }
+
+
+init : Props -> { model : Model, command : Cmd Msg }
+init { message } =
+    { model = message, command = Cmd.none }
+
+
+type Msg
+    = ClickedAlert
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        ClickedAlert ->
+            { model = model
+            , command = sendAlert model
+            }
+
+
+port sendAlert : String -> Cmd msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+view : Model -> Html Msg
+view model =
+    H.button
+        [ E.onClick ClickedAlert ]
+        [ H.text "Send Alert" ]
+

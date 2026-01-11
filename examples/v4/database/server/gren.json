@@ -1,0 +1,23 @@
+{
+    "type": "application",
+    "platform": "node",
+    "source-directories": [
+        "src",
+        ".prettynice"
+    ],
+    "gren-version": "0.6.3",
+    "dependencies": {
+        "direct": {
+            "blaix/gren-ws4sql": "3.0.2",
+            "blaix/prettynice": "local:../../../..",
+            "gren-lang/core": "7.3.0",
+            "gren-lang/node": "6.1.0",
+            "icidasset/html-gren": "6.0.0"
+        },
+        "indirect": {
+            "gren-lang/parser": "6.2.0",
+            "gren-lang/url": "6.0.0",
+            "joeybright/gren-static-serve": "4.0.0"
+        }
+    }
+}

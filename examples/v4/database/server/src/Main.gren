@@ -1,0 +1,151 @@
+module Main exposing (main)
+
+import Db
+import Db.Encode as Encode
+import Db.Decode as Decode
+import HttpClient
+import Init
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Attributes as A
+
+
+type alias Model =
+    { db : Db.Connection
+    }
+
+
+type alias User =
+    { id : Int
+    , name : String
+    }
+
+
+main : Prettynice.Program Model msg
+main =
+    Prettynice.defineProgram
+        { init = init
+        , router = router
+        }
+
+
+init : Environment -> Prettynice.Init Model msg
+init env =
+    Init.await HttpClient.initialize <| \httpPerm -> 
+        Prettynice.startProgram
+            { host = "0.0.0.0"
+            , port_ = 3000
+            , env = env
+            , model = { db = Db.init httpPerm "http://localhost:12321/dev" }
+            }
+
+
+router : Model -> Request -> Response msg -> Task Never (Response msg)
+router model request response =
+    when request.path is
+        [] ->
+            Response.asHtml viewHome response
+                |> Task.succeed
+
+        [ "users", userId ] ->
+            userId
+                |> String.toInt
+                |> Maybe.withDefault 0
+                |> getUser model.db
+                |> Task.map (userToResponse response)
+                |> Task.onError (errorToResponse response)
+
+        _ ->
+            notFound response
+                |> Task.succeed
+
+
+getUser : 
+    Db.Connection
+    -> Int 
+    -> Task Db.Error User
+getUser db userId =
+    Db.getOne db
+        { query = "select * from User where id = :id"
+        , parameters = [ Encode.int "id" userId ]
+        , decoder =
+            Decode.get2
+                (Decode.int "id")
+                (Decode.string "name")
+                (\id name -> { id = id, name = name })
+        }
+
+
+userToResponse : Response msg -> User -> Response msg
+userToResponse response user =
+    Response.asHtml (viewUser user) response
+
+
+errorToResponse : Response msg -> Db.Error -> Task Never (Response msg)
+errorToResponse response error =
+    when error is
+        Db.NoResultError ->
+            notFound response
+                |> Task.succeed
+
+        _ ->
+            response
+                -- In a real app you'll want a real error message
+                |> Response.asText (Debug.toString error)
+                |> Response.setStatus 500
+                |> Task.succeed
+
+
+viewUser : User -> { title : String, head : Array (Html msg), body : Array (Html msg) }
+viewUser user =
+    { title = "User Details"
+    , head = []
+    , body = 
+        [ H.p []
+            [ H.text (String.fromInt user.id)
+            , H.text ": "
+            , H.text user.name
+            ]
+        , H.p []
+            [ H.a [ A.href "/" ]
+                [ H.text "Home" ]
+            ]
+        ]
+    }
+
+
+viewHome : { title : String, head : Array (Html msg), body : Array (Html msg) }
+viewHome =
+    { title = "Home"
+    , head = []
+    , body =
+        [ H.ul []
+            [ H.li []
+                [ H.a
+                    [ A.href "/users/1" ]
+                    [ H.text "user 1" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/2" ]
+                    [ H.text "user 2" ]
+                ]
+            , H.li []
+                [ H.a
+                    [ A.href "/users/3" ]
+                    [ H.text "user 3" ]
+                ]
+            ]
+        ]
+    }
+
+
+notFound : Response msg -> Response msg
+notFound response =
+    response
+        |> Response.setStatus 404
+        |> Response.asText "not found"

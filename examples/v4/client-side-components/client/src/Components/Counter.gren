@@ -1,0 +1,88 @@
+module Components.Counter exposing (component, Model, Msg, Props)
+
+import Transmutable.Html as H exposing (Html)
+import Transmutable.Html.Events as E
+import Prettynice.Component exposing (Component)
+
+{-| A component is a wrapper around Browser.element.
+-}
+component : Component Props Model Msg
+component =
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+
+-- MODEL
+
+
+type alias Model =
+    { count : Int
+    }
+
+
+{-| A Props record is required.
+
+Prettynice will look for this so it knows how to encode data passed in
+server-side. Only certain types are supported. The build script will fail and
+tell you if you use one it doesn't recognize (yet).
+-}
+type alias Props =
+    { start : Int
+    }
+
+
+{-| A server-side init for this component will be generated so you can embed
+this in your server-side HTML and pass in the props.
+-}
+init : Props -> { model : Model, command : Cmd Msg }
+init props =
+    { model = { count = props.start }
+    , command = Cmd.none
+    }
+
+
+-- UPDATE
+
+
+type Msg
+    = Increment
+    | Decrement
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        Increment ->
+            { model = { model | count = model.count + 1 }
+            , command = Cmd.none
+            }
+
+        Decrement ->
+            { model = { model | count = model.count - 1 }
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+-- VIEW
+
+
+view : Model -> Html Msg
+view model =
+    H.p []
+        [ H.button
+            [ E.onClick Decrement ]
+            [ H.text "-" ]
+        , H.text <| String.fromInt model.count
+        , H.button
+            [ E.onClick Increment ]
+            [ H.text "+" ]
+        ]
+

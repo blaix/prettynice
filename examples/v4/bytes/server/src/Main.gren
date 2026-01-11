@@ -1,0 +1,80 @@
+module Main exposing (main)
+
+import Bytes exposing (Bytes)
+import Init
+import FileSystem
+import FileSystem.Path as Path
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineFullProgram
+        { init = init
+        , router = router
+        , update = update
+        , subscriptions = (\_ -> Sub.none)
+        }
+
+
+type alias Model =
+    { ponies : Maybe Bytes
+    }
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Init.await FileSystem.initialize <| \fsPermission ->
+        Prettynice.startFullProgram
+            { env = env
+            , host = "0.0.0.0"
+            , port_ = 3000
+            , model = { ponies = Nothing }
+            , command =
+                Path.fromPosixString "./ponies.gif"
+                    |> FileSystem.readFile fsPermission
+                    |> Task.attempt GotPonies
+            }
+
+
+router : Model -> Request -> Response Msg -> Task Never (Response Msg)
+router model request response =
+    Task.succeed <|
+        when model.ponies is
+            Just ponyBytes ->
+                response
+                    |> Response.asBytes
+                        { contentType = "image/gif"
+                        , body = ponyBytes
+                        }
+
+            Nothing ->
+                response
+                    |> Response.setStatus 500
+                    |> Response.asText "Can't read ponies.gif"
+
+
+type Msg
+    = GotPonies (Result FileSystem.Error Bytes)
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotPonies (Ok ponyBytes) ->
+            { model = { ponies = Just ponyBytes }
+            , command = Cmd.none
+            }
+
+        GotPonies (Err error) ->
+            let
+                _ = Debug.log "Error" error
+            in
+            { model = model
+            , command = Cmd.none
+            }

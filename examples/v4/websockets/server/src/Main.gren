@@ -1,0 +1,125 @@
+port module Main exposing (main)
+
+import Bytes exposing (Bytes)
+import Gen.Components.Chat as Chat
+import Node exposing (Environment)
+import HttpServer exposing (Method(..))
+import Prettynice
+import Prettynice.Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+import Task exposing (Task)
+import Transmutable.Html as H exposing (Html)
+
+
+main : Prettynice.Program Model Msg
+main =
+    Prettynice.defineFullProgram
+        { init = init
+        , router = router
+        , update = update
+        , subscriptions = subscriptions
+        }
+
+
+-- MODEL
+
+
+{-| Model holds all chat messages.
+
+For now this is only held in memory, so it will reset when the server starts.
+In a real application you may want to persist this on the filesystem or in a
+database.
+-}
+type alias Model =
+    { messages : Array String
+    }
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startProgram
+        { env = env
+        , host = "127.0.0.1"
+        , port_ = 3000
+        , model = { messages = [] }
+        }
+
+
+-- ROUTER
+
+
+router : Model -> Request -> Response Msg -> Task Never (Response Msg)
+router model request response =
+    when request is
+
+        -- Handle homepage requests
+        { method = GET, path = [] } ->
+            response
+                |> viewChat model.messages
+                |> Task.succeed
+        
+        -- Handle chat message posts
+        { method = POST, path = [ "send" ] } ->
+            let
+                message =
+                    request.body
+                        |> Bytes.toString
+                        |> Maybe.withDefault ""
+            in
+            response
+                |> Response.onSend (GotChatMessage message)
+                |> Task.succeed
+
+        -- All other requests: 404
+        _ ->
+            response
+                |> Response.setStatus 404
+                |> Response.asText "Not Found"
+                |> Task.succeed
+
+
+{-| Respond with HTML that includes our Chat component initialized with
+    messages stored on the server.
+-}
+viewChat : Array String -> Response Msg -> Response Msg
+viewChat messages =
+    Response.asHtml
+        { title = "Cool Chat"
+        , head = []
+        , body =
+            [ H.h1 [] [ H.text "Welcome to Cool Chat" ]
+            -- See client/src/Components/Chat.gren
+            , Chat.init { messages = messages }
+            ]
+        }
+
+
+-- UPDATE
+
+
+type Msg
+    = GotChatMessage String
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotChatMessage message ->
+            { model =
+                { model 
+                    | messages =
+                        Array.pushLast message model.messages
+                }
+            , command =
+                broadcast message
+            }
+
+
+{-| See server/src/ports.js
+-}
+port broadcast : String -> Cmd msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none

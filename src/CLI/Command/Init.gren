@@ -1,0 +1,212 @@
+module CLI.Command.Init exposing (run)
+
+import Ansi
+import CLI.Command as Command
+import Dict exposing (Dict)
+import FileSystem
+import FileSystem.Path as Path exposing (Path)
+import Node exposing (Environment)
+import Stream.Log
+import Task exposing (Task)
+import UI
+import UI.Attribute as Attr
+
+
+type RunAction
+    = InitializeProject String
+    | ShowHelp
+    | UsageError
+
+
+run :
+    { fsPerm : FileSystem.Permission
+    , args : Array String
+    , options : Command.Options
+    , env : Environment
+    }
+    -> Task Command.Error UI.Element
+run { fsPerm, args, options, env } =
+    when route args options is
+        InitializeProject dirName ->
+            initializeProject 
+                { fsPerm = fsPerm
+                , dirName = dirName
+                , env = env
+                }
+
+        ShowHelp ->
+            Task.succeed viewHelp
+
+        UsageError ->
+            Task.fail 
+                { exitCode = 1
+                , message = viewUsage
+                }
+
+
+initializeProject : 
+    { fsPerm : FileSystem.Permission
+    , dirName : String
+    , env : Environment
+    }
+    -> Task Command.Error UI.Element
+initializeProject { fsPerm, dirName, env } =
+    let
+        targetPath =
+            when env.platform is
+                Node.Win32 ->
+                    Path.fromWin32String dirName
+
+                _ ->
+                    Path.fromPosixString dirName
+
+        templatePath =
+            Path.parentPath env.applicationPath
+                |> Maybe.andThen Path.parentPath -- pop up out of the bin dir
+                |> Maybe.withDefault Path.empty
+                |> Path.appendPosixString "templates"
+                |> Path.appendPosixString "init"
+    in
+    Stream.Log.line env.stdout "🤖 Generating project..."
+        |> Task.andThen (\_ -> FileSystem.makeDirectory fsPerm { recursive = True } targetPath)
+        |> Task.andThen (\_ -> copyDirectory fsPerm templatePath targetPath)
+        |> Task.map (\_ -> viewInitSuccess)
+        |> Task.mapError (\err -> { exitCode = 2, message = viewInitError err })
+
+
+ignores : Array String
+ignores =
+    [ "node_modules"
+    , "tests"
+    , "dist"
+    , "build"
+    , "docs.json"
+    , ".gren"
+    , ".devbox"
+    ]
+
+
+copyDirectory : FileSystem.Permission -> Path -> Path -> Task FileSystem.Error {}
+copyDirectory fsPerm sourcePath targetPath =
+    FileSystem.listDirectory fsPerm sourcePath
+        |> Task.andThen (copyEntries fsPerm sourcePath targetPath)
+
+
+copyEntries : FileSystem.Permission -> Path -> Path -> Array { entityType : FileSystem.EntityType, path : Path } -> Task FileSystem.Error {}
+copyEntries fsPerm sourcePath targetPath entries =
+    when Array.popFirst entries is
+        Nothing ->
+            Task.succeed {}
+
+        Just { first = entry, rest = remainingEntries } ->
+            let
+                sourceEntry =
+                    Path.join [ sourcePath, entry.path ]
+
+                targetEntry =
+                    Path.join [ targetPath, entry.path ]
+
+                entryName =
+                    Path.filenameWithExtension entry.path
+            in
+            if Array.member entryName ignores then
+                copyEntries fsPerm sourcePath targetPath remainingEntries
+            else
+                when entry.entityType is
+                    FileSystem.Directory ->
+                        FileSystem.makeDirectory fsPerm { recursive = False } targetEntry
+                            |> Task.andThen (\_ -> copyDirectory fsPerm sourceEntry targetEntry)
+                            |> Task.andThen (\_ -> copyEntries fsPerm sourcePath targetPath remainingEntries)
+
+                    FileSystem.File ->
+                        FileSystem.copyFile fsPerm targetEntry sourceEntry
+                            |> Task.andThen (\_ -> copyEntries fsPerm sourcePath targetPath remainingEntries)
+
+                    _ ->
+                        copyEntries fsPerm sourcePath targetPath remainingEntries
+
+
+indent : String
+indent =
+    "    "
+
+
+viewHelp : UI.Element
+viewHelp =
+    UI.column []
+        [ UI.text [] "Initialize a new Prettynice project"
+        , UI.text [] ""
+        , viewUsage
+        ]
+
+
+viewUsage : UI.Element
+viewUsage =
+    UI.column []
+        [ UI.text [] "Usage:"
+        , UI.row [ Attr.color Ansi.Cyan ]
+            [ UI.text [] indent
+            , UI.text [] "prettynice init <directory>"
+            ]
+        , UI.text [] ""
+        , UI.text [] "Arguments:"
+        , UI.row []
+            [ UI.text [] indent
+            , UI.text [ Attr.color Ansi.Cyan ] "<directory> "
+            , UI.text [] " Path where the new project will be created"
+            ]
+        , UI.text [] ""
+        , UI.text [] "Example:"
+        , UI.row [ Attr.color Ansi.Cyan ]
+            [ UI.text [] indent
+            , UI.text [] "prettynice init my-app"
+            ]
+        ]
+
+
+viewInitSuccess : UI.Element
+viewInitSuccess =
+    UI.column []
+        [ UI.text [ Attr.color Ansi.Green ] "✅ Done!"
+        , UI.text [] ""
+        , UI.text [ Attr.color Ansi.Cyan ] "Now what?"
+        , UI.row []
+            [ UI.text [] "🌸 Start the dev server with: "
+            , UI.text [ Attr.color Ansi.Yellow ] "npm run dev"
+            ]
+        , UI.row []
+            [ UI.text [] "🌸 Make changes to your server at: "
+            , UI.text [ Attr.color Ansi.Yellow ] "server/src/Main.gren"
+            ]
+        , UI.row []
+            [ UI.text [] "🌸 View your example client-side component at: "
+            , UI.text [ Attr.color Ansi.Yellow ] "client/src/Components/Counter.gren"
+            ]
+        , UI.row []
+            [ UI.text [] "🌸 View more examples at: "
+            , UI.text [ Attr.color Ansi.Yellow ] "https://github.com/blaix/prettynice/tree/main/examples"
+            ]
+        ]
+
+
+viewInitError : FileSystem.Error -> UI.Element
+viewInitError error =
+    UI.row [ Attr.color Ansi.Red ]
+        [ UI.text [] "Failed to initialize project: "
+        , UI.text [] (FileSystem.errorToString error)
+        ]
+
+
+route : Array String -> Command.Options -> RunAction
+route args options =
+    -- Keep this at bottom because it breaks syntax highlighting rest of file.
+    -- https://github.com/MaeBrooks/tree-sitter-gren/issues/17
+    when { args = args, help = Dict.get "help" options } is
+        { help = Just _ } ->
+            ShowHelp
+
+        { args = [ dirName ] } ->
+            InitializeProject dirName
+
+        _ ->
+            UsageError

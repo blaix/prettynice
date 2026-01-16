@@ -1,0 +1,149 @@
+module CLI exposing (main)
+
+import Ansi
+import Args
+import CLI.Command as Command
+import CLI.Command.Init
+import Dict
+import FileSystem
+import Init
+import Node exposing (Environment)
+import Stream.Log
+import Task
+import Terminal
+import UI
+import UI.Attribute as Attr
+
+
+main : Node.Program Model Msg
+main =
+    Node.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        }
+
+
+type alias Model =
+    { termWidth : Int
+    , env : Environment
+    }
+
+
+init : Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Init.await FileSystem.initialize <| \fsPerm ->
+    Init.await Terminal.initialize <| \termConfig ->
+        let
+            termWidth =
+                when termConfig is
+                    Just t -> t.columns
+                    Nothing -> 80
+
+            parsedArgs =
+                env.args
+                    |> Array.dropFirst 2 -- node and file name
+                    |> Args.parse
+
+            commandTask =
+                when Array.popFirst parsedArgs.args is
+                    Just { first = "init", rest = args } ->
+                        CLI.Command.Init.run
+                            { fsPerm = fsPerm
+                            , args = args
+                            , options = parsedArgs.options
+                            , env = env
+                            }
+
+                    Nothing ->
+                        Task.succeed viewHelp
+
+                    _ ->
+                        Task.succeed viewUsage
+        in
+        Node.startProgram
+            { model = 
+                { termWidth = termWidth 
+                , env = env
+                }
+            , command = 
+                Task.attempt RanCommand commandTask
+            }
+
+
+type Msg
+    = RanCommand (Result Command.Error UI.Element)
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        RanCommand (Ok message) ->
+            { model = model
+            , command =
+                message
+                    |> UI.toString model.termWidth
+                    |> Stream.Log.line model.env.stdout
+                    |> Task.execute
+            }
+
+        RanCommand (Err error) ->
+            { model = model
+            , command =
+                error.message
+                    |> UI.toString model.termWidth
+                    |> Stream.Log.line model.env.stderr
+                    |> Task.map (\_ -> Node.exitWithCode error.exitCode)
+                    |> Task.executeCmd
+            }
+
+
+indent : String
+indent =
+    "    "
+
+viewHelp : UI.Element
+viewHelp =
+    UI.column []
+        [ UI.text [] "A full-stack web framework for Gren."
+        , UI.text [] ""
+        , viewUsage
+        ]
+
+
+viewUsage : UI.Element
+viewUsage =
+    UI.column []
+        [ UI.text [] "Usage:"
+        , UI.row [ Attr.color Ansi.Cyan ]
+            [ UI.text [] indent
+            , UI.text [] "prettynice <command> [options]"
+            ]
+        , UI.text [] ""
+        , UI.text [] "Commands:"
+        , UI.row []
+            [ UI.text [] indent
+            , UI.column [ Attr.color Ansi.Cyan ]
+                [ UI.text [] "init <directory> "
+                , UI.text [] "build "
+                ]
+            , UI.column []
+                [ UI.text [] " Initialize a new Prettynice project"
+                , UI.text [] " Build an existing Prettynice project"
+                ]
+            ]
+        , UI.text [] ""
+        , UI.text [] "Options:"
+        , UI.row []
+            [ UI.text [] indent
+            , UI.text [] "--help "
+            , UI.text [] " Show help information" 
+            ]
+        , UI.text [] ""
+        , UI.text [] "For more information, visit https://github.com/blaix/prettynice"
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

@@ -1,8 +1,35 @@
 {
-  "private": true,
+  "name": "prettynice",
+  "version": "4.0.0",
+  "description": "CLI for the Prettynice Gren framework.",
+  "bin": {
+    "prettynice": "bin/index.js"
+  },
+  "files": [
+    "bin",
+    "templates"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blaix/prettynice.git"
+  },
+  "keywords": [
+    "gren",
+    "prettynice",
+    "fullstack",
+    "webserver"
+  ],
+  "author": "Justin Blake",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/blaix/prettynice/issues"
+  },
+  "homepage": "https://github.com/blaix/prettynice",
   "dependencies": {
-    "gren-lang": "^0.6.3",
-    "prettynice": "file:cli"
+    "gren-lang": ">=0.6.0 <0.7"
   },
   "devDependencies": {
     "gren-packages": "^6.0.1"

@@ -1,0 +1,24 @@
+module CLI.Command exposing
+    ( Error
+    , Args
+    , Options
+    )
+
+
+import Args
+import Dict exposing (Dict)
+import UI
+
+
+type alias Error =
+    { message : UI.Element
+    , exitCode : Int
+    }
+
+
+type alias Args =
+    Array String
+
+
+type alias Options =
+    Dict String { optionType : Args.OptionType, values : Array String }

@@ -6,37 +6,14 @@ example NAME:
   @just header "RUNNING EXAMPLE: v4/{{NAME}}"
   cd examples/v4/{{NAME}} && npm install && npm run dev
 
-v2-example NAME:
-  @just header "RUNNING EXAMPLE: v2/{{NAME}}"
-  cd examples/v2/{{NAME}} && npm install && npm run dev
-
-v3-example NAME:
-  @just header "RUNNING EXAMPLE: v3/{{NAME}}"
-  cd examples/v3/{{NAME}} && npm install && npm run dev
-
 examples:
   for example in `ls examples/v4`; do just example $example; done
-
-v2-examples:
-  for example in `ls examples/v2`; do just v2-example $example; done
-
-v3-examples:
-  for example in `ls examples/v3`; do just v3-example $example; done
 
 docs:
   npx gren-doc-preview
 
-cli CMD="" OPT="":
-  rm -rf node_modules/prettynice
-  just build-cli
-  npm install
-  npx prettynice {{CMD}} {{OPT}}
-
-build-cli: clean-npm
+build-cli:
   npx gren make CLI --optimize --output=bin/main.js
-
-clean-npm:
-  for example in `ls examples/next`; do rm -rf examples/next/$example/node_modules && rm examples/next/$example/package-lock.json; done
 
 build-cli-debug:
   npx gren make CLI --output=bin/main.js

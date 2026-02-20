@@ -18,6 +18,11 @@ build-cli:
 build-cli-debug:
   npx gren make CLI --output=bin/main.js
 
+# `init-local` runs `prettynice init` but points the generated
+# project at this directory for its prettynice npm dependency.
+init-local TARGET:
+  npx prettynice init-local ${PWD} {{TARGET}}
+
 web:
   cd website/v2 && npm install && npm run dev
 

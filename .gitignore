@@ -2,3 +2,8 @@
 build
 docs.json
 node_modules
+
+# something is generating gren_package dirs in old examples that didn't support that:
+examples/v1/**/gren_packages
+examples/v2/**/gren_packages
+examples/v3/**/gren_packages

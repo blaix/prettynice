@@ -2,6 +2,7 @@ module CLI exposing (main)
 
 import Ansi
 import Args
+import ChildProcess
 import CLI.Command as Command
 import CLI.Command.Init
 import Dict
@@ -33,6 +34,7 @@ type alias Model =
 init : Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Init.await FileSystem.initialize <| \fsPerm ->
+    Init.await ChildProcess.initialize <| \procPerm ->
     Init.await Terminal.initialize <| \termConfig ->
         let
             termWidth =
@@ -50,9 +52,21 @@ init env =
                     Just { first = "init", rest = args } ->
                         CLI.Command.Init.run
                             { fsPerm = fsPerm
+                            , procPerm = procPerm
                             , args = args
                             , options = parsedArgs.options
                             , env = env
+                            , localPackage = Nothing
+                            }
+
+                    Just { first = "init-local", rest = [ localPackage, targetDir ] } ->
+                        CLI.Command.Init.run
+                            { fsPerm = fsPerm
+                            , procPerm = procPerm
+                            , args = [ targetDir ]
+                            , options = parsedArgs.options
+                            , env = env
+                            , localPackage = Just localPackage
                             }
 
                     Nothing ->

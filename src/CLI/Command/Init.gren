@@ -1,6 +1,8 @@
 module CLI.Command.Init exposing (run)
 
 import Ansi
+import Bytes
+import ChildProcess exposing (WorkingDirectory(..))
 import CLI.Command as Command
 import Dict exposing (Dict)
 import FileSystem
@@ -18,20 +20,29 @@ type RunAction
     | UsageError
 
 
+type Error
+    = FileSystemError FileSystem.Error
+    | ChildProcessError ChildProcess.FailedRun
+
+
 run :
     { fsPerm : FileSystem.Permission
+    , procPerm : ChildProcess.Permission
     , args : Array String
     , options : Command.Options
     , env : Environment
+    , localPackage : Maybe String
     }
     -> Task Command.Error UI.Element
-run { fsPerm, args, options, env } =
+run { fsPerm, procPerm, args, options, env, localPackage } =
     when route args options is
         InitializeProject dirName ->
             initializeProject 
                 { fsPerm = fsPerm
+                , procPerm = procPerm
                 , dirName = dirName
                 , env = env
+                , localPackage = localPackage
                 }
 
         ShowHelp ->
@@ -46,11 +57,13 @@ run { fsPerm, args, options, env } =
 
 initializeProject : 
     { fsPerm : FileSystem.Permission
+    , procPerm : ChildProcess.Permission
     , dirName : String
     , env : Environment
+    , localPackage : Maybe String
     }
     -> Task Command.Error UI.Element
-initializeProject { fsPerm, dirName, env } =
+initializeProject { fsPerm, dirName, procPerm, env, localPackage } =
     let
         targetPath =
             when env.platform is
@@ -68,10 +81,11 @@ initializeProject { fsPerm, dirName, env } =
                 |> Path.appendPosixString "init"
     in
     Stream.Log.line env.stdout "🤖 Generating project..."
-        |> Task.andThen (\_ -> FileSystem.makeDirectory fsPerm { recursive = True } targetPath)
         |> Task.andThen (\_ -> copyDirectory fsPerm templatePath targetPath)
-        |> Task.map (\_ -> viewInitSuccess)
+        |> Task.andThen (\_ -> Stream.Log.line env.stdout "🤖 Installing dependencies...")
+        |> Task.andThen (\_ -> npmInstall procPerm dirName localPackage)
         |> Task.mapError (\err -> { exitCode = 2, message = viewInitError err })
+        |> Task.map (\_ -> viewInitSuccess dirName)
 
 
 ignores : Array String
@@ -86,13 +100,36 @@ ignores =
     ]
 
 
-copyDirectory : FileSystem.Permission -> Path -> Path -> Task FileSystem.Error {}
+npmInstall : ChildProcess.Permission -> String -> Maybe String -> Task Error {}
+npmInstall procPerm dirName localPackage =
+    let
+        runOptions =
+            { ChildProcess.defaultRunOptions
+                | workingDirectory = SetWorkingDirectory dirName
+            }
+
+        args =
+            when localPackage is
+                Just pkg ->
+                    [ "install", pkg ]
+
+                Nothing ->
+                    [ "install" ]
+    in
+    ChildProcess.run procPerm "npm" args runOptions
+        |> Task.map (\_ -> {})
+        |> Task.mapError ChildProcessError
+    
+
+copyDirectory : FileSystem.Permission -> Path -> Path -> Task Error {}
 copyDirectory fsPerm sourcePath targetPath =
-    FileSystem.listDirectory fsPerm sourcePath
+    FileSystem.makeDirectory fsPerm { recursive = True } targetPath
+        |> Task.andThen (\_ -> FileSystem.listDirectory fsPerm sourcePath)
+        |> Task.mapError FileSystemError
         |> Task.andThen (copyEntries fsPerm sourcePath targetPath)
 
 
-copyEntries : FileSystem.Permission -> Path -> Path -> Array { entityType : FileSystem.EntityType, path : Path } -> Task FileSystem.Error {}
+copyEntries : FileSystem.Permission -> Path -> Path -> Array { entityType : FileSystem.EntityType, path : Path } -> Task Error {}
 copyEntries fsPerm sourcePath targetPath entries =
     when Array.popFirst entries is
         Nothing ->
@@ -114,12 +151,12 @@ copyEntries fsPerm sourcePath targetPath entries =
             else
                 when entry.entityType is
                     FileSystem.Directory ->
-                        FileSystem.makeDirectory fsPerm { recursive = False } targetEntry
-                            |> Task.andThen (\_ -> copyDirectory fsPerm sourceEntry targetEntry)
+                        copyDirectory fsPerm sourceEntry targetEntry
                             |> Task.andThen (\_ -> copyEntries fsPerm sourcePath targetPath remainingEntries)
 
                     FileSystem.File ->
                         FileSystem.copyFile fsPerm targetEntry sourceEntry
+                            |> Task.mapError FileSystemError
                             |> Task.andThen (\_ -> copyEntries fsPerm sourcePath targetPath remainingEntries)
 
                     _ ->
@@ -164,12 +201,19 @@ viewUsage =
         ]
 
 
-viewInitSuccess : UI.Element
-viewInitSuccess =
+viewInitSuccess : String -> UI.Element
+viewInitSuccess dirName =
     UI.column []
         [ UI.text [ Attr.color Ansi.Green ] "✅ Done!"
         , UI.text [] ""
         , UI.text [ Attr.color Ansi.Cyan ] "Now what?"
+        , UI.row [] <|
+            if dirName == "." then
+                []
+            else
+                [ UI.text [] "🌸 Navigate to your new project: "
+                , UI.text [ Attr.color Ansi.Yellow ] ("cd " ++ dirName)
+                ]
         , UI.row []
             [ UI.text [] "🌸 Start the dev server with: "
             , UI.text [ Attr.color Ansi.Yellow ] "npm run dev"
@@ -189,11 +233,26 @@ viewInitSuccess =
         ]
 
 
-viewInitError : FileSystem.Error -> UI.Element
+viewInitError : Error -> UI.Element
 viewInitError error =
+    let
+        errorMsg =
+            when error is
+                FileSystemError fsError ->
+                    FileSystem.errorToString fsError
+
+                ChildProcessError (ChildProcess.InitError { program, arguments, errorCode }) ->
+                    program ++ String.join " " arguments ++ "`" ++
+                    "exited with error code " ++ errorCode
+
+                ChildProcessError (ChildProcess.ProgramError { stderr }) ->
+                    stderr
+                        |> Bytes.toString
+                        |> Maybe.withDefault "(failed to decode error message)"
+    in
     UI.row [ Attr.color Ansi.Red ]
         [ UI.text [] "Failed to initialize project: "
-        , UI.text [] (FileSystem.errorToString error)
+        , UI.text [] errorMsg
         ]
 
 

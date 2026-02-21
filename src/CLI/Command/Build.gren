@@ -369,7 +369,9 @@ genServerComponent fsPerm component =
 
                             guidance =
                                 if hasPropsAlias then
-                                    "Could not parse the Props type alias. Supported field types are: Int, Float, String, Bool, Array, Maybe."
+                                    "Could not parse the Props type alias. Supported field types are: "
+                                        ++ String.join ", " Props.supportedFieldTypeNames
+                                        ++ "."
                                 else
                                     "No 'type alias Props' found. Components in client/src/Components/ must define a Props type alias. Example:\n\n    type alias Props =\n        { name : String\n        }"
 

@@ -5828,7 +5828,14 @@ var $blaix$prettynice$Prettynice$Internal$Props$IntType = { $: 'IntType' };
 var $blaix$prettynice$Prettynice$Internal$Props$MaybeType = function (a) {
 	return { $: 'MaybeType', a: a };
 };
+var $blaix$prettynice$Prettynice$Internal$Props$NestedType = function (a) {
+	return { $: 'NestedType', a: a };
+};
+var $blaix$prettynice$Prettynice$Internal$Props$SimpleType = function (a) {
+	return { $: 'SimpleType', a: a };
+};
 var $blaix$prettynice$Prettynice$Internal$Props$StringType = { $: 'StringType' };
+var $blaix$prettynice$Prettynice$Internal$Props$fieldTypes = [ $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$IntType, keyword: 'Int' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$FloatType, keyword: 'Float' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$StringType, keyword: 'String' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$BoolType, keyword: 'Bool' }), $blaix$prettynice$Prettynice$Internal$Props$NestedType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$ArrayType, keyword: 'Array' }), $blaix$prettynice$Prettynice$Internal$Props$NestedType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$MaybeType, keyword: 'Maybe' }) ];
 var $gren_lang$parser$Parser$ExpectingKeyword = function (a) {
 	return { $: 'ExpectingKeyword', a: a };
 };
@@ -5864,13 +5871,24 @@ var $gren_lang$parser$Parser$Advanced$spaces = $gren_lang$parser$Parser$Advanced
 	});
 var $gren_lang$parser$Parser$spaces = $gren_lang$parser$Parser$Advanced$spaces;
 function $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser() {
+	var toParser = function(entry) {
+		if (entry.$ === 'SimpleType') {
+			var _v1 = entry.a;
+			var keyword = _v1.keyword;
+			var constructor = _v1.constructor;
+			return A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(constructor), $gren_lang$parser$Parser$keyword(keyword));
+		} else {
+			var _v2 = entry.a;
+			var keyword = _v2.keyword;
+			var constructor = _v2.constructor;
+			return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(constructor), $gren_lang$parser$Parser$keyword(keyword)), $gren_lang$parser$Parser$lazy(function(_v3) {
+						return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
+					}));
+		}
+	};
 	return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Basics$identity), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
 						return _Utils_eq(c, _Utils_chr('('));
-					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf([ A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$IntType), $gren_lang$parser$Parser$keyword('Int')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$FloatType), $gren_lang$parser$Parser$keyword('Float')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$StringType), $gren_lang$parser$Parser$keyword('String')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$BoolType), $gren_lang$parser$Parser$keyword('Bool')), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$ArrayType), $gren_lang$parser$Parser$keyword('Array')), $gren_lang$parser$Parser$lazy(function(_v0) {
-									return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
-								})), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$MaybeType), $gren_lang$parser$Parser$keyword('Maybe')), $gren_lang$parser$Parser$lazy(function(_v1) {
-									return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
-								})) ]), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
+					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf(A2($gren_lang$core$Array$map, toParser, $blaix$prettynice$Prettynice$Internal$Props$fieldTypes)), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
 						return _Utils_eq(c, _Utils_chr(')'));
 					})), $gren_lang$parser$Parser$spaces));
 }
@@ -6129,6 +6147,15 @@ var $gren_lang$node$FileSystem$readFile$ = function(_v0, path) {
 	return _FileSystem_readFile(path);
 };
 var $gren_lang$node$FileSystem$readFile = F2($gren_lang$node$FileSystem$readFile$);
+var $blaix$prettynice$Prettynice$Internal$Props$supportedFieldTypeNames = A2($gren_lang$core$Array$map, function(entry) {
+		if (entry.$ === 'SimpleType') {
+			var keyword = entry.a.keyword;
+			return keyword;
+		} else {
+			var keyword = entry.a.keyword;
+			return keyword;
+		}
+	}, $blaix$prettynice$Prettynice$Internal$Props$fieldTypes);
 var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder = function(fieldType) {
 	switch (fieldType.$) {
 		case 'IntType':
@@ -6205,7 +6232,7 @@ var $blaix$prettynice$CLI$Command$Build$genServerComponent$ = function(fsPerm, c
 				var deadEnds = propsResult.a;
 				var normalized = A2($gren_lang$core$String$join, ' ', $gren_lang$core$String$words(source));
 				var hasPropsAlias = A2($gren_lang$core$String$contains, 'type alias Props', normalized);
-				var guidance = hasPropsAlias ? 'Could not parse the Props type alias. Supported field types are: Int, Float, String, Bool, Array, Maybe.' : 'No \'type alias Props\' found. Components in client/src/Components/ must define a Props type alias. Example:\n\n    type alias Props =\n        { name : String\n        }';
+				var guidance = hasPropsAlias ? ('Could not parse the Props type alias. Supported field types are: ' + (A2($gren_lang$core$String$join, ', ', $blaix$prettynice$Prettynice$Internal$Props$supportedFieldTypeNames) + '.')) : 'No \'type alias Props\' found. Components in client/src/Components/ must define a Props type alias. Example:\n\n    type alias Props =\n        { name : String\n        }';
 				var deadEndStr = A2($gren_lang$core$String$join, '; ', A2($gren_lang$core$Array$map, function(de) {
 							return 'row=' + ($gren_lang$core$String$fromInt(de.row) + (' col=' + $gren_lang$core$String$fromInt(de.col)));
 						}, deadEnds));

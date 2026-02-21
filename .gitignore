@@ -2,6 +2,7 @@
 build
 docs.json
 node_modules
+templates/init/**/gren_packages
 
 # something is generating gren_package dirs in old examples that didn't support that:
 examples/v1/**/gren_packages

@@ -1,9 +1,10 @@
-module Prettynice.Internal.Props exposing 
+module Prettynice.Internal.Props exposing
     ( Props
     , FieldType
     , get
     , encoder
     , typeSig
+    , supportedFieldTypeNames
     )
 
 
@@ -16,7 +17,7 @@ They are similar to [flags](https://gren-lang.org/book/applications/flags/).
 
 ...but it may be helpful to understand how your component props are parsed and what [field types](#FieldType) are supported.
 
-@docs Props, FieldType, get, encoder, typeSig
+@docs Props, FieldType, get, encoder, typeSig, supportedFieldTypeNames
 
 -}
 
@@ -50,27 +51,53 @@ type alias Props =
 
 {-| Represents the type of a prop field.
 
-Supported prop field types are:
-
-* Int
-* Float
-* String
-* Bool
-* Array
-* Maybe
-
-If you define props using an unsupported type,
+See [`supportedFieldTypeNames`](#supportedFieldTypeNames) for the list of
+supported types. If you define props using an unsupported type,
 Prettynice will give you an error on the build step.
 
 -}
 type FieldType
-    -- Update docs above if updating this list.
     = IntType
     | FloatType
     | StringType
     | BoolType
     | ArrayType FieldType
     | MaybeType FieldType
+
+
+type FieldTypeDetail
+    = SimpleType { keyword : String, constructor : FieldType }
+    | NestedType { keyword : String, constructor : FieldType -> FieldType }
+
+
+fieldTypes : Array FieldTypeDetail
+fieldTypes =
+    [ SimpleType { keyword = "Int", constructor = IntType }
+    , SimpleType { keyword = "Float", constructor = FloatType }
+    , SimpleType { keyword = "String", constructor = StringType }
+    , SimpleType { keyword = "Bool", constructor = BoolType }
+    , NestedType { keyword = "Array", constructor = ArrayType }
+    , NestedType { keyword = "Maybe", constructor = MaybeType }
+    ]
+
+
+{-| The list of supported prop field type names.
+
+This is the single source of truth for what types are supported.
+It drives the parser and can be used for error messages.
+-}
+supportedFieldTypeNames : Array String
+supportedFieldTypeNames =
+    Array.map
+        (\entry ->
+            when entry is
+                SimpleType { keyword } ->
+                    keyword
+
+                NestedType { keyword } ->
+                    keyword
+        )
+        fieldTypes
 
 
 {-| Return a string with the gren type signature for the given props.
@@ -207,21 +234,22 @@ parser =
 
 fieldParser : Parser FieldType
 fieldParser =
+    let
+        toParser entry =
+            when entry is
+                SimpleType { keyword, constructor } ->
+                    P.succeed constructor |. P.keyword keyword
+
+                NestedType { keyword, constructor } ->
+                    P.succeed constructor
+                        |. P.keyword keyword
+                        |= P.lazy (\_ -> fieldParser)
+    in
     P.succeed identity
         |. P.spaces
-        -- Probably a safer way to do this ensuring balanced parens?
         |. P.chompWhile (\c -> c == '(')
         |. P.spaces
-        |= P.oneOf
-            [ P.succeed IntType |. P.keyword "Int"
-            , P.succeed FloatType |. P.keyword "Float"
-            , P.succeed StringType |. P.keyword "String"
-            , P.succeed BoolType |. P.keyword "Bool"
-            , P.succeed ArrayType |. P.keyword "Array"
-                |= P.lazy (\_ -> fieldParser)
-            , P.succeed MaybeType |. P.keyword "Maybe"
-                |= P.lazy (\_ -> fieldParser)
-            ]
+        |= P.oneOf (Array.map toParser fieldTypes)
         |. P.spaces
         |. P.chompWhile (\c -> c == ')')
         |. P.spaces

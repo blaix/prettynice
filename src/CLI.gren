@@ -4,6 +4,7 @@ import Ansi
 import Args
 import ChildProcess
 import CLI.Command as Command
+import CLI.Command.Build
 import CLI.Command.Init
 import Dict
 import FileSystem
@@ -69,8 +70,14 @@ init env =
                             , localPackage = Just localPackage
                             }
 
-                    Nothing ->
-                        Task.succeed viewHelp
+                    Just { first = "build", rest = args } ->
+                        CLI.Command.Build.run
+                            { fsPerm = fsPerm
+                            , procPerm = procPerm
+                            , args = args
+                            , options = parsedArgs.options
+                            , env = env
+                            }
 
                     _ ->
                         Task.succeed viewUsage

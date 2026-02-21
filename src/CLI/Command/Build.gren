@@ -1,0 +1,834 @@
+module CLI.Command.Build exposing (run)
+
+import Ansi
+import Bytes
+import ChildProcess exposing (WorkingDirectory(..))
+import CLI.Command as Command
+import Dict exposing (Dict)
+import FileSystem
+import FileSystem.Path as Path exposing (Path)
+import Node exposing (Environment)
+import Prettynice.Internal.Props as Props exposing (Props)
+import Stream.Log
+import Task exposing (Task)
+import UI
+import UI.Attribute as Attr
+
+
+type RunAction
+    = RunBuild
+    | ShowHelp
+
+
+type Error
+    = FileSystemError FileSystem.Error
+    | ChildProcessError ChildProcess.FailedRun
+    | PropsParseError String
+
+
+type alias ComponentFile =
+    { relativePath : Path
+    , fullPath : Path
+    }
+
+
+run :
+    { fsPerm : FileSystem.Permission
+    , procPerm : ChildProcess.Permission
+    , args : Array String
+    , options : Command.Options
+    , env : Environment
+    }
+    -> Task Command.Error UI.Element
+run { fsPerm, procPerm, args, options, env } =
+    let
+        optimize =
+            Dict.member "optimize" options
+    in
+    when route args options is
+        RunBuild ->
+            buildProject
+                { fsPerm = fsPerm
+                , procPerm = procPerm
+                , env = env
+                , optimize = optimize
+                }
+
+        ShowHelp ->
+            Task.succeed viewHelp
+
+
+buildProject :
+    { fsPerm : FileSystem.Permission
+    , procPerm : ChildProcess.Permission
+    , env : Environment
+    , optimize : Bool
+    }
+    -> Task Command.Error UI.Element
+buildProject { fsPerm, procPerm, env, optimize } =
+    Stream.Log.line env.stdout "🌸 Cleaning up previous builds..."
+        |> Task.andThen (\_ -> clean fsPerm)
+        |> Task.andThen (\_ -> Stream.Log.line env.stdout "🌸 Generating prettynice dependencies...")
+        |> Task.andThen (\_ -> genDependencies fsPerm)
+        |> Task.andThen (\_ -> Stream.Log.line env.stdout "🌸 Discovering components...")
+        |> Task.andThen (\_ -> discoverComponents fsPerm)
+        |> Task.andThen
+            (\components ->
+                Stream.Log.line env.stdout "🌸 Generating server components..."
+                    |> Task.andThen (\_ -> genServerComponents fsPerm components)
+                    |> Task.map (\_ -> components)
+            )
+        |> Task.andThen
+            (\components ->
+                Stream.Log.line env.stdout "🌸 Generating client components..."
+                    |> Task.andThen (\_ -> genClientComponents fsPerm components)
+                    |> Task.map (\_ -> components)
+            )
+        |> Task.andThen
+            (\components ->
+                Stream.Log.line env.stdout "🌸 Generating server ports..."
+                    |> Task.andThen (\_ -> genServerPorts fsPerm)
+                    |> Task.map (\_ -> components)
+            )
+        |> Task.andThen
+            (\components ->
+                Stream.Log.line env.stdout "🌸 Generating client ports..."
+                    |> Task.andThen (\_ -> genClientPorts fsPerm components)
+                    |> Task.map (\_ -> components)
+            )
+        |> Task.andThen
+            (\components ->
+                Stream.Log.line env.stdout "🌸 Copying public assets..."
+                    |> Task.andThen (\_ -> copyPublicAssets fsPerm)
+                    |> Task.map (\_ -> components)
+            )
+        |> Task.andThen
+            (\components ->
+                Stream.Log.line env.stdout "🌸 Building client components..."
+                    |> Task.andThen (\_ -> buildClientComponents procPerm components optimize)
+            )
+        |> Task.andThen
+            (\_ ->
+                Stream.Log.line env.stdout "🌸 Building server..."
+                    |> Task.andThen (\_ -> buildServer procPerm optimize)
+            )
+        |> Task.mapError (\err -> { exitCode = 1, message = viewBuildError err })
+        |> Task.map (\_ -> viewBuildSuccess)
+
+
+-- CLEAN
+
+
+clean : FileSystem.Permission -> Task Error {}
+clean fsPerm =
+    let
+        remove path =
+            Path.fromPosixString path
+                |> FileSystem.remove fsPerm { recursive = True }
+                |> Task.map (\_ -> {})
+                |> Task.onError
+                    (\e ->
+                        if FileSystem.errorIsNoSuchFileOrDirectory e then
+                            Task.succeed {}
+                        else
+                            Task.fail e
+                    )
+
+        create path =
+            FileSystem.makeDirectory
+                fsPerm
+                { recursive = True }
+                (Path.fromPosixString path)
+
+        recreate path =
+            remove path
+                |> Task.andThen (\_ -> create path)
+    in
+    [ "./dist"
+    , "client/.prettynice"
+    , "server/.prettynice"
+    ]
+        |> Array.map recreate
+        |> Task.sequence
+        |> Task.map (\_ -> {})
+        |> Task.mapError FileSystemError
+
+
+-- GENERATE DEPENDENCIES
+
+
+genDependencies : FileSystem.Permission -> Task Error {}
+genDependencies fsPerm =
+    writeStringToFile fsPerm "" "dist/client/main.js"
+        |> Task.andThen (\_ -> writeStringToFile fsPerm prettyniceComponentModule "client/.prettynice/Prettynice/Component.gren")
+        |> Task.andThen (\_ -> writeStringToFile fsPerm serverWrapper "dist/server/index.js")
+        |> Task.map (\_ -> {})
+
+
+prettyniceComponentModule : String
+prettyniceComponentModule =
+    """
+    module Prettynice.Component exposing (Component)
+
+    import Transmutable.Html exposing (Html)
+
+    type alias Component props model msg =
+        { init : props -> { model : model, command : Cmd msg }
+        , view : model -> Html msg
+        , update : msg -> model -> { model : model, command : Cmd msg }
+        , subscriptions : model -> Sub msg
+        }
+    """
+
+
+serverWrapper : String
+serverWrapper =
+    """
+    const main = require("./main.js");
+    const app = main.Gren.Main.init({});
+
+    try {
+        const ports = require("./ports.js");
+        if (ports.init) {
+          ports.init(app);
+        }
+    } catch (e) {
+        if (e.code !== 'MODULE_NOT_FOUND') {
+            throw e;
+        }
+    }
+    """
+
+
+-- DISCOVER COMPONENTS
+
+
+discoverComponents : FileSystem.Permission -> Task Error (Array ComponentFile)
+discoverComponents fsPerm =
+    let
+        basePath =
+            Path.fromPosixString "client/src/Components"
+    in
+    listGrenFiles fsPerm basePath basePath
+        |> Task.onError
+            (\e ->
+                when e is
+                    FileSystemError fsErr ->
+                        if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
+                            Task.succeed []
+                        else
+                            Task.fail e
+
+                    _ ->
+                        Task.fail e
+            )
+
+
+listGrenFiles : FileSystem.Permission -> Path -> Path -> Task Error (Array ComponentFile)
+listGrenFiles fsPerm basePath thisPath =
+    FileSystem.listDirectory fsPerm thisPath
+        |> Task.mapError FileSystemError
+        |> Task.andThen (processEntries fsPerm basePath thisPath)
+
+
+processEntries : 
+    FileSystem.Permission 
+    -> Path 
+    -> Path 
+    -> Array 
+        { entityType : FileSystem.EntityType
+        , path : Path 
+        } 
+    -> Task Error (Array ComponentFile)
+processEntries fsPerm basePath thisPath entries =
+    when Array.popFirst entries is
+        Nothing ->
+            Task.succeed []
+
+        Just { first = entry, rest = remainingEntries } ->
+            let
+                fullPath =
+                    Path.join [ thisPath, entry.path ]
+            in
+            when entry.entityType is
+                FileSystem.File ->
+                    let
+                        filename =
+                            Path.filenameWithExtension entry.path
+                    in
+                    if String.takeLast 5 filename == ".gren" then
+                        let
+                            relativePath =
+                                makeRelativePath basePath fullPath
+                        in
+                        processEntries fsPerm basePath thisPath remainingEntries
+                            |> Task.map (\rest -> Array.pushFirst { relativePath = relativePath, fullPath = fullPath } rest)
+                    else
+                        processEntries fsPerm basePath thisPath remainingEntries
+
+                FileSystem.Directory ->
+                    listGrenFiles fsPerm basePath fullPath
+                        |> Task.andThen
+                            (\subFiles ->
+                                processEntries fsPerm basePath thisPath remainingEntries
+                                    |> Task.map (\rest -> Array.append subFiles rest)
+                            )
+
+                _ ->
+                    processEntries fsPerm basePath thisPath remainingEntries
+
+
+makeRelativePath : Path -> Path -> Path
+makeRelativePath basePath fullPath =
+    let
+        baseStr =
+            Path.toPosixString basePath
+
+        fullStr =
+            Path.toPosixString fullPath
+
+        basePrefix =
+            baseStr ++ "/"
+    in
+    if String.startsWith basePrefix fullStr then
+        String.dropFirst (String.count basePrefix) fullStr
+            |> Path.fromPosixString
+    else
+        fullPath
+
+
+-- GENERATE SERVER COMPONENTS
+
+
+genServerComponents : FileSystem.Permission -> Array ComponentFile -> Task Error {}
+genServerComponents fsPerm components =
+    when Array.popFirst components is
+        Nothing ->
+            Task.succeed {}
+
+        Just { first = component, rest = remainingComponents } ->
+            genServerComponent fsPerm component
+                |> Task.andThen (\_ -> genServerComponents fsPerm remainingComponents)
+
+
+genServerComponent : FileSystem.Permission -> ComponentFile -> Task Error {}
+genServerComponent fsPerm component =
+    FileSystem.readFile fsPerm component.fullPath
+        |> Task.mapError FileSystemError
+        |> Task.andThen
+            (\bytes ->
+                let
+                    source =
+                        Bytes.toString bytes
+                            |> Maybe.withDefault ""
+
+                    propsResult =
+                        Props.get source
+
+                    modName =
+                        componentModuleName component
+
+                    baseName =
+                        componentBaseName component
+                in
+                when propsResult is
+                    Ok props ->
+                        let
+                            content =
+                                toServerComponent modName baseName props
+
+                            destPath =
+                                "server/.prettynice/Gen/Components/" ++ Path.toPosixString component.relativePath
+                        in
+                        writeStringToFile fsPerm content destPath
+                            |> Task.map (\_ -> {})
+
+                    Err deadEnds ->
+                        let
+                            deadEndStr =
+                                Array.map
+                                    (\de ->
+                                        "row=" ++ String.fromInt de.row
+                                            ++ " col=" ++ String.fromInt de.col
+                                    )
+                                    deadEnds
+                                    |> String.join "; "
+
+                            normalized =
+                                source
+                                    |> String.words
+                                    |> String.join " "
+
+                            debugContent =
+                                "deadEnds: " ++ deadEndStr ++ "\n"
+                                    ++ "normalized length: " ++ String.fromInt (String.count normalized) ++ "\n"
+                                    ++ "normalized content:\n" ++ normalized ++ "\n"
+
+                            hasPropsAlias =
+                                String.contains "type alias Props" normalized
+
+                            guidance =
+                                if hasPropsAlias then
+                                    "Could not parse the Props type alias. Supported field types are: Int, Float, String, Bool, Array, Maybe."
+                                else
+                                    "No 'type alias Props' found. Components in client/src/Components/ must define a Props type alias. Example:\n\n    type alias Props =\n        { name : String\n        }"
+
+                            writeDebugToTemp =
+                                FileSystem.makeTempDirectory fsPerm "prettynice-debug"
+                                    |> Task.andThen
+                                        (\tempDir ->
+                                            let
+                                                debugPath =
+                                                    Path.join [ tempDir, Path.fromPosixString "debug.txt" ]
+                                            in
+                                            FileSystem.writeFile fsPerm (Bytes.fromString debugContent) debugPath
+                                                |> Task.map (\_ -> "\n\nDebug log written to: " ++ Path.toPosixString debugPath)
+                                        )
+                                    |> Task.onError
+                                        (\fsErr ->
+                                            Task.succeed ("\n\n(Failed to write debug log: " ++ FileSystem.errorToString fsErr ++ ")")
+                                        )
+                        in
+                        writeDebugToTemp
+                            |> Task.andThen
+                                (\debugNote ->
+                                    Task.fail
+                                        (PropsParseError
+                                            ("Failed to parse props for " ++ baseName ++ ".\n\n"
+                                                ++ guidance
+                                                ++ debugNote
+                                            )
+                                        )
+                                )
+            )
+
+
+toServerComponent : String -> String -> Props -> String
+toServerComponent modName baseName props =
+    """
+    module Gen.{{MODULE_NAME}} exposing (init)
+
+    import Json.Encode as Encode
+    import Prettynice.Internal.Props as Props
+    import Transmutable.Html as H exposing (Html)
+    import Transmutable.Html.Attributes as A
+
+    type alias Props =
+        {{PROPS_TYPE}}
+
+    encoder : Props -> Encode.Value
+    encoder props =
+        {{PROPS_ENCODER}}
+
+    init : Props -> Html msg
+    init props =
+        let
+            propJson = Encode.encode 0 (encoder props)
+        in
+        H.span []
+            [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []
+            , H.node "script" []
+                [ H.text <|
+                    \"""\n
+                    var $__components = $__components || {};
+                    $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];
+                    $__components["{{MODULE_NAME}}"].push(
+                        Gren.Gen.{{MODULE_NAME}}.init({\n
+                            flags:
+                                \""" ++ propJson ++ \"""
+                            ,
+                            node: document.currentScript.parentNode.getElementsByClassName(
+                                "prettynice-component-{{MODULE_NAME}}"
+                            )[0],
+                        })
+                    );\n
+                    \"""
+                ]
+            ]
+    """
+        |> String.replace "{{MODULE_NAME}}" modName
+        |> String.replace "{{PROPS_TYPE}}" (Props.typeSig props)
+        |> String.replace "{{PROPS_ENCODER}}" (Props.encoder props)
+
+
+-- GENERATE CLIENT COMPONENTS
+
+
+genClientComponents : FileSystem.Permission -> Array ComponentFile -> Task Error {}
+genClientComponents fsPerm components =
+    when Array.popFirst components is
+        Nothing ->
+            Task.succeed {}
+
+        Just { first = component, rest = remainingComponents } ->
+            genClientComponent fsPerm component
+                |> Task.andThen (\_ -> genClientComponents fsPerm remainingComponents)
+
+
+genClientComponent : FileSystem.Permission -> ComponentFile -> Task Error {}
+genClientComponent fsPerm component =
+    let
+        modName =
+            componentModuleName component
+
+        baseName =
+            componentBaseName component
+
+        content =
+            toClientComponent modName baseName
+
+        destPath =
+            "client/.prettynice/Gen/Components/" ++ Path.toPosixString component.relativePath
+    in
+    writeStringToFile fsPerm content destPath
+        |> Task.map (\_ -> {})
+
+
+toClientComponent : String -> String -> String
+toClientComponent modName baseName =
+    """
+    module Gen.{{MODULE_NAME}} exposing (main)
+
+    import Transmutable.Html.VirtualDom exposing (toVirtualDom)
+    import {{MODULE_NAME}} as {{NAME}}
+    import Browser
+
+    main : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg
+    main =
+        let
+            e = {{NAME}}.component
+        in
+        Browser.element
+            { init = e.init
+            , update = e.update
+            , subscriptions = e.subscriptions
+            , view = e.view >> toVirtualDom
+            }
+    """
+        |> String.replace "{{NAME}}" baseName
+        |> String.replace "{{MODULE_NAME}}" modName
+
+
+-- GENERATE SERVER PORTS
+
+
+genServerPorts : FileSystem.Permission -> Task Error {}
+genServerPorts fsPerm =
+    let
+        srcPath =
+            Path.fromPosixString "server/src/ports.js"
+
+        destPath =
+            Path.fromPosixString "dist/server/ports.js"
+    in
+    FileSystem.copyFile fsPerm destPath srcPath
+        |> Task.map (\_ -> {})
+        |> Task.mapError FileSystemError
+        |> Task.onError
+            (\e ->
+                when e is
+                    FileSystemError fsErr ->
+                        if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
+                            writeStringToFile fsPerm "" "dist/server/ports.js"
+                                |> Task.map (\_ -> {})
+                        else
+                            Task.fail e
+
+                    _ ->
+                        Task.fail e
+            )
+
+
+-- GENERATE CLIENT PORTS
+
+
+genClientPorts : FileSystem.Permission -> Array ComponentFile -> Task Error {}
+genClientPorts fsPerm components =
+    when Array.popFirst components is
+        Nothing ->
+            Task.succeed {}
+
+        Just { first = component, rest = remainingComponents } ->
+            genClientPort fsPerm component
+                |> Task.andThen (\_ -> genClientPorts fsPerm remainingComponents)
+
+
+genClientPort : FileSystem.Permission -> ComponentFile -> Task Error {}
+genClientPort fsPerm component =
+    let
+        relStr =
+            Path.toPosixString component.relativePath
+
+        jsRelStr =
+            String.dropLast 5 relStr ++ ".js"
+
+        srcPath =
+            Path.fromPosixString ("client/src/Components/" ++ jsRelStr)
+
+        destPath =
+            Path.fromPosixString ("dist/client/Components/" ++ jsRelStr)
+    in
+    FileSystem.copyFile fsPerm destPath srcPath
+        |> Task.map (\_ -> {})
+        |> Task.mapError FileSystemError
+        |> Task.onError
+            (\e ->
+                when e is
+                    FileSystemError fsErr ->
+                        if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
+                            writeStringToFile fsPerm "" ("dist/client/Components/" ++ jsRelStr)
+                                |> Task.map (\_ -> {})
+                        else
+                            Task.fail e
+
+                    _ ->
+                        Task.fail e
+            )
+
+
+-- COPY PUBLIC ASSETS
+
+
+copyPublicAssets : FileSystem.Permission -> Task Error {}
+copyPublicAssets fsPerm =
+    let
+        sourcePath =
+            Path.fromPosixString "public"
+
+        targetPath =
+            Path.fromPosixString "dist/client"
+    in
+    copyDirectoryContents fsPerm sourcePath targetPath
+        |> Task.onError
+            (\e ->
+                when e is
+                    FileSystemError fsErr ->
+                        if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
+                            Task.succeed {}
+                        else
+                            Task.fail e
+
+                    _ ->
+                        Task.fail e
+            )
+
+
+copyDirectoryContents : FileSystem.Permission -> Path -> Path -> Task Error {}
+copyDirectoryContents fsPerm sourcePath targetPath =
+    FileSystem.makeDirectory fsPerm { recursive = True } targetPath
+        |> Task.andThen (\_ -> FileSystem.listDirectory fsPerm sourcePath)
+        |> Task.mapError FileSystemError
+        |> Task.andThen (copyEntriesRecursive fsPerm sourcePath targetPath)
+
+
+copyEntriesRecursive : FileSystem.Permission -> Path -> Path -> Array { entityType : FileSystem.EntityType, path : Path } -> Task Error {}
+copyEntriesRecursive fsPerm sourcePath targetPath entries =
+    when Array.popFirst entries is
+        Nothing ->
+            Task.succeed {}
+
+        Just { first = entry, rest = remainingEntries } ->
+            let
+                sourceEntry =
+                    Path.join [ sourcePath, entry.path ]
+
+                targetEntry =
+                    Path.join [ targetPath, entry.path ]
+            in
+            when entry.entityType is
+                FileSystem.Directory ->
+                    copyDirectoryContents fsPerm sourceEntry targetEntry
+                        |> Task.andThen (\_ -> copyEntriesRecursive fsPerm sourcePath targetPath remainingEntries)
+
+                FileSystem.File ->
+                    FileSystem.copyFile fsPerm targetEntry sourceEntry
+                        |> Task.mapError FileSystemError
+                        |> Task.andThen (\_ -> copyEntriesRecursive fsPerm sourcePath targetPath remainingEntries)
+
+                _ ->
+                    copyEntriesRecursive fsPerm sourcePath targetPath remainingEntries
+
+
+-- BUILD CLIENT COMPONENTS
+
+
+buildClientComponents : ChildProcess.Permission -> Array ComponentFile -> Bool -> Task Error {}
+buildClientComponents procPerm components optimize =
+    if Array.isEmpty components then
+        Task.succeed {}
+    else
+        let
+            moduleNames =
+                Array.map generatedModuleName components
+
+            optimizeArgs =
+                if optimize then
+                    [ "--optimize" ]
+                else
+                    []
+
+            args =
+                [ "gren", "make" ] ++ optimizeArgs ++ moduleNames ++
+                    [ "--output=../dist/client/main.js" ]
+
+            runOptions =
+                { ChildProcess.defaultRunOptions
+                    | workingDirectory = SetWorkingDirectory "./client"
+                }
+        in
+        ChildProcess.run procPerm "npx" args runOptions
+            |> Task.map (\_ -> {})
+            |> Task.mapError ChildProcessError
+
+
+-- BUILD SERVER
+
+
+buildServer : ChildProcess.Permission -> Bool -> Task Error {}
+buildServer procPerm optimize =
+    let
+        optimizeArgs =
+            if optimize then
+                [ "--optimize" ]
+            else
+                []
+
+        args =
+            [ "gren", "make" ] ++ optimizeArgs ++
+            [ "Main", "--output=../dist/server/main.js" ]
+
+        runOptions =
+            { ChildProcess.defaultRunOptions
+                | workingDirectory = SetWorkingDirectory "./server"
+            }
+    in
+    ChildProcess.run procPerm "npx" args runOptions
+        |> Task.map (\_ -> {})
+        |> Task.mapError ChildProcessError
+
+
+-- HELPERS
+
+
+componentModuleName : ComponentFile -> String
+componentModuleName component =
+    let
+        relStr =
+            Path.toPosixString component.relativePath
+
+        withoutExt =
+            String.dropLast 5 relStr
+    in
+    "Components." ++ String.replace "/" "." withoutExt
+
+
+generatedModuleName : ComponentFile -> String
+generatedModuleName component =
+    "Gen." ++ componentModuleName component
+
+
+componentBaseName : ComponentFile -> String
+componentBaseName component =
+    Path.filenameWithExtension component.relativePath
+        |> String.dropLast 5
+
+
+writeStringToFile : FileSystem.Permission -> String -> String -> Task Error Path
+writeStringToFile fsPerm content path =
+    let
+        filePath =
+            Path.fromPosixString path
+
+        parentDir =
+            Path.parentPath filePath
+                |> Maybe.withDefault Path.empty
+    in
+    FileSystem.makeDirectory fsPerm { recursive = True } parentDir
+        |> Task.andThen (\_ -> FileSystem.writeFile fsPerm (Bytes.fromString content) filePath)
+        |> Task.mapError FileSystemError
+
+
+-- VIEWS
+
+
+indent : String
+indent =
+    "    "
+
+
+viewBuildSuccess : UI.Element
+viewBuildSuccess =
+    UI.text [ Attr.color Ansi.Green ] "✅ Done"
+
+
+viewBuildError : Error -> UI.Element
+viewBuildError error =
+    let
+        errorMsg =
+            when error is
+                FileSystemError fsError ->
+                    FileSystem.errorToString fsError
+
+                ChildProcessError (ChildProcess.InitError { program, arguments, errorCode }) ->
+                    "`" ++ program ++ " " ++ String.join " " arguments ++ "`" ++
+                    " exited with error code " ++ errorCode
+
+                ChildProcessError (ChildProcess.ProgramError { stderr }) ->
+                    stderr
+                        |> Bytes.toString
+                        |> Maybe.withDefault "(failed to decode error message)"
+
+                PropsParseError msg ->
+                    msg
+    in
+    UI.row [ Attr.color Ansi.Red ]
+        [ UI.text [] "Build failed: "
+        , UI.text [] errorMsg
+        ]
+
+
+viewHelp : UI.Element
+viewHelp =
+    UI.column []
+        [ UI.text [] "Build a Prettynice project"
+        , UI.text [] ""
+        , viewUsage
+        ]
+
+
+viewUsage : UI.Element
+viewUsage =
+    UI.column []
+        [ UI.text [] "Usage:"
+        , UI.row [ Attr.color Ansi.Cyan ]
+            [ UI.text [] indent
+            , UI.text [] "prettynice build [options]"
+            ]
+        , UI.text [] ""
+        , UI.text [] "Options:"
+        , UI.row []
+            [ UI.text [] indent
+            , UI.text [ Attr.color Ansi.Cyan ] "--optimize "
+            , UI.text [] " Build with optimizations enabled"
+            ]
+        , UI.row []
+            [ UI.text [] indent
+            , UI.text [ Attr.color Ansi.Cyan ] "--help "
+            , UI.text [] " Show this help information"
+            ]
+        ]
+
+
+route : Array String -> Command.Options -> RunAction
+route args options =
+    -- Keep this at bottom because it breaks syntax highlighting rest of file.
+    -- https://github.com/MaeBrooks/tree-sitter-gren/issues/17
+    when { args = args, help = Dict.get "help" options } is
+        { help = Just _ } ->
+            ShowHelp
+
+        { args = [] } ->
+            RunBuild
+
+        _ ->
+            RunBuild

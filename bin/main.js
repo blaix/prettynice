@@ -2134,7 +2134,7 @@ function _Json_runHelp(decoder, value) {
 
       var keyValuePairs = [];
       for (var key in value) {
-        if (value.hasOwnProperty(key)) {
+        if (Object.hasOwn(value, key)) {
           var result = _Json_runHelp(decoder.b, value[key]);
           if (!$gren_lang$core$Result$isOk(result)) {
             return $gren_lang$core$Result$Err(
@@ -2288,7 +2288,11 @@ function _Json_arrayEquality(aDecoders, bDecoders) {
 // ENCODE
 
 var _Json_encode = F2(function (indentLevel, value) {
-  return JSON.stringify(_Json_unwrap(value), null, indentLevel) + "";
+  return (
+    (indentLevel === 0
+      ? JSON.stringify(_Json_unwrap(value))
+      : JSON.stringify(_Json_unwrap(value), null, indentLevel)) + ""
+  );
 });
 
 function _Json_wrap(value) {
@@ -2313,7 +2317,10 @@ function _Json_emptyObject() {
 }
 
 var _Json_addField = F3(function (key, value, object) {
-  object[key] = _Json_unwrap(value);
+  var unwrapped = _Json_unwrap(value);
+  if (!(key === "toJSON" && typeof unwrapped === "function")) {
+    object[key] = unwrapped;
+  }
   return object;
 });
 
@@ -2656,9 +2663,9 @@ var _String_unitLength = function (str) {
 };
 
 var _String_getUnit = F2(function (index, str) {
-  var ret = str.at(index);
+  var char = str.at(index);
 
-  if (typeof ret === "undefined") {
+  if (typeof char === "undefined") {
     return $gren_lang$core$Maybe$Nothing;
   }
 
@@ -2679,6 +2686,10 @@ var _String_foldrUnits = F3(function (fn, state, str) {
   }
 
   return state;
+});
+
+var _String_sliceUnits = F3(function (start, end, str) {
+  return str.slice(start, end);
 });
 var $gren_lang$core$String$any = _String_any;
 var $gren_lang$core$Basics$composeL$ = function(g, f) {
@@ -3473,7 +3484,7 @@ var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString
 	}
 
 	return { 
-		newOffset: newOffset, 
+		newOffset: newOffset < 0 ? -1 : target, 
 		newRow: row, 
 		newCol: col 
 	};
@@ -3492,11 +3503,12 @@ var $gren_lang$parser$Parser$Advanced$chompIf = F2($gren_lang$parser$Parser$Adva
 var $gren_lang$parser$Parser$chompIf = function(isGood) {
 	return $gren_lang$parser$Parser$Advanced$chompIf$(isGood, $gren_lang$parser$Parser$UnexpectedChar);
 };
+var $gren_lang$parser$Parser$Advanced$findSubString = _Parser_findSubString;
 var $gren_lang$core$Basics$lt = _Utils_lt;
 var $gren_lang$core$String$unitLength = _String_unitLength;
 var $gren_lang$parser$Parser$Advanced$chompUntilEndOr = function(str) {
 	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
-			var _v0 = A5(_Parser_findSubString, str, s.offset, s.row, s.col, s.src);
+			var _v0 = A5($gren_lang$parser$Parser$Advanced$findSubString, str, s.offset, s.row, s.col, s.src);
 			var newOffset = _v0.newOffset;
 			var newRow = _v0.newRow;
 			var newCol = _v0.newCol;
@@ -3547,7 +3559,7 @@ var $gren_lang$parser$Parser$Advanced$chompWhile = function(isGood) {
 		});
 };
 var $gren_lang$parser$Parser$chompWhile = $gren_lang$parser$Parser$Advanced$chompWhile;
-var $gren_lang$core$String$slice = _String_slice;
+var $gren_lang$core$String$sliceUnits = _String_sliceUnits;
 var $gren_lang$parser$Parser$Advanced$mapChompedString$ = function(func, _v0) {
 	var parse = _v0.a;
 	return $gren_lang$parser$Parser$Advanced$Parser(function(s0) {
@@ -3562,7 +3574,7 @@ var $gren_lang$parser$Parser$Advanced$mapChompedString$ = function(func, _v0) {
 				var p = _v3.pred;
 				var a = _v3.value;
 				var s1 = _v3.state;
-				return $gren_lang$parser$Parser$Advanced$Good({ pred: p, state: s1, value: A2(func, A3($gren_lang$core$String$slice, s0.offset, s1.offset, s0.src), a) });
+				return $gren_lang$parser$Parser$Advanced$Good({ pred: p, state: s1, value: A2(func, A3($gren_lang$core$String$sliceUnits, s0.offset, s1.offset, s0.src), a) });
 			}
 		});
 };
@@ -4136,43 +4148,304 @@ var $joeybright$gren_args$Args$parseHelper$ = function(parseState, acc, passedAr
 };
 var $joeybright$gren_args$Args$parseHelper = F3($joeybright$gren_args$Args$parseHelper$);
 var $joeybright$gren_args$Args$parse = A2($joeybright$gren_args$Args$parseHelper, $joeybright$gren_args$Args$ParsingArgs, { args: [  ], options: $gren_lang$core$Dict$empty });
+var $blaix$prettynice$CLI$Command$Build$ChildProcessError = function (a) {
+	return { $: 'ChildProcessError', a: a };
+};
+var $gren_lang$node$ChildProcess$SetWorkingDirectory = function (a) {
+	return { $: 'SetWorkingDirectory', a: a };
+};
+var $gren_lang$node$ChildProcess$DefaultShell = { $: 'DefaultShell' };
+var $gren_lang$node$ChildProcess$InheritEnvironmentVariables = { $: 'InheritEnvironmentVariables' };
+var $gren_lang$node$ChildProcess$InheritWorkingDirectory = { $: 'InheritWorkingDirectory' };
+var $gren_lang$node$ChildProcess$NoLimit = { $: 'NoLimit' };
+var $gren_lang$core$Basics$mul = _Basics_mul;
+var $gren_lang$node$ChildProcess$defaultRunOptions = { environmentVariables: $gren_lang$node$ChildProcess$InheritEnvironmentVariables, maximumBytesWrittenToStreams: 1024 * 1024, runDuration: $gren_lang$node$ChildProcess$NoLimit, shell: $gren_lang$node$ChildProcess$DefaultShell, workingDirectory: $gren_lang$node$ChildProcess$InheritWorkingDirectory };
+var $gren_lang$core$String$slice = _String_slice;
+var $gren_lang$core$String$dropLast$ = function(n, string) {
+	return (n < 1) ? string : A3($gren_lang$core$String$slice, 0, -n, string);
+};
+var $gren_lang$core$String$dropLast = F2($gren_lang$core$String$dropLast$);
+var $gren_lang$core$String$replace$ = function(before, after, string) {
+	return A2($gren_lang$core$String$join, after, A2($gren_lang$core$String$split, before, string));
+};
+var $gren_lang$core$String$replace = F3($gren_lang$core$String$replace$);
+var $gren_lang$node$FileSystem$Path$toPosixString = _FilePath_toPosix;
+var $blaix$prettynice$CLI$Command$Build$componentModuleName = function(component) {
+	var relStr = $gren_lang$node$FileSystem$Path$toPosixString(component.relativePath);
+	var withoutExt = $gren_lang$core$String$dropLast$(5, relStr);
+	return 'Components.' + $gren_lang$core$String$replace$('/', '.', withoutExt);
+};
+var $blaix$prettynice$CLI$Command$Build$generatedModuleName = function(component) {
+	return 'Gen.' + $blaix$prettynice$CLI$Command$Build$componentModuleName(component);
+};
+var $gren_lang$core$Array$isEmpty = function(array) {
+	return $gren_lang$core$Array$length(array) === 0;
+};
 var $gren_lang$core$Task$fail = _Scheduler_fail;
-var $gren_lang$core$Maybe$andThen$ = function(callback, maybeValue) {
-	if (maybeValue.$ === 'Just') {
-		var value = maybeValue.a;
-		return callback(value);
+var $gren_lang$core$Task$mapError$ = function(convert, task) {
+	return A2($gren_lang$core$Task$onError, $gren_lang$core$Basics$composeL$($gren_lang$core$Task$fail, convert), task);
+};
+var $gren_lang$core$Task$mapError = F2($gren_lang$core$Task$mapError$);
+
+
+var bufferNs = require("node:buffer");
+var process = require("node:process");
+var stream = require("node:stream");
+
+var _ChildProcess_module = function () {
+  return require("node:child_process");
+};
+
+var _ChildProcess_run = function (options) {
+  return _Scheduler_binding(function (callback) {
+    var childProcess = _ChildProcess_module();
+
+    var workingDir = options.workingDirectory;
+    var env = options.environmentVariables;
+    var shell = options.shell;
+
+    childProcess.execFile(
+      options.program,
+      options._arguments,
+      {
+        encoding: "buffer",
+        timeout: options.runDuration,
+        cwd: _ChildProcess_handleCwd(workingDir),
+        env: _ChildProcess_handleEnv(env),
+        timeout: options.runDuration,
+        maxBuffer: options.maximumBytesWrittenToStreams,
+        shell: _ChildProcess_handleShell(shell),
+      },
+      function (err, stdout, stderr) {
+        if (err == null) {
+          callback(
+            _Scheduler_succeed({
+              stdout: new DataView(
+                stdout.buffer,
+                stdout.byteOffset,
+                stdout.byteLength,
+              ),
+              stderr: new DataView(
+                stderr.buffer,
+                stderr.byteOffset,
+                stderr.byteLength,
+              ),
+            }),
+          );
+        } else {
+          if (typeof err.errno === "undefined") {
+            // errno only exists on system errors, the program was run
+            callback(
+              _Scheduler_fail(
+                $gren_lang$node$ChildProcess$ProgramError({
+                  exitCode: err.code,
+                  stdout: new DataView(
+                    stdout.buffer,
+                    stdout.byteOffset,
+                    stdout.byteLength,
+                  ),
+                  stderr: new DataView(
+                    stderr.buffer,
+                    stderr.byteOffset,
+                    stderr.byteLength,
+                  ),
+                }),
+              ),
+            );
+          } else {
+            callback(
+              _Scheduler_fail(
+                $gren_lang$node$ChildProcess$InitError({
+                  a: err.path,
+                  b: err.spawnargs,
+                  c: err.code,
+                }),
+              ),
+            );
+          }
+        }
+      },
+    );
+  });
+};
+
+var _ChildProcess_spawn = F3(function (sendInitToApp, sendExitToApp, options) {
+  return _Scheduler_binding(function (callback) {
+    var subproc = _ChildProcess_getSubProc(options);
+
+    var proc = _Scheduler_rawSpawn(
+      sendInitToApp({
+        processId: _Scheduler_rawSpawn(
+          _Scheduler_binding(function (callback) {
+            return function () {
+              subproc.kill();
+            };
+          }),
+        ),
+        streams:
+          options.connection.kind !== 1
+            ? {}
+            : {
+                input: stream.Writable.toWeb(subproc.stdin),
+                output: stream.Readable.toWeb(subproc.stdout),
+                error: stream.Readable.toWeb(subproc.stderr),
+              },
+      }),
+    );
+
+    subproc.on("exit", function (code) {
+      _Scheduler_rawSpawn(sendExitToApp(code));
+    });
+
+    callback(_Scheduler_succeed(proc));
+  });
+});
+
+function _ChildProcess_getSubProc(options) {
+  var childProcess = _ChildProcess_module();
+
+  var workingDir = options.workingDirectory;
+  var env = options.environmentVariables;
+  var shell = options.shell;
+
+  var subproc = childProcess.spawn(options.program, options._arguments, {
+    cwd: _ChildProcess_handleCwd(workingDir),
+    env: _ChildProcess_handleEnv(env),
+    timeout: options.runDuration,
+    shell: _ChildProcess_handleShell(shell),
+    stdio:
+      options.connection.kind === 0
+        ? "inherit"
+        : options.connection.kind === 1
+          ? "pipe"
+          : "ignore",
+    detached:
+      options.connection.kind === 3 && process.platform === "win32",
+  });
+
+  if (options.connection.kind === 3) {
+    subproc.unref();
+  }
+
+  return subproc;
+}
+
+function _ChildProcess_handleCwd(cwd) {
+  return cwd.inherit ? process.cwd() : cwd.override;
+}
+
+function _ChildProcess_handleEnv(env) {
+  return env.option === 0
+    ? process.env
+    : env.option === 1
+      ? _Utils_update(process.env, _ChildProcess_dictToObj(env.value))
+      : _ChildProcess_dictToObj(env.value);
+}
+
+function _ChildProcess_handleShell(shell) {
+  return shell.choice === 0
+    ? false
+    : shell.choice === 1
+      ? true
+      : shell.value;
+}
+
+function _ChildProcess_dictToObj(dict) {
+  return A3(
+    $gren_lang$core$Dict$foldl,
+    F3(function (key, value, acc) {
+      acc[key] = value;
+      return acc;
+    }),
+    {},
+    dict,
+  );
+}
+var $gren_lang$node$ChildProcess$InitError = function (a) {
+	return { $: 'InitError', a: a };
+};
+var $gren_lang$node$ChildProcess$ProgramError = function (a) {
+	return { $: 'ProgramError', a: a };
+};
+var $gren_lang$core$Basics$gt = _Utils_gt;
+var $gren_lang$core$Basics$max$ = function(x, y) {
+	return (_Utils_cmp(x, y) > 0) ? x : y;
+};
+var $gren_lang$core$Basics$max = F2($gren_lang$core$Basics$max$);
+var $gren_lang$node$ChildProcess$run$ = function(_v0, program, _arguments, opts) {
+	return _ChildProcess_run({ _arguments: _arguments, environmentVariables: function () {
+			var _v1 = opts.environmentVariables;
+			switch (_v1.$) {
+				case 'InheritEnvironmentVariables':
+					return { option: 0, value: $gren_lang$core$Dict$empty };
+				case 'MergeWithEnvironmentVariables':
+					var value = _v1.a;
+					return { option: 1, value: value };
+				default:
+					var value = _v1.a;
+					return { option: 2, value: value };
+			}
+		}(), maximumBytesWrittenToStreams: opts.maximumBytesWrittenToStreams, program: program, runDuration: function () {
+			var _v2 = opts.runDuration;
+			if (_v2.$ === 'NoLimit') {
+				return 0;
+			} else {
+				var ms = _v2.a;
+				return $gren_lang$core$Basics$max$(0, ms);
+			}
+		}(), shell: function () {
+			var _v3 = opts.shell;
+			switch (_v3.$) {
+				case 'NoShell':
+					return { choice: 0, value: '' };
+				case 'DefaultShell':
+					return { choice: 1, value: '' };
+				default:
+					var value = _v3.a;
+					return { choice: 2, value: value };
+			}
+		}(), workingDirectory: function () {
+			var _v4 = opts.workingDirectory;
+			if (_v4.$ === 'InheritWorkingDirectory') {
+				return { inherit: true, override: '' };
+			} else {
+				var value = _v4.a;
+				return { inherit: false, override: value };
+			}
+		}() });
+};
+var $gren_lang$node$ChildProcess$run = F4($gren_lang$node$ChildProcess$run$);
+var $blaix$prettynice$CLI$Command$Build$buildClientComponents$ = function(procPerm, components, optimize) {
+	if ($gren_lang$core$Array$isEmpty(components)) {
+		return $gren_lang$core$Task$succeed({  });
 	} else {
-		return $gren_lang$core$Maybe$Nothing;
+		var runOptions = _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { workingDirectory: $gren_lang$node$ChildProcess$SetWorkingDirectory('./client') });
+		var optimizeArgs = optimize ? [ '--optimize' ] : [  ];
+		var moduleNames = A2($gren_lang$core$Array$map, $blaix$prettynice$CLI$Command$Build$generatedModuleName, components);
+		var args = _Utils_ap([ 'gren', 'make' ], _Utils_ap(optimizeArgs, _Utils_ap(moduleNames, [ '--output=../dist/client/main.js' ])));
+		return $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$ChildProcessError, $gren_lang$core$Task$map$(function(_v0) {
+					return {  };
+				}, $gren_lang$node$ChildProcess$run$(procPerm, 'npx', args, runOptions)));
 	}
 };
-var $gren_lang$core$Maybe$andThen = F2($gren_lang$core$Maybe$andThen$);
-var $gren_lang$node$FileSystem$Path$fromPosixString = _FilePath_fromPosix;
-var $gren_lang$core$Array$prepend = _Array_append;
-var $gren_lang$core$Array$append$ = function(fst, second) {
-	return A2($gren_lang$core$Array$prepend, second, fst);
+var $blaix$prettynice$CLI$Command$Build$buildClientComponents = F3($blaix$prettynice$CLI$Command$Build$buildClientComponents$);
+var $blaix$prettynice$CLI$Command$Build$buildServer$ = function(procPerm, optimize) {
+	var runOptions = _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { workingDirectory: $gren_lang$node$ChildProcess$SetWorkingDirectory('./server') });
+	var optimizeArgs = optimize ? [ '--optimize' ] : [  ];
+	var args = _Utils_ap([ 'gren', 'make' ], _Utils_ap(optimizeArgs, [ 'Main', '--output=../dist/server/main.js' ]));
+	return $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$ChildProcessError, $gren_lang$core$Task$map$(function(_v0) {
+				return {  };
+			}, $gren_lang$node$ChildProcess$run$(procPerm, 'npx', args, runOptions)));
 };
-var $gren_lang$core$Array$append = F2($gren_lang$core$Array$append$);
-var $gren_lang$core$String$isEmpty = function(string) {
-	return string === '';
-};
-var $gren_lang$node$FileSystem$Path$filenameWithExtension = function(path) {
-	return $gren_lang$core$String$isEmpty(path.extension) ? path.filename : (path.filename + ('.' + path.extension));
-};
-var $gren_lang$core$Array$keepIf = _Array_filter;
-var $gren_lang$core$Basics$neq = _Utils_notEqual;
-var $gren_lang$node$FileSystem$Path$prepend$ = function(left, right) {
-	return _Utils_update(left, { directory: A2($gren_lang$core$Array$keepIf, function(dir) {
-				return dir !== '';
-			}, $gren_lang$core$Array$append$(right.directory, $gren_lang$core$Array$pushLast$($gren_lang$node$FileSystem$Path$filenameWithExtension(left), left.directory))), extension: right.extension, filename: right.filename });
-};
-var $gren_lang$node$FileSystem$Path$prepend = F2($gren_lang$node$FileSystem$Path$prepend$);
-var $gren_lang$node$FileSystem$Path$appendPosixString$ = function(str, path) {
-	return $gren_lang$node$FileSystem$Path$prepend$(path, $gren_lang$node$FileSystem$Path$fromPosixString(str));
-};
-var $gren_lang$node$FileSystem$Path$appendPosixString = F2($gren_lang$node$FileSystem$Path$appendPosixString$);
-var $blaix$prettynice$CLI$Command$Init$FileSystemError = function (a) {
+var $blaix$prettynice$CLI$Command$Build$buildServer = F2($blaix$prettynice$CLI$Command$Build$buildServer$);
+var $blaix$prettynice$CLI$Command$Build$FileSystemError = function (a) {
 	return { $: 'FileSystemError', a: a };
 };
+var $gren_lang$node$FileSystem$errorIsNoSuchFileOrDirectory = function(_v0) {
+	var code = _v0.a.code;
+	return code === 'ENOENT';
+};
+var $gren_lang$node$FileSystem$Path$fromPosixString = _FilePath_fromPosix;
 
 
 var fs = require("node:fs");
@@ -4913,11 +5186,57 @@ var $gren_lang$core$Time$Posix = function (a) {
 	return { $: 'Posix', a: a };
 };
 var $gren_lang$core$Time$millisToPosix = $gren_lang$core$Time$Posix;
+var $gren_lang$node$FileSystem$makeDirectory$ = function(_v0, options, path) {
+	return A2(_FileSystem_makeDirectory, options, path);
+};
+var $gren_lang$node$FileSystem$makeDirectory = F3($gren_lang$node$FileSystem$makeDirectory$);
+var $gren_lang$node$FileSystem$remove$ = function(_v0, options, path) {
+	return A2(_FileSystem_remove, options, path);
+};
+var $gren_lang$node$FileSystem$remove = F3($gren_lang$node$FileSystem$remove$);
+var $blaix$prettynice$CLI$Command$Build$clean = function(fsPerm) {
+	var remove = function(path) {
+		return A2($gren_lang$core$Task$onError, function(e) {
+				return $gren_lang$node$FileSystem$errorIsNoSuchFileOrDirectory(e) ? $gren_lang$core$Task$succeed({  }) : $gren_lang$core$Task$fail(e);
+			}, $gren_lang$core$Task$map$(function(_v2) {
+					return {  };
+				}, $gren_lang$node$FileSystem$remove$(fsPerm, { recursive: true }, $gren_lang$node$FileSystem$Path$fromPosixString(path))));
+	};
+	var create = function(path) {
+		return $gren_lang$node$FileSystem$makeDirectory$(fsPerm, { recursive: true }, $gren_lang$node$FileSystem$Path$fromPosixString(path));
+	};
+	var recreate = function(path) {
+		return A2($gren_lang$core$Task$andThen, function(_v1) {
+				return create(path);
+			}, remove(path));
+	};
+	return $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, $gren_lang$core$Task$map$(function(_v0) {
+				return {  };
+			}, $gren_lang$core$Task$sequence(A2($gren_lang$core$Array$map, recreate, [ './dist', 'client/.prettynice', 'server/.prettynice' ]))));
+};
 var $gren_lang$node$FileSystem$copyFile$ = function(_v0, dest, src) {
 	return A2(_FileSystem_copyFile, src, dest);
 };
 var $gren_lang$node$FileSystem$copyFile = F3($gren_lang$node$FileSystem$copyFile$);
-var $blaix$prettynice$CLI$Command$Init$ignores = [ 'node_modules', 'tests', 'dist', 'build', 'docs.json', '.gren', '.devbox' ];
+var $gren_lang$core$Array$prepend = _Array_append;
+var $gren_lang$core$Array$append$ = function(fst, second) {
+	return A2($gren_lang$core$Array$prepend, second, fst);
+};
+var $gren_lang$core$Array$append = F2($gren_lang$core$Array$append$);
+var $gren_lang$core$String$isEmpty = function(string) {
+	return string === '';
+};
+var $gren_lang$node$FileSystem$Path$filenameWithExtension = function(path) {
+	return $gren_lang$core$String$isEmpty(path.extension) ? path.filename : (path.filename + ('.' + path.extension));
+};
+var $gren_lang$core$Array$keepIf = _Array_filter;
+var $gren_lang$core$Basics$neq = _Utils_notEqual;
+var $gren_lang$node$FileSystem$Path$prepend$ = function(left, right) {
+	return _Utils_update(left, { directory: A2($gren_lang$core$Array$keepIf, function(dir) {
+				return dir !== '';
+			}, $gren_lang$core$Array$append$(right.directory, $gren_lang$core$Array$pushLast$($gren_lang$node$FileSystem$Path$filenameWithExtension(left), left.directory))), extension: right.extension, filename: right.filename });
+};
+var $gren_lang$node$FileSystem$Path$prepend = F2($gren_lang$node$FileSystem$Path$prepend$);
 var $gren_lang$node$FileSystem$Path$append$ = function(left, right) {
 	return $gren_lang$node$FileSystem$Path$prepend$(right, left);
 };
@@ -4939,34 +5258,14 @@ var $gren_lang$node$FileSystem$listDirectory$ = function(_v0, path) {
 	return _FileSystem_listDirectory(path);
 };
 var $gren_lang$node$FileSystem$listDirectory = F2($gren_lang$node$FileSystem$listDirectory$);
-var $gren_lang$node$FileSystem$makeDirectory$ = function(_v0, options, path) {
-	return A2(_FileSystem_makeDirectory, options, path);
-};
-var $gren_lang$node$FileSystem$makeDirectory = F3($gren_lang$node$FileSystem$makeDirectory$);
-var $gren_lang$core$Task$mapError$ = function(convert, task) {
-	return A2($gren_lang$core$Task$onError, $gren_lang$core$Basics$composeL$($gren_lang$core$Task$fail, convert), task);
-};
-var $gren_lang$core$Task$mapError = F2($gren_lang$core$Task$mapError$);
-var $gren_lang$core$Array$findFirst = _Array_findFirst;
-var $gren_lang$core$Array$member$ = function(value, array) {
-	var _v0 = A2($gren_lang$core$Array$findFirst, function(v) {
-			return _Utils_eq(v, value);
-		}, array);
-	if (_v0.$ === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $gren_lang$core$Array$member = F2($gren_lang$core$Array$member$);
-var $blaix$prettynice$CLI$Command$Init$copyDirectory$ = function(fsPerm, sourcePath, targetPath) {
-	return A2($gren_lang$core$Task$andThen, A3($blaix$prettynice$CLI$Command$Init$copyEntries, fsPerm, sourcePath, targetPath), $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Init$FileSystemError, A2($gren_lang$core$Task$andThen, function(_v5) {
+var $blaix$prettynice$CLI$Command$Build$copyDirectoryContents$ = function(fsPerm, sourcePath, targetPath) {
+	return A2($gren_lang$core$Task$andThen, A3($blaix$prettynice$CLI$Command$Build$copyEntriesRecursive, fsPerm, sourcePath, targetPath), $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, A2($gren_lang$core$Task$andThen, function(_v5) {
 					return $gren_lang$node$FileSystem$listDirectory$(fsPerm, sourcePath);
 				}, $gren_lang$node$FileSystem$makeDirectory$(fsPerm, { recursive: true }, targetPath))));
 };
-var $blaix$prettynice$CLI$Command$Init$copyDirectory = F3($blaix$prettynice$CLI$Command$Init$copyDirectory$);
-var $blaix$prettynice$CLI$Command$Init$copyEntries$ = function(fsPerm, sourcePath, targetPath, entries) {
-	copyEntries:
+var $blaix$prettynice$CLI$Command$Build$copyDirectoryContents = F3($blaix$prettynice$CLI$Command$Build$copyDirectoryContents$);
+var $blaix$prettynice$CLI$Command$Build$copyEntriesRecursive$ = function(fsPerm, sourcePath, targetPath, entries) {
+	copyEntriesRecursive:
 	while (true) {
 		var _v0 = $gren_lang$core$Array$popFirst(entries);
 		if (_v0.$ === 'Nothing') {
@@ -4977,45 +5276,985 @@ var $blaix$prettynice$CLI$Command$Init$copyEntries$ = function(fsPerm, sourcePat
 			var remainingEntries = _v1.rest;
 			var targetEntry = $gren_lang$node$FileSystem$Path$join([ targetPath, entry.path ]);
 			var sourceEntry = $gren_lang$node$FileSystem$Path$join([ sourcePath, entry.path ]);
-			var entryName = $gren_lang$node$FileSystem$Path$filenameWithExtension(entry.path);
-			if ($gren_lang$core$Array$member$(entryName, $blaix$prettynice$CLI$Command$Init$ignores)) {
-				var $temp$fsPerm = fsPerm,
-				$temp$sourcePath = sourcePath,
-				$temp$targetPath = targetPath,
-				$temp$entries = remainingEntries;
-				fsPerm = $temp$fsPerm;
-				sourcePath = $temp$sourcePath;
-				targetPath = $temp$targetPath;
-				entries = $temp$entries;
-				continue copyEntries;
-			} else {
-				var _v2 = entry.entityType;
-				switch (_v2.$) {
-					case 'Directory':
-						return A2($gren_lang$core$Task$andThen, function(_v3) {
-								return $blaix$prettynice$CLI$Command$Init$copyEntries$(fsPerm, sourcePath, targetPath, remainingEntries);
-							}, $blaix$prettynice$CLI$Command$Init$copyDirectory$(fsPerm, sourceEntry, targetEntry));
-					case 'File':
-						return A2($gren_lang$core$Task$andThen, function(_v4) {
-								return $blaix$prettynice$CLI$Command$Init$copyEntries$(fsPerm, sourcePath, targetPath, remainingEntries);
-							}, $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Init$FileSystemError, $gren_lang$node$FileSystem$copyFile$(fsPerm, targetEntry, sourceEntry)));
-					default:
-						var $temp$fsPerm = fsPerm,
-						$temp$sourcePath = sourcePath,
-						$temp$targetPath = targetPath,
-						$temp$entries = remainingEntries;
-						fsPerm = $temp$fsPerm;
-						sourcePath = $temp$sourcePath;
-						targetPath = $temp$targetPath;
-						entries = $temp$entries;
-						continue copyEntries;
-				}
+			var _v2 = entry.entityType;
+			switch (_v2.$) {
+				case 'Directory':
+					return A2($gren_lang$core$Task$andThen, function(_v3) {
+							return $blaix$prettynice$CLI$Command$Build$copyEntriesRecursive$(fsPerm, sourcePath, targetPath, remainingEntries);
+						}, $blaix$prettynice$CLI$Command$Build$copyDirectoryContents$(fsPerm, sourceEntry, targetEntry));
+				case 'File':
+					return A2($gren_lang$core$Task$andThen, function(_v4) {
+							return $blaix$prettynice$CLI$Command$Build$copyEntriesRecursive$(fsPerm, sourcePath, targetPath, remainingEntries);
+						}, $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, $gren_lang$node$FileSystem$copyFile$(fsPerm, targetEntry, sourceEntry)));
+				default:
+					var $temp$fsPerm = fsPerm,
+					$temp$sourcePath = sourcePath,
+					$temp$targetPath = targetPath,
+					$temp$entries = remainingEntries;
+					fsPerm = $temp$fsPerm;
+					sourcePath = $temp$sourcePath;
+					targetPath = $temp$targetPath;
+					entries = $temp$entries;
+					continue copyEntriesRecursive;
 			}
 		}
 	}
 };
-var $blaix$prettynice$CLI$Command$Init$copyEntries = F4($blaix$prettynice$CLI$Command$Init$copyEntries$);
-var $gren_lang$node$FileSystem$Path$fromWin32String = _FilePath_fromWin32;
+var $blaix$prettynice$CLI$Command$Build$copyEntriesRecursive = F4($blaix$prettynice$CLI$Command$Build$copyEntriesRecursive$);
+var $blaix$prettynice$CLI$Command$Build$copyPublicAssets = function(fsPerm) {
+	var targetPath = $gren_lang$node$FileSystem$Path$fromPosixString('dist/client');
+	var sourcePath = $gren_lang$node$FileSystem$Path$fromPosixString('public');
+	return A2($gren_lang$core$Task$onError, function(e) {
+			if (e.$ === 'FileSystemError') {
+				var fsErr = e.a;
+				return $gren_lang$node$FileSystem$errorIsNoSuchFileOrDirectory(fsErr) ? $gren_lang$core$Task$succeed({  }) : $gren_lang$core$Task$fail(e);
+			} else {
+				return $gren_lang$core$Task$fail(e);
+			}
+		}, $blaix$prettynice$CLI$Command$Build$copyDirectoryContents$(fsPerm, sourcePath, targetPath));
+};
+var $gren_lang$core$String$foldl = _String_foldl;
+var $gren_lang$core$String$count = function(string) {
+	return A3($gren_lang$core$String$foldl, F2(function(_v0, num) {
+				return num + 1;
+			}), 0, string);
+};
+var $gren_lang$core$String$dropFirst$ = function(n, string) {
+	return (n < 1) ? string : A3($gren_lang$core$String$slice, n, $gren_lang$core$String$unitLength(string), string);
+};
+var $gren_lang$core$String$dropFirst = F2($gren_lang$core$String$dropFirst$);
+var $gren_lang$core$String$startsWith = _String_startsWith;
+var $blaix$prettynice$CLI$Command$Build$makeRelativePath$ = function(basePath, fullPath) {
+	var fullStr = $gren_lang$node$FileSystem$Path$toPosixString(fullPath);
+	var baseStr = $gren_lang$node$FileSystem$Path$toPosixString(basePath);
+	var basePrefix = baseStr + '/';
+	return A2($gren_lang$core$String$startsWith, basePrefix, fullStr) ? $gren_lang$node$FileSystem$Path$fromPosixString($gren_lang$core$String$dropFirst$($gren_lang$core$String$count(basePrefix), fullStr)) : fullPath;
+};
+var $blaix$prettynice$CLI$Command$Build$makeRelativePath = F2($blaix$prettynice$CLI$Command$Build$makeRelativePath$);
+var $gren_lang$core$String$takeLast$ = function(n, string) {
+	return (n < 1) ? '' : A3($gren_lang$core$String$slice, -n, $gren_lang$core$String$unitLength(string), string);
+};
+var $gren_lang$core$String$takeLast = F2($gren_lang$core$String$takeLast$);
+var $blaix$prettynice$CLI$Command$Build$listGrenFiles$ = function(fsPerm, basePath, thisPath) {
+	return A2($gren_lang$core$Task$andThen, A3($blaix$prettynice$CLI$Command$Build$processEntries, fsPerm, basePath, thisPath), $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, $gren_lang$node$FileSystem$listDirectory$(fsPerm, thisPath)));
+};
+var $blaix$prettynice$CLI$Command$Build$listGrenFiles = F3($blaix$prettynice$CLI$Command$Build$listGrenFiles$);
+var $blaix$prettynice$CLI$Command$Build$processEntries$ = function(fsPerm, basePath, thisPath, entries) {
+	processEntries:
+	while (true) {
+		var _v0 = $gren_lang$core$Array$popFirst(entries);
+		if (_v0.$ === 'Nothing') {
+			return $gren_lang$core$Task$succeed([  ]);
+		} else {
+			var _v1 = _v0.a;
+			var entry = _v1.first;
+			var remainingEntries = _v1.rest;
+			var fullPath = $gren_lang$node$FileSystem$Path$join([ thisPath, entry.path ]);
+			var _v2 = entry.entityType;
+			switch (_v2.$) {
+				case 'File':
+					var filename = $gren_lang$node$FileSystem$Path$filenameWithExtension(entry.path);
+					if ($gren_lang$core$String$takeLast$(5, filename) === '.gren') {
+						var relativePath = $blaix$prettynice$CLI$Command$Build$makeRelativePath$(basePath, fullPath);
+						return $gren_lang$core$Task$map$(function(rest) {
+								return $gren_lang$core$Array$pushFirst$({ fullPath: fullPath, relativePath: relativePath }, rest);
+							}, $blaix$prettynice$CLI$Command$Build$processEntries$(fsPerm, basePath, thisPath, remainingEntries));
+					} else {
+						var $temp$fsPerm = fsPerm,
+						$temp$basePath = basePath,
+						$temp$thisPath = thisPath,
+						$temp$entries = remainingEntries;
+						fsPerm = $temp$fsPerm;
+						basePath = $temp$basePath;
+						thisPath = $temp$thisPath;
+						entries = $temp$entries;
+						continue processEntries;
+					}
+				case 'Directory':
+					return A2($gren_lang$core$Task$andThen, function(subFiles) {
+							return $gren_lang$core$Task$map$(function(rest) {
+									return $gren_lang$core$Array$append$(subFiles, rest);
+								}, $blaix$prettynice$CLI$Command$Build$processEntries$(fsPerm, basePath, thisPath, remainingEntries));
+						}, $blaix$prettynice$CLI$Command$Build$listGrenFiles$(fsPerm, basePath, fullPath));
+				default:
+					var $temp$fsPerm = fsPerm,
+					$temp$basePath = basePath,
+					$temp$thisPath = thisPath,
+					$temp$entries = remainingEntries;
+					fsPerm = $temp$fsPerm;
+					basePath = $temp$basePath;
+					thisPath = $temp$thisPath;
+					entries = $temp$entries;
+					continue processEntries;
+			}
+		}
+	}
+};
+var $blaix$prettynice$CLI$Command$Build$processEntries = F4($blaix$prettynice$CLI$Command$Build$processEntries$);
+var $blaix$prettynice$CLI$Command$Build$discoverComponents = function(fsPerm) {
+	var basePath = $gren_lang$node$FileSystem$Path$fromPosixString('client/src/Components');
+	return A2($gren_lang$core$Task$onError, function(e) {
+			if (e.$ === 'FileSystemError') {
+				var fsErr = e.a;
+				return $gren_lang$node$FileSystem$errorIsNoSuchFileOrDirectory(fsErr) ? $gren_lang$core$Task$succeed([  ]) : $gren_lang$core$Task$fail(e);
+			} else {
+				return $gren_lang$core$Task$fail(e);
+			}
+		}, $blaix$prettynice$CLI$Command$Build$listGrenFiles$(fsPerm, basePath, basePath));
+};
+var $blaix$prettynice$CLI$Command$Build$componentBaseName = function(component) {
+	return $gren_lang$core$String$dropLast$(5, $gren_lang$node$FileSystem$Path$filenameWithExtension(component.relativePath));
+};
+var $blaix$prettynice$CLI$Command$Build$toClientComponent$ = function(modName, baseName) {
+	return $gren_lang$core$String$replace$('{{MODULE_NAME}}', modName, $gren_lang$core$String$replace$('{{NAME}}', baseName, 'module Gen.{{MODULE_NAME}} exposing (main)\n\nimport Transmutable.Html.VirtualDom exposing (toVirtualDom)\nimport {{MODULE_NAME}} as {{NAME}}\nimport Browser\n\nmain : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg\nmain =\n    let\n        e = {{NAME}}.component\n    in\n    Browser.element\n        { init = e.init\n        , update = e.update\n        , subscriptions = e.subscriptions\n        , view = e.view >> toVirtualDom\n        }'));
+};
+var $blaix$prettynice$CLI$Command$Build$toClientComponent = F2($blaix$prettynice$CLI$Command$Build$toClientComponent$);
+
+
+// BYTES
+
+var _Bytes_empty = new DataView(new ArrayBuffer(0));
+
+function _Bytes_length(bytes) {
+  return bytes.byteLength;
+}
+
+var _Bytes_getHostEndianness = F2(function (le, be) {
+  return _Scheduler_binding(function (callback) {
+    callback(
+      _Scheduler_succeed(
+        new Uint8Array(new Uint32Array([1]))[0] === 1 ? le : be,
+      ),
+    );
+  });
+});
+
+function _Bytes_fromString(str) {
+  var encoder = new TextEncoder();
+  var uint8s = encoder.encode(str);
+  return new DataView(uint8s.buffer);
+}
+
+function _Bytes_toString(bytes) {
+  var decoder = new TextDecoder("utf-8", { fatal: true });
+
+  try {
+    return $gren_lang$core$Maybe$Just(decoder.decode(bytes));
+  } catch (e) {
+    return $gren_lang$core$Maybe$Nothing;
+  }
+}
+
+function _Bytes_flatten(arrayOfBytes) {
+  var requiredSize = 0;
+  for (var i = 0; i < arrayOfBytes.length; i++) {
+    requiredSize += arrayOfBytes[i].byteLength;
+  }
+
+  var offset = 0;
+  var result = new Uint8Array(requiredSize);
+
+  for (var i = 0; i < arrayOfBytes.length; i++) {
+    var currentBytes = new Uint8Array(arrayOfBytes[i].buffer);
+    var currentByteLength = arrayOfBytes[i].byteLength;
+
+    for (var j = 0; j < currentByteLength; j++) {
+      result[offset] = currentBytes[j];
+      offset++;
+    }
+  }
+
+  return new DataView(result.buffer);
+}
+
+// ENCODERS
+
+function _Bytes_encode(encoder) {
+  var mutableBytes = new DataView(new ArrayBuffer($gren_lang$core$Bytes$Encode$getLength(encoder)));
+  A3($gren_lang$core$Bytes$Encode$write, encoder, mutableBytes, 0);
+  return mutableBytes;
+}
+
+// SIGNED INTEGERS
+
+var _Bytes_write_i8 = F3(function (mb, i, n) {
+  mb.setInt8(i, n);
+  return i + 1;
+});
+var _Bytes_write_i16 = F4(function (mb, i, n, isLE) {
+  mb.setInt16(i, n, isLE);
+  return i + 2;
+});
+var _Bytes_write_i32 = F4(function (mb, i, n, isLE) {
+  mb.setInt32(i, n, isLE);
+  return i + 4;
+});
+
+// UNSIGNED INTEGERS
+
+var _Bytes_write_u8 = F3(function (mb, i, n) {
+  mb.setUint8(i, n);
+  return i + 1;
+});
+var _Bytes_write_u16 = F4(function (mb, i, n, isLE) {
+  mb.setUint16(i, n, isLE);
+  return i + 2;
+});
+var _Bytes_write_u32 = F4(function (mb, i, n, isLE) {
+  mb.setUint32(i, n, isLE);
+  return i + 4;
+});
+
+// FLOATS
+
+var _Bytes_write_f32 = F4(function (mb, i, n, isLE) {
+  mb.setFloat32(i, n, isLE);
+  return i + 4;
+});
+var _Bytes_write_f64 = F4(function (mb, i, n, isLE) {
+  mb.setFloat64(i, n, isLE);
+  return i + 8;
+});
+
+// BYTES
+
+var _Bytes_write_bytes = F3(function (mb, offset, bytes) {
+  for (var i = 0, len = bytes.byteLength, limit = len - 4; i <= limit; i += 4) {
+    mb.setUint32(offset + i, bytes.getUint32(i));
+  }
+  for (; i < len; i++) {
+    mb.setUint8(offset + i, bytes.getUint8(i));
+  }
+  return offset + len;
+});
+
+// DECODER
+
+var _Bytes_decode = F2(function (decoder, bytes) {
+  try {
+    return $gren_lang$core$Maybe$Just(A2(decoder, bytes, 0).value);
+  } catch (e) {
+    if (e instanceof RangeError) {
+      return $gren_lang$core$Maybe$Nothing;
+    } else {
+      throw e;
+    }
+  }
+});
+
+var _Bytes_read_i8 = F2(function (bytes, offset) {
+  return { offset: offset + 1, value: bytes.getInt8(offset) };
+});
+var _Bytes_read_i16 = F3(function (isLE, bytes, offset) {
+  return { offset: offset + 2, value: bytes.getInt16(offset, isLE) };
+});
+var _Bytes_read_i32 = F3(function (isLE, bytes, offset) {
+  return { offset: offset + 4, value: bytes.getInt32(offset, isLE) };
+});
+var _Bytes_read_u8 = F2(function (bytes, offset) {
+  return { offset: offset + 1, value: bytes.getUint8(offset) };
+});
+var _Bytes_read_u16 = F3(function (isLE, bytes, offset) {
+  return { offset: offset + 2, value: bytes.getUint16(offset, isLE) };
+});
+var _Bytes_read_u32 = F3(function (isLE, bytes, offset) {
+  return { offset: offset + 4, value: bytes.getUint32(offset, isLE) };
+});
+var _Bytes_read_f32 = F3(function (isLE, bytes, offset) {
+  return { offset: offset + 4, value: bytes.getFloat32(offset, isLE) };
+});
+var _Bytes_read_f64 = F3(function (isLE, bytes, offset) {
+  return { offset: offset + 8, value: bytes.getFloat64(offset, isLE) };
+});
+
+var _Bytes_read_bytes = F3(function (len, bytes, offset) {
+  return {
+    offset: offset + len,
+    value: new DataView(bytes.buffer, bytes.byteOffset + offset, len),
+  };
+});
+
+var _Bytes_decodeFailure = F2(function () {
+  throw 0;
+});
+var $gren_lang$core$Bytes$Encode$getLength = function(builder) {
+	switch (builder.$) {
+		case 'I8':
+			return 1;
+		case 'I16':
+			return 2;
+		case 'I32':
+			return 4;
+		case 'U8':
+			return 1;
+		case 'U16':
+			return 2;
+		case 'U32':
+			return 4;
+		case 'F32':
+			return 4;
+		case 'F64':
+			return 8;
+		case 'Seq':
+			var w = builder.a.width;
+			return w;
+		default:
+			var bs = builder.a;
+			return _Bytes_length(bs);
+	}
+};
+var $gren_lang$core$Bytes$LE = { $: 'LE' };
+var $gren_lang$core$Bytes$Encode$write$ = function(builder, mb, offset) {
+	switch (builder.$) {
+		case 'I8':
+			var n = builder.a;
+			return A3(_Bytes_write_i8, mb, offset, n);
+		case 'I16':
+			var _v1 = builder.a;
+			var e = _v1.endian;
+			var n = _v1.number;
+			return A4(_Bytes_write_i16, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
+		case 'I32':
+			var _v2 = builder.a;
+			var e = _v2.endian;
+			var n = _v2.number;
+			return A4(_Bytes_write_i32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
+		case 'U8':
+			var n = builder.a;
+			return A3(_Bytes_write_u8, mb, offset, n);
+		case 'U16':
+			var _v3 = builder.a;
+			var e = _v3.endian;
+			var n = _v3.number;
+			return A4(_Bytes_write_u16, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
+		case 'U32':
+			var _v4 = builder.a;
+			var e = _v4.endian;
+			var n = _v4.number;
+			return A4(_Bytes_write_u32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
+		case 'F32':
+			var _v5 = builder.a;
+			var e = _v5.endian;
+			var n = _v5.number;
+			return A4(_Bytes_write_f32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
+		case 'F64':
+			var _v6 = builder.a;
+			var e = _v6.endian;
+			var n = _v6.number;
+			return A4(_Bytes_write_f64, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
+		case 'Seq':
+			var bs = builder.a.items;
+			return $gren_lang$core$Bytes$Encode$writeSequence$(bs, mb, offset);
+		default:
+			var bs = builder.a;
+			return A3(_Bytes_write_bytes, mb, offset, bs);
+	}
+};
+var $gren_lang$core$Bytes$Encode$write = F3($gren_lang$core$Bytes$Encode$write$);
+var $gren_lang$core$Bytes$Encode$writeSequence$ = function(builders, mb, offset) {
+	return A3($gren_lang$core$Array$foldl, F2(function(builder, currentOffset) {
+				return $gren_lang$core$Bytes$Encode$write$(builder, mb, currentOffset);
+			}), offset, builders);
+};
+var $gren_lang$core$Bytes$Encode$writeSequence = F3($gren_lang$core$Bytes$Encode$writeSequence$);
+var $gren_lang$core$Bytes$fromString = _Bytes_fromString;
+var $gren_lang$core$Basics$sub = _Basics_sub;
+var $gren_lang$core$Array$dropLast$ = function(n, array) {
+	return A3($gren_lang$core$Array$slice, 0, $gren_lang$core$Array$length(array) - n, array);
+};
+var $gren_lang$core$Array$dropLast = F2($gren_lang$core$Array$dropLast$);
+var $gren_lang$core$Array$last = function(array) {
+	return A2($gren_lang$core$Array$get, -1, array);
+};
+var $gren_lang$core$Array$popLast = function(array) {
+	var _v0 = $gren_lang$core$Array$last(array);
+	if (_v0.$ === 'Just') {
+		var value = _v0.a;
+		return $gren_lang$core$Maybe$Just({ initial: $gren_lang$core$Array$dropLast$(1, array), last: value });
+	} else {
+		return $gren_lang$core$Maybe$Nothing;
+	}
+};
+var $gren_lang$node$FileSystem$Path$parentPath = function(path) {
+	var _v0 = $gren_lang$core$Array$popLast(path.directory);
+	if (_v0.$ === 'Nothing') {
+		return ($gren_lang$node$FileSystem$Path$filenameWithExtension(path) === '') ? $gren_lang$core$Maybe$Nothing : $gren_lang$core$Maybe$Just(_Utils_update(path, { extension: '', filename: '' }));
+	} else {
+		var _v1 = _v0.a;
+		var last = _v1.last;
+		var initial = _v1.initial;
+		var _v2 = function () {
+			var _v3 = A2($gren_lang$core$String$split, '.', last);
+			if (_v3.length === 2) {
+				var file = _v3[0];
+				var ext = _v3[1];
+				return { extension: ext, filename: file };
+			} else {
+				return { extension: '', filename: last };
+			}
+		}();
+		var filename = _v2.filename;
+		var extension = _v2.extension;
+		return $gren_lang$core$Maybe$Just(_Utils_update(path, { directory: initial, extension: extension, filename: filename }));
+	}
+};
+var $gren_lang$node$FileSystem$writeFile$ = function(_v0, bytes, path) {
+	return A2(_FileSystem_writeFile, bytes, path);
+};
+var $gren_lang$node$FileSystem$writeFile = F3($gren_lang$node$FileSystem$writeFile$);
+var $blaix$prettynice$CLI$Command$Build$writeStringToFile$ = function(fsPerm, content, path) {
+	var filePath = $gren_lang$node$FileSystem$Path$fromPosixString(path);
+	var parentDir = $gren_lang$core$Maybe$withDefault$($gren_lang$node$FileSystem$Path$empty, $gren_lang$node$FileSystem$Path$parentPath(filePath));
+	return $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, A2($gren_lang$core$Task$andThen, function(_v0) {
+				return $gren_lang$node$FileSystem$writeFile$(fsPerm, $gren_lang$core$Bytes$fromString(content), filePath);
+			}, $gren_lang$node$FileSystem$makeDirectory$(fsPerm, { recursive: true }, parentDir)));
+};
+var $blaix$prettynice$CLI$Command$Build$writeStringToFile = F3($blaix$prettynice$CLI$Command$Build$writeStringToFile$);
+var $blaix$prettynice$CLI$Command$Build$genClientComponent$ = function(fsPerm, component) {
+	var modName = $blaix$prettynice$CLI$Command$Build$componentModuleName(component);
+	var destPath = 'client/.prettynice/Gen/Components/' + $gren_lang$node$FileSystem$Path$toPosixString(component.relativePath);
+	var baseName = $blaix$prettynice$CLI$Command$Build$componentBaseName(component);
+	var content = $blaix$prettynice$CLI$Command$Build$toClientComponent$(modName, baseName);
+	return $gren_lang$core$Task$map$(function(_v0) {
+			return {  };
+		}, $blaix$prettynice$CLI$Command$Build$writeStringToFile$(fsPerm, content, destPath));
+};
+var $blaix$prettynice$CLI$Command$Build$genClientComponent = F2($blaix$prettynice$CLI$Command$Build$genClientComponent$);
+var $blaix$prettynice$CLI$Command$Build$genClientComponents$ = function(fsPerm, components) {
+	var _v0 = $gren_lang$core$Array$popFirst(components);
+	if (_v0.$ === 'Nothing') {
+		return $gren_lang$core$Task$succeed({  });
+	} else {
+		var _v1 = _v0.a;
+		var component = _v1.first;
+		var remainingComponents = _v1.rest;
+		return A2($gren_lang$core$Task$andThen, function(_v2) {
+				return $blaix$prettynice$CLI$Command$Build$genClientComponents$(fsPerm, remainingComponents);
+			}, $blaix$prettynice$CLI$Command$Build$genClientComponent$(fsPerm, component));
+	}
+};
+var $blaix$prettynice$CLI$Command$Build$genClientComponents = F2($blaix$prettynice$CLI$Command$Build$genClientComponents$);
+var $blaix$prettynice$CLI$Command$Build$genClientPort$ = function(fsPerm, component) {
+	var relStr = $gren_lang$node$FileSystem$Path$toPosixString(component.relativePath);
+	var jsRelStr = $gren_lang$core$String$dropLast$(5, relStr) + '.js';
+	var srcPath = $gren_lang$node$FileSystem$Path$fromPosixString('client/src/Components/' + jsRelStr);
+	var destPath = $gren_lang$node$FileSystem$Path$fromPosixString('dist/client/Components/' + jsRelStr);
+	return A2($gren_lang$core$Task$onError, function(e) {
+			if (e.$ === 'FileSystemError') {
+				var fsErr = e.a;
+				return $gren_lang$node$FileSystem$errorIsNoSuchFileOrDirectory(fsErr) ? $gren_lang$core$Task$map$(function(_v2) {
+						return {  };
+					}, $blaix$prettynice$CLI$Command$Build$writeStringToFile$(fsPerm, '', 'dist/client/Components/' + jsRelStr)) : $gren_lang$core$Task$fail(e);
+			} else {
+				return $gren_lang$core$Task$fail(e);
+			}
+		}, $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, $gren_lang$core$Task$map$(function(_v0) {
+					return {  };
+				}, $gren_lang$node$FileSystem$copyFile$(fsPerm, destPath, srcPath))));
+};
+var $blaix$prettynice$CLI$Command$Build$genClientPort = F2($blaix$prettynice$CLI$Command$Build$genClientPort$);
+var $blaix$prettynice$CLI$Command$Build$genClientPorts$ = function(fsPerm, components) {
+	var _v0 = $gren_lang$core$Array$popFirst(components);
+	if (_v0.$ === 'Nothing') {
+		return $gren_lang$core$Task$succeed({  });
+	} else {
+		var _v1 = _v0.a;
+		var component = _v1.first;
+		var remainingComponents = _v1.rest;
+		return A2($gren_lang$core$Task$andThen, function(_v2) {
+				return $blaix$prettynice$CLI$Command$Build$genClientPorts$(fsPerm, remainingComponents);
+			}, $blaix$prettynice$CLI$Command$Build$genClientPort$(fsPerm, component));
+	}
+};
+var $blaix$prettynice$CLI$Command$Build$genClientPorts = F2($blaix$prettynice$CLI$Command$Build$genClientPorts$);
+var $blaix$prettynice$CLI$Command$Build$prettyniceComponentModule = 'module Prettynice.Component exposing (Component)\n\nimport Transmutable.Html exposing (Html)\n\ntype alias Component props model msg =\n    { init : props -> { model : model, command : Cmd msg }\n    , view : model -> Html msg\n    , update : msg -> model -> { model : model, command : Cmd msg }\n    , subscriptions : model -> Sub msg\n    }';
+var $blaix$prettynice$CLI$Command$Build$serverWrapper = 'const main = require("./main.js");\nconst app = main.Gren.Main.init({});\n\ntry {\n    const ports = require("./ports.js");\n    if (ports.init) {\n      ports.init(app);\n    }\n} catch (e) {\n    if (e.code !== \'MODULE_NOT_FOUND\') {\n        throw e;\n    }\n}';
+var $blaix$prettynice$CLI$Command$Build$genDependencies = function(fsPerm) {
+	return $gren_lang$core$Task$map$(function(_v2) {
+			return {  };
+		}, A2($gren_lang$core$Task$andThen, function(_v1) {
+				return $blaix$prettynice$CLI$Command$Build$writeStringToFile$(fsPerm, $blaix$prettynice$CLI$Command$Build$serverWrapper, 'dist/server/index.js');
+			}, A2($gren_lang$core$Task$andThen, function(_v0) {
+					return $blaix$prettynice$CLI$Command$Build$writeStringToFile$(fsPerm, $blaix$prettynice$CLI$Command$Build$prettyniceComponentModule, 'client/.prettynice/Prettynice/Component.gren');
+				}, $blaix$prettynice$CLI$Command$Build$writeStringToFile$(fsPerm, '', 'dist/client/main.js'))));
+};
+var $blaix$prettynice$CLI$Command$Build$PropsParseError = function (a) {
+	return { $: 'PropsParseError', a: a };
+};
+var $gren_lang$core$String$contains = _String_contains;
+var $gren_lang$node$FileSystem$errorToString = function(_v0) {
+	var message = _v0.a.message;
+	return message;
+};
+var $gren_lang$parser$Parser$Forbidden = { $: 'Forbidden' };
+var $gren_lang$parser$Parser$Advanced$fromInfo$ = function(row, col, x, context) {
+	return $gren_lang$parser$Parser$Advanced$AddRight({ bag: $gren_lang$parser$Parser$Advanced$Empty, deadEnd: { col: col, contextStack: context, problem: x, row: row } });
+};
+var $gren_lang$parser$Parser$Advanced$fromInfo = F4($gren_lang$parser$Parser$Advanced$fromInfo$);
+var $gren_lang$parser$Parser$Advanced$chompUntil = function(_v0) {
+	var _v1 = _v0.a;
+	var str = _v1.str;
+	var expecting = _v1.expecting;
+	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
+			var _v2 = A5($gren_lang$parser$Parser$Advanced$findSubString, str, s.offset, s.row, s.col, s.src);
+			var newOffset = _v2.newOffset;
+			var newRow = _v2.newRow;
+			var newCol = _v2.newCol;
+			return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad({ bag: $gren_lang$parser$Parser$Advanced$fromInfo$(newRow, newCol, expecting, s.context), pred: false }) : $gren_lang$parser$Parser$Advanced$Good({ pred: _Utils_cmp(s.offset, newOffset) < 0, state: { col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src }, value: {  } });
+		});
+};
+var $gren_lang$parser$Parser$Expecting = function (a) {
+	return { $: 'Expecting', a: a };
+};
+var $gren_lang$parser$Parser$Advanced$Token = function (a) {
+	return { $: 'Token', a: a };
+};
+var $gren_lang$parser$Parser$toToken = function(str) {
+	return $gren_lang$parser$Parser$Advanced$Token({ expecting: $gren_lang$parser$Parser$Expecting(str), str: str });
+};
+var $gren_lang$parser$Parser$chompUntil = function(str) {
+	return $gren_lang$parser$Parser$Advanced$chompUntil($gren_lang$parser$Parser$toToken(str));
+};
+var $gren_lang$core$Set$Set_gren_builtin = function (a) {
+	return { $: 'Set_gren_builtin', a: a };
+};
+var $gren_lang$core$Set$empty = $gren_lang$core$Set$Set_gren_builtin($gren_lang$core$Dict$empty);
+var $blaix$prettynice$Prettynice$Internal$Props$ArrayType = function (a) {
+	return { $: 'ArrayType', a: a };
+};
+var $blaix$prettynice$Prettynice$Internal$Props$BoolType = { $: 'BoolType' };
+var $blaix$prettynice$Prettynice$Internal$Props$FloatType = { $: 'FloatType' };
+var $blaix$prettynice$Prettynice$Internal$Props$IntType = { $: 'IntType' };
+var $blaix$prettynice$Prettynice$Internal$Props$MaybeType = function (a) {
+	return { $: 'MaybeType', a: a };
+};
+var $blaix$prettynice$Prettynice$Internal$Props$StringType = { $: 'StringType' };
+var $gren_lang$parser$Parser$ExpectingKeyword = function (a) {
+	return { $: 'ExpectingKeyword', a: a };
+};
+var $gren_lang$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+var $gren_lang$parser$Parser$Advanced$keyword = function(_v0) {
+	var _v1 = _v0.a;
+	var kwd = _v1.str;
+	var expecting = _v1.expecting;
+	var progress = !$gren_lang$core$String$isEmpty(kwd);
+	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
+			var _v2 = A5($gren_lang$parser$Parser$Advanced$isSubString, kwd, s.offset, s.row, s.col, s.src);
+			var newOffset = _v2.newOffset;
+			var newRow = _v2.newRow;
+			var newCol = _v2.newCol;
+			return (_Utils_eq(newOffset, -1) || (0 <= A3($gren_lang$parser$Parser$Advanced$isSubChar, function(c) {
+					return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, _Utils_chr('_'));
+				}, newOffset, s.src))) ? $gren_lang$parser$Parser$Advanced$Bad({ bag: $gren_lang$parser$Parser$Advanced$fromState$(s, expecting), pred: false }) : $gren_lang$parser$Parser$Advanced$Good({ pred: progress, state: { col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src }, value: {  } });
+		});
+};
+var $gren_lang$parser$Parser$keyword = function(kwd) {
+	return $gren_lang$parser$Parser$Advanced$keyword($gren_lang$parser$Parser$Advanced$Token({ expecting: $gren_lang$parser$Parser$ExpectingKeyword(kwd), str: kwd }));
+};
+var $gren_lang$parser$Parser$Advanced$lazy = function(thunk) {
+	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
+			var _v0 = thunk({  });
+			var parse = _v0.a;
+			return parse(s);
+		});
+};
+var $gren_lang$parser$Parser$lazy = $gren_lang$parser$Parser$Advanced$lazy;
+var $gren_lang$parser$Parser$Advanced$spaces = $gren_lang$parser$Parser$Advanced$chompWhile(function(c) {
+		return _Utils_eq(c, _Utils_chr(' ')) || (_Utils_eq(c, _Utils_chr('\n')) || _Utils_eq(c, _Utils_chr('\r')));
+	});
+var $gren_lang$parser$Parser$spaces = $gren_lang$parser$Parser$Advanced$spaces;
+function $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser() {
+	return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Basics$identity), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
+						return _Utils_eq(c, _Utils_chr('('));
+					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf([ A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$IntType), $gren_lang$parser$Parser$keyword('Int')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$FloatType), $gren_lang$parser$Parser$keyword('Float')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$StringType), $gren_lang$parser$Parser$keyword('String')), A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$BoolType), $gren_lang$parser$Parser$keyword('Bool')), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$ArrayType), $gren_lang$parser$Parser$keyword('Array')), $gren_lang$parser$Parser$lazy(function(_v0) {
+									return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
+								})), A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($blaix$prettynice$Prettynice$Internal$Props$MaybeType), $gren_lang$parser$Parser$keyword('Maybe')), $gren_lang$parser$Parser$lazy(function(_v1) {
+									return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
+								})) ]), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
+						return _Utils_eq(c, _Utils_chr(')'));
+					})), $gren_lang$parser$Parser$spaces));
+}
+try {
+	var $blaix$prettynice$Prettynice$Internal$Props$fieldParser = $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
+	$blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser = function () {
+		return $blaix$prettynice$Prettynice$Internal$Props$fieldParser;
+	};
+} catch ($) {
+	throw 'Some top-level definitions from `Prettynice.Internal.Props` are causing infinite recursion:\n\n  ┌─────┐\n  │    fieldParser\n  └─────┘\n\nThese errors are very tricky, so read https://github.com/gren-lang/compiler/blob/0.6.3/hints/bad-recursion.md to learn how to fix it!';}
+var $gren_lang$parser$Parser$Advanced$revAlways$ = function(_v0, b) {
+	return b;
+};
+var $gren_lang$parser$Parser$Advanced$revAlways = F2($gren_lang$parser$Parser$Advanced$revAlways$);
+var $gren_lang$parser$Parser$Advanced$revSkip$ = function(iParser, kParser) {
+	return $gren_lang$parser$Parser$Advanced$map2$($gren_lang$parser$Parser$Advanced$revAlways, iParser, kParser);
+};
+var $gren_lang$parser$Parser$Advanced$revSkip = F2($gren_lang$parser$Parser$Advanced$revSkip$);
+var $gren_lang$parser$Parser$Advanced$loopHelp$ = function(p, state, callback, s0) {
+	loopHelp:
+	while (true) {
+		var _v0 = callback(state);
+		var parse = _v0.a;
+		var _v1 = parse(s0);
+		if (_v1.$ === 'Good') {
+			var _v2 = _v1.a;
+			var p1 = _v2.pred;
+			var step = _v2.value;
+			var s1 = _v2.state;
+			if (step.$ === 'Loop') {
+				var newState = step.a;
+				var $temp$p = p || p1,
+				$temp$state = newState,
+				$temp$callback = callback,
+				$temp$s0 = s1;
+				p = $temp$p;
+				state = $temp$state;
+				callback = $temp$callback;
+				s0 = $temp$s0;
+				continue loopHelp;
+			} else {
+				var result = step.a;
+				return $gren_lang$parser$Parser$Advanced$Good({ pred: p || p1, state: s1, value: result });
+			}
+		} else {
+			var _v4 = _v1.a;
+			var p1 = _v4.pred;
+			var x = _v4.bag;
+			return $gren_lang$parser$Parser$Advanced$Bad({ bag: x, pred: p || p1 });
+		}
+	}
+};
+var $gren_lang$parser$Parser$Advanced$loopHelp = F4($gren_lang$parser$Parser$Advanced$loopHelp$);
+var $gren_lang$parser$Parser$Advanced$loop$ = function(state, callback) {
+	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
+			return $gren_lang$parser$Parser$Advanced$loopHelp$(false, state, callback, s);
+		});
+};
+var $gren_lang$parser$Parser$Advanced$loop = F2($gren_lang$parser$Parser$Advanced$loop$);
+var $gren_lang$parser$Parser$Advanced$map$ = function(func, _v0) {
+	var parse = _v0.a;
+	return $gren_lang$parser$Parser$Advanced$Parser(function(s0) {
+			var _v1 = parse(s0);
+			if (_v1.$ === 'Good') {
+				var _v2 = _v1.a;
+				var p = _v2.pred;
+				var a = _v2.value;
+				var s1 = _v2.state;
+				return $gren_lang$parser$Parser$Advanced$Good({ pred: p, state: s1, value: func(a) });
+			} else {
+				var _v3 = _v1.a;
+				var pred = _v3.pred;
+				var bag = _v3.bag;
+				return $gren_lang$parser$Parser$Advanced$Bad({ bag: bag, pred: pred });
+			}
+		});
+};
+var $gren_lang$parser$Parser$Advanced$map = F2($gren_lang$parser$Parser$Advanced$map$);
+var $gren_lang$parser$Parser$Advanced$Done = function (a) {
+	return { $: 'Done', a: a };
+};
+var $gren_lang$parser$Parser$Advanced$Loop = function (a) {
+	return { $: 'Loop', a: a };
+};
+var $gren_lang$parser$Parser$Advanced$sequenceEndForbidden$ = function(ender, ws, parseItem, sep, items) {
+	return $gren_lang$parser$Parser$Advanced$revSkip$(ws, $gren_lang$parser$Parser$Advanced$oneOf([ $gren_lang$parser$Parser$Advanced$revSkip$(sep, $gren_lang$parser$Parser$Advanced$revSkip$(ws, $gren_lang$parser$Parser$Advanced$map$(function(item) {
+							return $gren_lang$parser$Parser$Advanced$Loop($gren_lang$core$Array$pushLast$(item, items));
+						}, parseItem))), $gren_lang$parser$Parser$Advanced$map$(function(_v0) {
+					return $gren_lang$parser$Parser$Advanced$Done(items);
+				}, ender) ]));
+};
+var $gren_lang$parser$Parser$Advanced$sequenceEndForbidden = F5($gren_lang$parser$Parser$Advanced$sequenceEndForbidden$);
+var $gren_lang$parser$Parser$Advanced$sequenceEndMandatory$ = function(ws, parseItem, sep, items) {
+	return $gren_lang$parser$Parser$Advanced$oneOf([ $gren_lang$parser$Parser$Advanced$map$(function(item) {
+				return $gren_lang$parser$Parser$Advanced$Loop($gren_lang$core$Array$pushLast$(item, items));
+			}, $gren_lang$parser$Parser$Advanced$ignorer$(parseItem, $gren_lang$parser$Parser$Advanced$ignorer$(ws, $gren_lang$parser$Parser$Advanced$ignorer$(sep, ws)))), $gren_lang$parser$Parser$Advanced$map$(function(_v0) {
+				return $gren_lang$parser$Parser$Advanced$Done(items);
+			}, $gren_lang$parser$Parser$Advanced$succeed({  })) ]);
+};
+var $gren_lang$parser$Parser$Advanced$sequenceEndMandatory = F4($gren_lang$parser$Parser$Advanced$sequenceEndMandatory$);
+var $gren_lang$parser$Parser$Advanced$sequenceEndOptional$ = function(ender, ws, parseItem, sep, items) {
+	var parseEnd = $gren_lang$parser$Parser$Advanced$map$(function(_v0) {
+			return $gren_lang$parser$Parser$Advanced$Done(items);
+		}, ender);
+	return $gren_lang$parser$Parser$Advanced$revSkip$(ws, $gren_lang$parser$Parser$Advanced$oneOf([ $gren_lang$parser$Parser$Advanced$revSkip$(sep, $gren_lang$parser$Parser$Advanced$revSkip$(ws, $gren_lang$parser$Parser$Advanced$oneOf([ $gren_lang$parser$Parser$Advanced$map$(function(item) {
+								return $gren_lang$parser$Parser$Advanced$Loop($gren_lang$core$Array$pushLast$(item, items));
+							}, parseItem), parseEnd ]))), parseEnd ]));
+};
+var $gren_lang$parser$Parser$Advanced$sequenceEndOptional = F5($gren_lang$parser$Parser$Advanced$sequenceEndOptional$);
+var $gren_lang$parser$Parser$Advanced$sequenceEnd$ = function(ender, ws, parseItem, sep, trailing) {
+	var chompRest = function(item) {
+		switch (trailing.$) {
+			case 'Forbidden':
+				return $gren_lang$parser$Parser$Advanced$loop$([ item ], A4($gren_lang$parser$Parser$Advanced$sequenceEndForbidden, ender, ws, parseItem, sep));
+			case 'Optional':
+				return $gren_lang$parser$Parser$Advanced$loop$([ item ], A4($gren_lang$parser$Parser$Advanced$sequenceEndOptional, ender, ws, parseItem, sep));
+			default:
+				return $gren_lang$parser$Parser$Advanced$ignorer$($gren_lang$parser$Parser$Advanced$revSkip$(ws, $gren_lang$parser$Parser$Advanced$revSkip$(sep, $gren_lang$parser$Parser$Advanced$revSkip$(ws, $gren_lang$parser$Parser$Advanced$loop$([ item ], A3($gren_lang$parser$Parser$Advanced$sequenceEndMandatory, ws, parseItem, sep))))), ender);
+		}
+	};
+	return $gren_lang$parser$Parser$Advanced$oneOf([ $gren_lang$parser$Parser$Advanced$andThen$(chompRest, parseItem), $gren_lang$parser$Parser$Advanced$map$(function(_v0) {
+				return [  ];
+			}, ender) ]);
+};
+var $gren_lang$parser$Parser$Advanced$sequenceEnd = F5($gren_lang$parser$Parser$Advanced$sequenceEnd$);
+var $gren_lang$parser$Parser$Advanced$token = function(_v0) {
+	var _v1 = _v0.a;
+	var str = _v1.str;
+	var expecting = _v1.expecting;
+	var progress = !$gren_lang$core$String$isEmpty(str);
+	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
+			var _v2 = A5($gren_lang$parser$Parser$Advanced$isSubString, str, s.offset, s.row, s.col, s.src);
+			var newOffset = _v2.newOffset;
+			var newRow = _v2.newRow;
+			var newCol = _v2.newCol;
+			return _Utils_eq(newOffset, -1) ? $gren_lang$parser$Parser$Advanced$Bad({ bag: $gren_lang$parser$Parser$Advanced$fromState$(s, expecting), pred: false }) : $gren_lang$parser$Parser$Advanced$Good({ pred: progress, state: { col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src }, value: {  } });
+		});
+};
+var $gren_lang$parser$Parser$Advanced$sequence = function(i) {
+	return $gren_lang$parser$Parser$Advanced$revSkip$($gren_lang$parser$Parser$Advanced$token(i.start), $gren_lang$parser$Parser$Advanced$revSkip$(i.spaces, $gren_lang$parser$Parser$Advanced$sequenceEnd$($gren_lang$parser$Parser$Advanced$token(i.end), i.spaces, i.item, $gren_lang$parser$Parser$Advanced$token(i.separator), i.trailing)));
+};
+var $gren_lang$parser$Parser$Advanced$Forbidden = { $: 'Forbidden' };
+var $gren_lang$parser$Parser$Advanced$Mandatory = { $: 'Mandatory' };
+var $gren_lang$parser$Parser$Advanced$Optional = { $: 'Optional' };
+var $gren_lang$parser$Parser$toAdvancedTrailing = function(trailing) {
+	switch (trailing.$) {
+		case 'Forbidden':
+			return $gren_lang$parser$Parser$Advanced$Forbidden;
+		case 'Optional':
+			return $gren_lang$parser$Parser$Advanced$Optional;
+		default:
+			return $gren_lang$parser$Parser$Advanced$Mandatory;
+	}
+};
+var $gren_lang$parser$Parser$sequence = function(i) {
+	return $gren_lang$parser$Parser$Advanced$sequence({ end: $gren_lang$parser$Parser$toToken(i.end), item: i.item, separator: $gren_lang$parser$Parser$toToken(i.separator), spaces: i.spaces, start: $gren_lang$parser$Parser$toToken(i.start), trailing: $gren_lang$parser$Parser$toAdvancedTrailing(i.trailing) });
+};
+var $gren_lang$parser$Parser$ExpectingSymbol = function (a) {
+	return { $: 'ExpectingSymbol', a: a };
+};
+var $gren_lang$parser$Parser$Advanced$symbol = $gren_lang$parser$Parser$Advanced$token;
+var $gren_lang$parser$Parser$symbol = function(str) {
+	return $gren_lang$parser$Parser$Advanced$symbol($gren_lang$parser$Parser$Advanced$Token({ expecting: $gren_lang$parser$Parser$ExpectingSymbol(str), str: str }));
+};
+var $gren_lang$parser$Parser$ExpectingVariable = { $: 'ExpectingVariable' };
+var $gren_lang$core$Dict$member$ = function(key, dict) {
+	var _v0 = $gren_lang$core$Dict$get$(key, dict);
+	if (_v0.$ === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $gren_lang$core$Dict$member = F2($gren_lang$core$Dict$member$);
+var $gren_lang$core$Set$member$ = function(key, _v0) {
+	var dict = _v0.a;
+	return $gren_lang$core$Dict$member$(key, dict);
+};
+var $gren_lang$core$Set$member = F2($gren_lang$core$Set$member$);
+var $gren_lang$parser$Parser$Advanced$varHelp$ = function(isGood, offset, row, col, src, indent, context) {
+	varHelp:
+	while (true) {
+		var newOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, isGood, offset, src);
+		if (_Utils_eq(newOffset, -1)) {
+			return { col: col, context: context, indent: indent, offset: offset, row: row, src: src };
+		} else {
+			if (_Utils_eq(newOffset, -2)) {
+				var $temp$isGood = isGood,
+				$temp$offset = offset + 1,
+				$temp$row = row + 1,
+				$temp$col = 1,
+				$temp$src = src,
+				$temp$indent = indent,
+				$temp$context = context;
+				isGood = $temp$isGood;
+				offset = $temp$offset;
+				row = $temp$row;
+				col = $temp$col;
+				src = $temp$src;
+				indent = $temp$indent;
+				context = $temp$context;
+				continue varHelp;
+			} else {
+				var $temp$isGood = isGood,
+				$temp$offset = newOffset,
+				$temp$row = row,
+				$temp$col = col + 1,
+				$temp$src = src,
+				$temp$indent = indent,
+				$temp$context = context;
+				isGood = $temp$isGood;
+				offset = $temp$offset;
+				row = $temp$row;
+				col = $temp$col;
+				src = $temp$src;
+				indent = $temp$indent;
+				context = $temp$context;
+				continue varHelp;
+			}
+		}
+	}
+};
+var $gren_lang$parser$Parser$Advanced$varHelp = F7($gren_lang$parser$Parser$Advanced$varHelp$);
+var $gren_lang$parser$Parser$Advanced$variable = function(i) {
+	return $gren_lang$parser$Parser$Advanced$Parser(function(s) {
+			var firstOffset = A3($gren_lang$parser$Parser$Advanced$isSubChar, i.start, s.offset, s.src);
+			if (_Utils_eq(firstOffset, -1)) {
+				return $gren_lang$parser$Parser$Advanced$Bad({ bag: $gren_lang$parser$Parser$Advanced$fromState$(s, i.expecting), pred: false });
+			} else {
+				var s1 = _Utils_eq(firstOffset, -2) ? $gren_lang$parser$Parser$Advanced$varHelp$(i.inner, s.offset + 1, s.row + 1, 1, s.src, s.indent, s.context) : $gren_lang$parser$Parser$Advanced$varHelp$(i.inner, firstOffset, s.row, s.col + 1, s.src, s.indent, s.context);
+				var name = A3($gren_lang$core$String$sliceUnits, s.offset, s1.offset, s.src);
+				return $gren_lang$core$Set$member$(name, i.reserved) ? $gren_lang$parser$Parser$Advanced$Bad({ bag: $gren_lang$parser$Parser$Advanced$fromState$(s, i.expecting), pred: false }) : $gren_lang$parser$Parser$Advanced$Good({ pred: true, state: s1, value: name });
+			}
+		});
+};
+var $gren_lang$parser$Parser$variable = function(i) {
+	return $gren_lang$parser$Parser$Advanced$variable({ expecting: $gren_lang$parser$Parser$ExpectingVariable, inner: i.inner, reserved: i.reserved, start: i.start });
+};
+var $blaix$prettynice$Prettynice$Internal$Props$parser = A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(A2($gren_lang$core$Array$foldl, F2(function(r, d) {
+									return $gren_lang$core$Dict$set$(r.key, r.value, d);
+								}), $gren_lang$core$Dict$empty)), $gren_lang$parser$Parser$chompUntil('type alias Props')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol('=')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$sequence({ end: '}', item: A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed(F2(function(field, fieldType) {
+							return { key: field, value: fieldType };
+						})), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$variable({ inner: function(c) {
+									return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, _Utils_chr('_'));
+								}, reserved: $gren_lang$core$Set$empty, start: $gren_lang$core$Char$isLower }), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol(':')), $gren_lang$parser$Parser$spaces)), $blaix$prettynice$Prettynice$Internal$Props$fieldParser), separator: ',', spaces: $gren_lang$parser$Parser$spaces, start: '{', trailing: $gren_lang$parser$Parser$Forbidden }));
+var $gren_lang$core$String$words = _String_words;
+var $blaix$prettynice$Prettynice$Internal$Props$get = function(content) {
+	var normalized = A2($gren_lang$core$String$join, ' ', $gren_lang$core$String$words(content));
+	return $gren_lang$parser$Parser$run$($blaix$prettynice$Prettynice$Internal$Props$parser, normalized);
+};
+var $gren_lang$node$FileSystem$makeTempDirectory$ = function(_v0, prefix) {
+	return _FileSystem_mkdtemp(prefix);
+};
+var $gren_lang$node$FileSystem$makeTempDirectory = F2($gren_lang$node$FileSystem$makeTempDirectory$);
+var $gren_lang$node$FileSystem$readFile$ = function(_v0, path) {
+	return _FileSystem_readFile(path);
+};
+var $gren_lang$node$FileSystem$readFile = F2($gren_lang$node$FileSystem$readFile$);
+var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder = function(fieldType) {
+	switch (fieldType.$) {
+		case 'IntType':
+			return 'Encode.int';
+		case 'FloatType':
+			return 'Encode.float';
+		case 'StringType':
+			return 'Encode.string';
+		case 'BoolType':
+			return 'Encode.bool';
+		case 'ArrayType':
+			var t = fieldType.a;
+			return '(Encode.array ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(t) + ')');
+		default:
+			var t = fieldType.a;
+			return '(Maybe.map (' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(t) + ') >> Maybe.withDefault Encode.null)');
+	}
+};
+var $blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder$ = function(name, fieldType, encoders) {
+	var field = $gren_lang$core$String$replace$('{{ENCODER}}', $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(fieldType), $gren_lang$core$String$replace$('{{NAME}}', name, '{ key = "{{NAME}}"\n          , value = {{ENCODER}} props.{{NAME}}\n          }'));
+	return $gren_lang$core$Array$pushLast$(field, encoders);
+};
+var $blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder = F3($blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder$);
+var $blaix$prettynice$Prettynice$Internal$Props$encoder = function(props) {
+	var fields = A2($gren_lang$core$String$join, '\n        , ', $gren_lang$core$Dict$foldl$($blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder, [  ], props));
+	return $gren_lang$core$String$replace$('{{FIELDS}}', fields, 'Encode.object \n        [ {{FIELDS}}\n        ]');
+};
+var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString = function(fieldType) {
+	switch (fieldType.$) {
+		case 'IntType':
+			return 'Int';
+		case 'FloatType':
+			return 'Float';
+		case 'StringType':
+			return 'String';
+		case 'BoolType':
+			return 'Bool';
+		case 'ArrayType':
+			var t = fieldType.a;
+			return '(Array ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(t) + ')');
+		default:
+			var t = fieldType.a;
+			return '(Maybe ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(t) + ')');
+	}
+};
+var $blaix$prettynice$Prettynice$Internal$Props$addFieldSig$ = function(name, fieldType, sigs) {
+	var field = name + (' : ' + $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(fieldType));
+	return $gren_lang$core$Array$pushLast$(field, sigs);
+};
+var $blaix$prettynice$Prettynice$Internal$Props$addFieldSig = F3($blaix$prettynice$Prettynice$Internal$Props$addFieldSig$);
+var $blaix$prettynice$Prettynice$Internal$Props$typeSig = function(props) {
+	var fields = A2($gren_lang$core$String$join, ', ', $gren_lang$core$Dict$foldl$($blaix$prettynice$Prettynice$Internal$Props$addFieldSig, [  ], props));
+	return '{ ' + (fields + ' }');
+};
+var $blaix$prettynice$CLI$Command$Build$toServerComponent$ = function(modName, baseName, props) {
+	return $gren_lang$core$String$replace$('{{PROPS_ENCODER}}', $blaix$prettynice$Prettynice$Internal$Props$encoder(props), $gren_lang$core$String$replace$('{{PROPS_TYPE}}', $blaix$prettynice$Prettynice$Internal$Props$typeSig(props), $gren_lang$core$String$replace$('{{MODULE_NAME}}', modName, 'module Gen.{{MODULE_NAME}} exposing (init)\n\nimport Json.Encode as Encode\nimport Prettynice.Internal.Props as Props\nimport Transmutable.Html as H exposing (Html)\nimport Transmutable.Html.Attributes as A\n\ntype alias Props =\n    {{PROPS_TYPE}}\n\nencoder : Props -> Encode.Value\nencoder props =\n    {{PROPS_ENCODER}}\n\ninit : Props -> Html msg\ninit props =\n    let\n        propJson = Encode.encode 0 (encoder props)\n    in\n    H.span []\n        [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []\n        , H.node "script" []\n            [ H.text <|\n                \"""\n\n                var $__components = $__components || {};\n                $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];\n                $__components["{{MODULE_NAME}}"].push(\n                    Gren.Gen.{{MODULE_NAME}}.init({\n\n                        flags:\n                            \""" ++ propJson ++ \"""\n                        ,\n                        node: document.currentScript.parentNode.getElementsByClassName(\n                            "prettynice-component-{{MODULE_NAME}}"\n                        )[0],\n                    })\n                );\n\n                \"""\n            ]\n        ]')));
+};
+var $blaix$prettynice$CLI$Command$Build$toServerComponent = F3($blaix$prettynice$CLI$Command$Build$toServerComponent$);
+var $gren_lang$core$Bytes$toString = _Bytes_toString;
+var $blaix$prettynice$CLI$Command$Build$genServerComponent$ = function(fsPerm, component) {
+	return A2($gren_lang$core$Task$andThen, function(bytes) {
+			var source = $gren_lang$core$Maybe$withDefault$('', $gren_lang$core$Bytes$toString(bytes));
+			var propsResult = $blaix$prettynice$Prettynice$Internal$Props$get(source);
+			var modName = $blaix$prettynice$CLI$Command$Build$componentModuleName(component);
+			var baseName = $blaix$prettynice$CLI$Command$Build$componentBaseName(component);
+			if (propsResult.$ === 'Ok') {
+				var props = propsResult.a;
+				var destPath = 'server/.prettynice/Gen/Components/' + $gren_lang$node$FileSystem$Path$toPosixString(component.relativePath);
+				var content = $blaix$prettynice$CLI$Command$Build$toServerComponent$(modName, baseName, props);
+				return $gren_lang$core$Task$map$(function(_v1) {
+						return {  };
+					}, $blaix$prettynice$CLI$Command$Build$writeStringToFile$(fsPerm, content, destPath));
+			} else {
+				var deadEnds = propsResult.a;
+				var normalized = A2($gren_lang$core$String$join, ' ', $gren_lang$core$String$words(source));
+				var hasPropsAlias = A2($gren_lang$core$String$contains, 'type alias Props', normalized);
+				var guidance = hasPropsAlias ? 'Could not parse the Props type alias. Supported field types are: Int, Float, String, Bool, Array, Maybe.' : 'No \'type alias Props\' found. Components in client/src/Components/ must define a Props type alias. Example:\n\n    type alias Props =\n        { name : String\n        }';
+				var deadEndStr = A2($gren_lang$core$String$join, '; ', A2($gren_lang$core$Array$map, function(de) {
+							return 'row=' + ($gren_lang$core$String$fromInt(de.row) + (' col=' + $gren_lang$core$String$fromInt(de.col)));
+						}, deadEnds));
+				var debugContent = 'deadEnds: ' + (deadEndStr + ('\n' + ('normalized length: ' + ($gren_lang$core$String$fromInt($gren_lang$core$String$count(normalized)) + ('\n' + ('normalized content:\n' + (normalized + '\n')))))));
+				var writeDebugToTemp = A2($gren_lang$core$Task$onError, function(fsErr) {
+						return $gren_lang$core$Task$succeed('\n\n(Failed to write debug log: ' + ($gren_lang$node$FileSystem$errorToString(fsErr) + ')'));
+					}, A2($gren_lang$core$Task$andThen, function(tempDir) {
+							var debugPath = $gren_lang$node$FileSystem$Path$join([ tempDir, $gren_lang$node$FileSystem$Path$fromPosixString('debug.txt') ]);
+							return $gren_lang$core$Task$map$(function(_v2) {
+									return '\n\nDebug log written to: ' + $gren_lang$node$FileSystem$Path$toPosixString(debugPath);
+								}, $gren_lang$node$FileSystem$writeFile$(fsPerm, $gren_lang$core$Bytes$fromString(debugContent), debugPath));
+						}, $gren_lang$node$FileSystem$makeTempDirectory$(fsPerm, 'prettynice-debug')));
+				return A2($gren_lang$core$Task$andThen, function(debugNote) {
+						return $gren_lang$core$Task$fail($blaix$prettynice$CLI$Command$Build$PropsParseError('Failed to parse props for ' + (baseName + ('.\n\n' + (guidance + debugNote)))));
+					}, writeDebugToTemp);
+			}
+		}, $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, $gren_lang$node$FileSystem$readFile$(fsPerm, component.fullPath)));
+};
+var $blaix$prettynice$CLI$Command$Build$genServerComponent = F2($blaix$prettynice$CLI$Command$Build$genServerComponent$);
+var $blaix$prettynice$CLI$Command$Build$genServerComponents$ = function(fsPerm, components) {
+	var _v0 = $gren_lang$core$Array$popFirst(components);
+	if (_v0.$ === 'Nothing') {
+		return $gren_lang$core$Task$succeed({  });
+	} else {
+		var _v1 = _v0.a;
+		var component = _v1.first;
+		var remainingComponents = _v1.rest;
+		return A2($gren_lang$core$Task$andThen, function(_v2) {
+				return $blaix$prettynice$CLI$Command$Build$genServerComponents$(fsPerm, remainingComponents);
+			}, $blaix$prettynice$CLI$Command$Build$genServerComponent$(fsPerm, component));
+	}
+};
+var $blaix$prettynice$CLI$Command$Build$genServerComponents = F2($blaix$prettynice$CLI$Command$Build$genServerComponents$);
+var $blaix$prettynice$CLI$Command$Build$genServerPorts = function(fsPerm) {
+	var srcPath = $gren_lang$node$FileSystem$Path$fromPosixString('server/src/ports.js');
+	var destPath = $gren_lang$node$FileSystem$Path$fromPosixString('dist/server/ports.js');
+	return A2($gren_lang$core$Task$onError, function(e) {
+			if (e.$ === 'FileSystemError') {
+				var fsErr = e.a;
+				return $gren_lang$node$FileSystem$errorIsNoSuchFileOrDirectory(fsErr) ? $gren_lang$core$Task$map$(function(_v2) {
+						return {  };
+					}, $blaix$prettynice$CLI$Command$Build$writeStringToFile$(fsPerm, '', 'dist/server/ports.js')) : $gren_lang$core$Task$fail(e);
+			} else {
+				return $gren_lang$core$Task$fail(e);
+			}
+		}, $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Build$FileSystemError, $gren_lang$core$Task$map$(function(_v0) {
+					return {  };
+				}, $gren_lang$node$FileSystem$copyFile$(fsPerm, destPath, srcPath))));
+};
 
 
 var _Stream_read = function (stream) {
@@ -5305,255 +6544,6 @@ var $gren_lang$core$Stream$Log$bytes$ = function(stream, data) {
 			}, A2($gren_lang$core$Stream$write, data, stream)));
 };
 var $gren_lang$core$Stream$Log$bytes = F2($gren_lang$core$Stream$Log$bytes$);
-
-
-// BYTES
-
-var _Bytes_empty = new DataView(new ArrayBuffer(0));
-
-function _Bytes_length(bytes) {
-  return bytes.byteLength;
-}
-
-var _Bytes_getHostEndianness = F2(function (le, be) {
-  return _Scheduler_binding(function (callback) {
-    callback(
-      _Scheduler_succeed(
-        new Uint8Array(new Uint32Array([1]))[0] === 1 ? le : be,
-      ),
-    );
-  });
-});
-
-function _Bytes_fromString(str) {
-  var encoder = new TextEncoder();
-  var uint8s = encoder.encode(str);
-  return new DataView(uint8s.buffer);
-}
-
-function _Bytes_toString(bytes) {
-  var decoder = new TextDecoder("utf-8", { fatal: true });
-
-  try {
-    return $gren_lang$core$Maybe$Just(decoder.decode(bytes));
-  } catch (e) {
-    return $gren_lang$core$Maybe$Nothing;
-  }
-}
-
-function _Bytes_flatten(arrayOfBytes) {
-  var requiredSize = 0;
-  for (var i = 0; i < arrayOfBytes.length; i++) {
-    requiredSize += arrayOfBytes[i].byteLength;
-  }
-
-  var offset = 0;
-  var result = new Uint8Array(requiredSize);
-
-  for (var i = 0; i < arrayOfBytes.length; i++) {
-    var currentBytes = new Uint8Array(arrayOfBytes[i].buffer);
-    var currentByteLength = arrayOfBytes[i].byteLength;
-
-    for (var j = 0; j < currentByteLength; j++) {
-      result[offset] = currentBytes[j];
-      offset++;
-    }
-  }
-
-  return new DataView(result.buffer);
-}
-
-// ENCODERS
-
-function _Bytes_encode(encoder) {
-  var mutableBytes = new DataView(new ArrayBuffer($gren_lang$core$Bytes$Encode$getLength(encoder)));
-  A3($gren_lang$core$Bytes$Encode$write, encoder, mutableBytes, 0);
-  return mutableBytes;
-}
-
-// SIGNED INTEGERS
-
-var _Bytes_write_i8 = F3(function (mb, i, n) {
-  mb.setInt8(i, n);
-  return i + 1;
-});
-var _Bytes_write_i16 = F4(function (mb, i, n, isLE) {
-  mb.setInt16(i, n, isLE);
-  return i + 2;
-});
-var _Bytes_write_i32 = F4(function (mb, i, n, isLE) {
-  mb.setInt32(i, n, isLE);
-  return i + 4;
-});
-
-// UNSIGNED INTEGERS
-
-var _Bytes_write_u8 = F3(function (mb, i, n) {
-  mb.setUint8(i, n);
-  return i + 1;
-});
-var _Bytes_write_u16 = F4(function (mb, i, n, isLE) {
-  mb.setUint16(i, n, isLE);
-  return i + 2;
-});
-var _Bytes_write_u32 = F4(function (mb, i, n, isLE) {
-  mb.setUint32(i, n, isLE);
-  return i + 4;
-});
-
-// FLOATS
-
-var _Bytes_write_f32 = F4(function (mb, i, n, isLE) {
-  mb.setFloat32(i, n, isLE);
-  return i + 4;
-});
-var _Bytes_write_f64 = F4(function (mb, i, n, isLE) {
-  mb.setFloat64(i, n, isLE);
-  return i + 8;
-});
-
-// BYTES
-
-var _Bytes_write_bytes = F3(function (mb, offset, bytes) {
-  for (var i = 0, len = bytes.byteLength, limit = len - 4; i <= limit; i += 4) {
-    mb.setUint32(offset + i, bytes.getUint32(i));
-  }
-  for (; i < len; i++) {
-    mb.setUint8(offset + i, bytes.getUint8(i));
-  }
-  return offset + len;
-});
-
-// DECODER
-
-var _Bytes_decode = F2(function (decoder, bytes) {
-  try {
-    return $gren_lang$core$Maybe$Just(A2(decoder, bytes, 0).value);
-  } catch (e) {
-    if (e instanceof RangeError) {
-      return $gren_lang$core$Maybe$Nothing;
-    } else {
-      throw e;
-    }
-  }
-});
-
-var _Bytes_read_i8 = F2(function (bytes, offset) {
-  return { offset: offset + 1, value: bytes.getInt8(offset) };
-});
-var _Bytes_read_i16 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 2, value: bytes.getInt16(offset, isLE) };
-});
-var _Bytes_read_i32 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 4, value: bytes.getInt32(offset, isLE) };
-});
-var _Bytes_read_u8 = F2(function (bytes, offset) {
-  return { offset: offset + 1, value: bytes.getUint8(offset) };
-});
-var _Bytes_read_u16 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 2, value: bytes.getUint16(offset, isLE) };
-});
-var _Bytes_read_u32 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 4, value: bytes.getUint32(offset, isLE) };
-});
-var _Bytes_read_f32 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 4, value: bytes.getFloat32(offset, isLE) };
-});
-var _Bytes_read_f64 = F3(function (isLE, bytes, offset) {
-  return { offset: offset + 8, value: bytes.getFloat64(offset, isLE) };
-});
-
-var _Bytes_read_bytes = F3(function (len, bytes, offset) {
-  return {
-    offset: offset + len,
-    value: new DataView(bytes.buffer, bytes.byteOffset + offset, len),
-  };
-});
-
-var _Bytes_decodeFailure = F2(function () {
-  throw 0;
-});
-var $gren_lang$core$Bytes$Encode$getLength = function(builder) {
-	switch (builder.$) {
-		case 'I8':
-			return 1;
-		case 'I16':
-			return 2;
-		case 'I32':
-			return 4;
-		case 'U8':
-			return 1;
-		case 'U16':
-			return 2;
-		case 'U32':
-			return 4;
-		case 'F32':
-			return 4;
-		case 'F64':
-			return 8;
-		case 'Seq':
-			var w = builder.a.width;
-			return w;
-		default:
-			var bs = builder.a;
-			return _Bytes_length(bs);
-	}
-};
-var $gren_lang$core$Bytes$LE = { $: 'LE' };
-var $gren_lang$core$Bytes$Encode$write$ = function(builder, mb, offset) {
-	switch (builder.$) {
-		case 'I8':
-			var n = builder.a;
-			return A3(_Bytes_write_i8, mb, offset, n);
-		case 'I16':
-			var _v1 = builder.a;
-			var e = _v1.endian;
-			var n = _v1.number;
-			return A4(_Bytes_write_i16, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-		case 'I32':
-			var _v2 = builder.a;
-			var e = _v2.endian;
-			var n = _v2.number;
-			return A4(_Bytes_write_i32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-		case 'U8':
-			var n = builder.a;
-			return A3(_Bytes_write_u8, mb, offset, n);
-		case 'U16':
-			var _v3 = builder.a;
-			var e = _v3.endian;
-			var n = _v3.number;
-			return A4(_Bytes_write_u16, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-		case 'U32':
-			var _v4 = builder.a;
-			var e = _v4.endian;
-			var n = _v4.number;
-			return A4(_Bytes_write_u32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-		case 'F32':
-			var _v5 = builder.a;
-			var e = _v5.endian;
-			var n = _v5.number;
-			return A4(_Bytes_write_f32, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-		case 'F64':
-			var _v6 = builder.a;
-			var e = _v6.endian;
-			var n = _v6.number;
-			return A4(_Bytes_write_f64, mb, offset, n, _Utils_eq(e, $gren_lang$core$Bytes$LE));
-		case 'Seq':
-			var bs = builder.a.items;
-			return $gren_lang$core$Bytes$Encode$writeSequence$(bs, mb, offset);
-		default:
-			var bs = builder.a;
-			return A3(_Bytes_write_bytes, mb, offset, bs);
-	}
-};
-var $gren_lang$core$Bytes$Encode$write = F3($gren_lang$core$Bytes$Encode$write$);
-var $gren_lang$core$Bytes$Encode$writeSequence$ = function(builders, mb, offset) {
-	return A3($gren_lang$core$Array$foldl, F2(function(builder, currentOffset) {
-				return $gren_lang$core$Bytes$Encode$write$(builder, mb, currentOffset);
-			}), offset, builders);
-};
-var $gren_lang$core$Bytes$Encode$writeSequence = F3($gren_lang$core$Bytes$Encode$writeSequence$);
-var $gren_lang$core$Bytes$fromString = _Bytes_fromString;
 var $gren_lang$core$Stream$Log$string$ = function(stream, data) {
 	return $gren_lang$core$Stream$Log$bytes$(stream, $gren_lang$core$Bytes$fromString(data));
 };
@@ -5562,311 +6552,11 @@ var $gren_lang$core$Stream$Log$line$ = function(stream, data) {
 	return $gren_lang$core$Stream$Log$string$(stream, data + '\n');
 };
 var $gren_lang$core$Stream$Log$line = F2($gren_lang$core$Stream$Log$line$);
-var $blaix$prettynice$CLI$Command$Init$ChildProcessError = function (a) {
-	return { $: 'ChildProcessError', a: a };
-};
-var $gren_lang$node$ChildProcess$SetWorkingDirectory = function (a) {
-	return { $: 'SetWorkingDirectory', a: a };
-};
-var $gren_lang$node$ChildProcess$DefaultShell = { $: 'DefaultShell' };
-var $gren_lang$node$ChildProcess$InheritEnvironmentVariables = { $: 'InheritEnvironmentVariables' };
-var $gren_lang$node$ChildProcess$InheritWorkingDirectory = { $: 'InheritWorkingDirectory' };
-var $gren_lang$node$ChildProcess$NoLimit = { $: 'NoLimit' };
-var $gren_lang$core$Basics$mul = _Basics_mul;
-var $gren_lang$node$ChildProcess$defaultRunOptions = { environmentVariables: $gren_lang$node$ChildProcess$InheritEnvironmentVariables, maximumBytesWrittenToStreams: 1024 * 1024, runDuration: $gren_lang$node$ChildProcess$NoLimit, shell: $gren_lang$node$ChildProcess$DefaultShell, workingDirectory: $gren_lang$node$ChildProcess$InheritWorkingDirectory };
-
-
-var bufferNs = require("node:buffer");
-var process = require("node:process");
-var stream = require("node:stream");
-
-var _ChildProcess_module = function () {
-  return require("node:child_process");
-};
-
-var _ChildProcess_run = function (options) {
-  return _Scheduler_binding(function (callback) {
-    var childProcess = _ChildProcess_module();
-
-    var workingDir = options.workingDirectory;
-    var env = options.environmentVariables;
-    var shell = options.shell;
-
-    childProcess.execFile(
-      options.program,
-      options._arguments,
-      {
-        encoding: "buffer",
-        timeout: options.runDuration,
-        cwd: _ChildProcess_handleCwd(workingDir),
-        env: _ChildProcess_handleEnv(env),
-        timeout: options.runDuration,
-        maxBuffer: options.maximumBytesWrittenToStreams,
-        shell: _ChildProcess_handleShell(shell),
-      },
-      function (err, stdout, stderr) {
-        if (err == null) {
-          callback(
-            _Scheduler_succeed({
-              stdout: new DataView(
-                stdout.buffer,
-                stdout.byteOffset,
-                stdout.byteLength,
-              ),
-              stderr: new DataView(
-                stderr.buffer,
-                stderr.byteOffset,
-                stderr.byteLength,
-              ),
-            }),
-          );
-        } else {
-          if (typeof err.errno === "undefined") {
-            // errno only exists on system errors, the program was run
-            callback(
-              _Scheduler_fail(
-                $gren_lang$node$ChildProcess$ProgramError({
-                  exitCode: err.code,
-                  stdout: new DataView(
-                    stdout.buffer,
-                    stdout.byteOffset,
-                    stdout.byteLength,
-                  ),
-                  stderr: new DataView(
-                    stderr.buffer,
-                    stderr.byteOffset,
-                    stderr.byteLength,
-                  ),
-                }),
-              ),
-            );
-          } else {
-            callback(
-              _Scheduler_fail(
-                $gren_lang$node$ChildProcess$InitError({
-                  a: err.path,
-                  b: err.spawnargs,
-                  c: err.code,
-                }),
-              ),
-            );
-          }
-        }
-      },
-    );
-  });
-};
-
-var _ChildProcess_spawn = F3(function (sendInitToApp, sendExitToApp, options) {
-  return _Scheduler_binding(function (callback) {
-    var subproc = _ChildProcess_getSubProc(options);
-
-    var proc = _Scheduler_rawSpawn(
-      sendInitToApp({
-        processId: _Scheduler_rawSpawn(
-          _Scheduler_binding(function (callback) {
-            return function () {
-              subproc.kill();
-            };
-          }),
-        ),
-        streams:
-          options.connection.kind !== 1
-            ? {}
-            : {
-                input: stream.Writable.toWeb(subproc.stdin),
-                output: stream.Readable.toWeb(subproc.stdout),
-                error: stream.Readable.toWeb(subproc.stderr),
-              },
-      }),
-    );
-
-    subproc.on("exit", function (code) {
-      _Scheduler_rawSpawn(sendExitToApp(code));
-    });
-
-    callback(_Scheduler_succeed(proc));
-  });
-});
-
-function _ChildProcess_getSubProc(options) {
-  var childProcess = _ChildProcess_module();
-
-  var workingDir = options.workingDirectory;
-  var env = options.environmentVariables;
-  var shell = options.shell;
-
-  var subproc = childProcess.spawn(options.program, options._arguments, {
-    cwd: _ChildProcess_handleCwd(workingDir),
-    env: _ChildProcess_handleEnv(env),
-    timeout: options.runDuration,
-    shell: _ChildProcess_handleShell(shell),
-    stdio:
-      options.connection.kind === 0
-        ? "inherit"
-        : options.connection.kind === 1
-          ? "pipe"
-          : "ignore",
-    detached:
-      options.connection.kind === 3 && process.platform === "win32",
-  });
-
-  if (options.connection.kind === 3) {
-    subproc.unref();
-  }
-
-  return subproc;
-}
-
-function _ChildProcess_handleCwd(cwd) {
-  return cwd.inherit ? process.cwd() : cwd.override;
-}
-
-function _ChildProcess_handleEnv(env) {
-  return env.option === 0
-    ? process.env
-    : env.option === 1
-      ? _Utils_update(process.env, _ChildProcess_dictToObj(env.value))
-      : _ChildProcess_dictToObj(env.value);
-}
-
-function _ChildProcess_handleShell(shell) {
-  return shell.choice === 0
-    ? false
-    : shell.choice === 1
-      ? true
-      : shell.value;
-}
-
-function _ChildProcess_dictToObj(dict) {
-  return A3(
-    $gren_lang$core$Dict$foldl,
-    F3(function (key, value, acc) {
-      acc[key] = value;
-      return acc;
-    }),
-    {},
-    dict,
-  );
-}
-var $gren_lang$node$ChildProcess$InitError = function (a) {
-	return { $: 'InitError', a: a };
-};
-var $gren_lang$node$ChildProcess$ProgramError = function (a) {
-	return { $: 'ProgramError', a: a };
-};
-var $gren_lang$core$Basics$gt = _Utils_gt;
-var $gren_lang$core$Basics$max$ = function(x, y) {
-	return (_Utils_cmp(x, y) > 0) ? x : y;
-};
-var $gren_lang$core$Basics$max = F2($gren_lang$core$Basics$max$);
-var $gren_lang$node$ChildProcess$run$ = function(_v0, program, _arguments, opts) {
-	return _ChildProcess_run({ _arguments: _arguments, environmentVariables: function () {
-			var _v1 = opts.environmentVariables;
-			switch (_v1.$) {
-				case 'InheritEnvironmentVariables':
-					return { option: 0, value: $gren_lang$core$Dict$empty };
-				case 'MergeWithEnvironmentVariables':
-					var value = _v1.a;
-					return { option: 1, value: value };
-				default:
-					var value = _v1.a;
-					return { option: 2, value: value };
-			}
-		}(), maximumBytesWrittenToStreams: opts.maximumBytesWrittenToStreams, program: program, runDuration: function () {
-			var _v2 = opts.runDuration;
-			if (_v2.$ === 'NoLimit') {
-				return 0;
-			} else {
-				var ms = _v2.a;
-				return $gren_lang$core$Basics$max$(0, ms);
-			}
-		}(), shell: function () {
-			var _v3 = opts.shell;
-			switch (_v3.$) {
-				case 'NoShell':
-					return { choice: 0, value: '' };
-				case 'DefaultShell':
-					return { choice: 1, value: '' };
-				default:
-					var value = _v3.a;
-					return { choice: 2, value: value };
-			}
-		}(), workingDirectory: function () {
-			var _v4 = opts.workingDirectory;
-			if (_v4.$ === 'InheritWorkingDirectory') {
-				return { inherit: true, override: '' };
-			} else {
-				var value = _v4.a;
-				return { inherit: false, override: value };
-			}
-		}() });
-};
-var $gren_lang$node$ChildProcess$run = F4($gren_lang$node$ChildProcess$run$);
-var $blaix$prettynice$CLI$Command$Init$npmInstall$ = function(procPerm, dirName, localPackage) {
-	var runOptions = _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { workingDirectory: $gren_lang$node$ChildProcess$SetWorkingDirectory(dirName) });
-	var args = function () {
-		if (localPackage.$ === 'Just') {
-			var pkg = localPackage.a;
-			return [ 'install', pkg ];
-		} else {
-			return [ 'install' ];
-		}
-	}();
-	return $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Init$ChildProcessError, $gren_lang$core$Task$map$(function(_v0) {
-				return {  };
-			}, $gren_lang$node$ChildProcess$run$(procPerm, 'npm', args, runOptions)));
-};
-var $blaix$prettynice$CLI$Command$Init$npmInstall = F3($blaix$prettynice$CLI$Command$Init$npmInstall$);
-var $gren_lang$core$Basics$sub = _Basics_sub;
-var $gren_lang$core$Array$dropLast$ = function(n, array) {
-	return A3($gren_lang$core$Array$slice, 0, $gren_lang$core$Array$length(array) - n, array);
-};
-var $gren_lang$core$Array$dropLast = F2($gren_lang$core$Array$dropLast$);
-var $gren_lang$core$Array$last = function(array) {
-	return A2($gren_lang$core$Array$get, -1, array);
-};
-var $gren_lang$core$Array$popLast = function(array) {
-	var _v0 = $gren_lang$core$Array$last(array);
-	if (_v0.$ === 'Just') {
-		var value = _v0.a;
-		return $gren_lang$core$Maybe$Just({ initial: $gren_lang$core$Array$dropLast$(1, array), last: value });
-	} else {
-		return $gren_lang$core$Maybe$Nothing;
-	}
-};
-var $gren_lang$node$FileSystem$Path$parentPath = function(path) {
-	var _v0 = $gren_lang$core$Array$popLast(path.directory);
-	if (_v0.$ === 'Nothing') {
-		return ($gren_lang$node$FileSystem$Path$filenameWithExtension(path) === '') ? $gren_lang$core$Maybe$Nothing : $gren_lang$core$Maybe$Just(_Utils_update(path, { extension: '', filename: '' }));
-	} else {
-		var _v1 = _v0.a;
-		var last = _v1.last;
-		var initial = _v1.initial;
-		var _v2 = function () {
-			var _v3 = A2($gren_lang$core$String$split, '.', last);
-			if (_v3.length === 2) {
-				var file = _v3[0];
-				var ext = _v3[1];
-				return { extension: ext, filename: file };
-			} else {
-				return { extension: '', filename: last };
-			}
-		}();
-		var filename = _v2.filename;
-		var extension = _v2.extension;
-		return $gren_lang$core$Maybe$Just(_Utils_update(path, { directory: initial, extension: extension, filename: filename }));
-	}
-};
 var $blaix$gren_ansi$Ansi$Red = { $: 'Red' };
 var $blaix$gren_tui$UI$Attribute$Color = function (a) {
 	return { $: 'Color', a: a };
 };
 var $blaix$gren_tui$UI$Attribute$color = $blaix$gren_tui$UI$Attribute$Color;
-var $gren_lang$node$FileSystem$errorToString = function(_v0) {
-	var message = _v0.a.message;
-	return message;
-};
 var $blaix$gren_tui$UI$Row = function (a) {
 	return { $: 'Row', a: a };
 };
@@ -5897,7 +6587,228 @@ var $blaix$gren_tui$UI$text$ = function(attrs, content) {
 			}, $blaix$gren_tui$SingleLine$fromString(content)));
 };
 var $blaix$gren_tui$UI$text = F2($blaix$gren_tui$UI$text$);
-var $gren_lang$core$Bytes$toString = _Bytes_toString;
+var $blaix$prettynice$CLI$Command$Build$viewBuildError = function(error) {
+	var errorMsg = function () {
+		switch (error.$) {
+			case 'FileSystemError':
+				var fsError = error.a;
+				return $gren_lang$node$FileSystem$errorToString(fsError);
+			case 'ChildProcessError':
+				if (error.a.$ === 'InitError') {
+					var _v1 = error.a.a;
+					var program = _v1.program;
+					var _arguments = _v1._arguments;
+					var errorCode = _v1.errorCode;
+					return '`' + (program + (' ' + (A2($gren_lang$core$String$join, ' ', _arguments) + ('`' + (' exited with error code ' + errorCode)))));
+				} else {
+					var stderr = error.a.a.stderr;
+					return $gren_lang$core$Maybe$withDefault$('(failed to decode error message)', $gren_lang$core$Bytes$toString(stderr));
+				}
+			default:
+				var msg = error.a;
+				return msg;
+		}
+	}();
+	return $blaix$gren_tui$UI$row$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Red) ], [ $blaix$gren_tui$UI$text$([  ], 'Build failed: '), $blaix$gren_tui$UI$text$([  ], errorMsg) ]);
+};
+var $blaix$gren_ansi$Ansi$Green = { $: 'Green' };
+var $blaix$prettynice$CLI$Command$Build$viewBuildSuccess = $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Green) ], '✅ Done');
+var $blaix$prettynice$CLI$Command$Build$buildProject = function(_v0) {
+	var fsPerm = _v0.fsPerm;
+	var procPerm = _v0.procPerm;
+	var env = _v0.env;
+	var optimize = _v0.optimize;
+	return $gren_lang$core$Task$map$(function(_v19) {
+			return $blaix$prettynice$CLI$Command$Build$viewBuildSuccess;
+		}, $gren_lang$core$Task$mapError$(function(err) {
+				return { exitCode: 1, message: $blaix$prettynice$CLI$Command$Build$viewBuildError(err) };
+			}, A2($gren_lang$core$Task$andThen, function(_v17) {
+					return A2($gren_lang$core$Task$andThen, function(_v18) {
+							return $blaix$prettynice$CLI$Command$Build$buildServer$(procPerm, optimize);
+						}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Building server...'));
+				}, A2($gren_lang$core$Task$andThen, function(components) {
+						return A2($gren_lang$core$Task$andThen, function(_v16) {
+								return $blaix$prettynice$CLI$Command$Build$buildClientComponents$(procPerm, components, optimize);
+							}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Building client components...'));
+					}, A2($gren_lang$core$Task$andThen, function(components) {
+							return $gren_lang$core$Task$map$(function(_v15) {
+									return components;
+								}, A2($gren_lang$core$Task$andThen, function(_v14) {
+										return $blaix$prettynice$CLI$Command$Build$copyPublicAssets(fsPerm);
+									}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Copying public assets...')));
+						}, A2($gren_lang$core$Task$andThen, function(components) {
+								return $gren_lang$core$Task$map$(function(_v13) {
+										return components;
+									}, A2($gren_lang$core$Task$andThen, function(_v12) {
+											return $blaix$prettynice$CLI$Command$Build$genClientPorts$(fsPerm, components);
+										}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Generating client ports...')));
+							}, A2($gren_lang$core$Task$andThen, function(components) {
+									return $gren_lang$core$Task$map$(function(_v11) {
+											return components;
+										}, A2($gren_lang$core$Task$andThen, function(_v10) {
+												return $blaix$prettynice$CLI$Command$Build$genServerPorts(fsPerm);
+											}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Generating server ports...')));
+								}, A2($gren_lang$core$Task$andThen, function(components) {
+										return $gren_lang$core$Task$map$(function(_v9) {
+												return components;
+											}, A2($gren_lang$core$Task$andThen, function(_v8) {
+													return $blaix$prettynice$CLI$Command$Build$genClientComponents$(fsPerm, components);
+												}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Generating client components...')));
+									}, A2($gren_lang$core$Task$andThen, function(components) {
+											return $gren_lang$core$Task$map$(function(_v7) {
+													return components;
+												}, A2($gren_lang$core$Task$andThen, function(_v6) {
+														return $blaix$prettynice$CLI$Command$Build$genServerComponents$(fsPerm, components);
+													}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Generating server components...')));
+										}, A2($gren_lang$core$Task$andThen, function(_v5) {
+												return $blaix$prettynice$CLI$Command$Build$discoverComponents(fsPerm);
+											}, A2($gren_lang$core$Task$andThen, function(_v4) {
+													return $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Discovering components...');
+												}, A2($gren_lang$core$Task$andThen, function(_v3) {
+														return $blaix$prettynice$CLI$Command$Build$genDependencies(fsPerm);
+													}, A2($gren_lang$core$Task$andThen, function(_v2) {
+															return $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Generating prettynice dependencies...');
+														}, A2($gren_lang$core$Task$andThen, function(_v1) {
+																return $blaix$prettynice$CLI$Command$Build$clean(fsPerm);
+															}, $gren_lang$core$Stream$Log$line$(env.stdout, '🌸 Cleaning up previous builds...')))))))))))))));
+};
+var $blaix$prettynice$CLI$Command$Build$RunBuild = { $: 'RunBuild' };
+var $blaix$prettynice$CLI$Command$Build$ShowHelp = { $: 'ShowHelp' };
+var $blaix$prettynice$CLI$Command$Build$route$ = function(args, options) {
+	var _v0 = { args: args, help: $gren_lang$core$Dict$get$('help', options) };
+	if (_v0.help.$ === 'Just') {
+		return $blaix$prettynice$CLI$Command$Build$ShowHelp;
+	} else {
+		if (_v0.args.length === 0) {
+			return $blaix$prettynice$CLI$Command$Build$RunBuild;
+		} else {
+			return $blaix$prettynice$CLI$Command$Build$RunBuild;
+		}
+	}
+};
+var $blaix$prettynice$CLI$Command$Build$route = F2($blaix$prettynice$CLI$Command$Build$route$);
+var $blaix$gren_ansi$Ansi$Cyan = { $: 'Cyan' };
+var $blaix$prettynice$CLI$Command$Build$indent = '    ';
+var $blaix$prettynice$CLI$Command$Build$viewUsage = $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], 'Usage:'), $blaix$gren_tui$UI$row$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$Command$Build$indent), $blaix$gren_tui$UI$text$([  ], 'prettynice build [options]') ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'Options:'), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$Command$Build$indent), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], '--optimize '), $blaix$gren_tui$UI$text$([  ], ' Build with optimizations enabled') ]), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$Command$Build$indent), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], '--help '), $blaix$gren_tui$UI$text$([  ], ' Show this help information') ]) ]);
+var $blaix$prettynice$CLI$Command$Build$viewHelp = $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], 'Build a Prettynice project'), $blaix$gren_tui$UI$text$([  ], ''), $blaix$prettynice$CLI$Command$Build$viewUsage ]);
+var $blaix$prettynice$CLI$Command$Build$run = function(_v0) {
+	var fsPerm = _v0.fsPerm;
+	var procPerm = _v0.procPerm;
+	var args = _v0.args;
+	var options = _v0.options;
+	var env = _v0.env;
+	var optimize = $gren_lang$core$Dict$member$('optimize', options);
+	var _v1 = $blaix$prettynice$CLI$Command$Build$route$(args, options);
+	if (_v1.$ === 'RunBuild') {
+		return $blaix$prettynice$CLI$Command$Build$buildProject({ env: env, fsPerm: fsPerm, optimize: optimize, procPerm: procPerm });
+	} else {
+		return $gren_lang$core$Task$succeed($blaix$prettynice$CLI$Command$Build$viewHelp);
+	}
+};
+var $gren_lang$core$Maybe$andThen$ = function(callback, maybeValue) {
+	if (maybeValue.$ === 'Just') {
+		var value = maybeValue.a;
+		return callback(value);
+	} else {
+		return $gren_lang$core$Maybe$Nothing;
+	}
+};
+var $gren_lang$core$Maybe$andThen = F2($gren_lang$core$Maybe$andThen$);
+var $gren_lang$node$FileSystem$Path$appendPosixString$ = function(str, path) {
+	return $gren_lang$node$FileSystem$Path$prepend$(path, $gren_lang$node$FileSystem$Path$fromPosixString(str));
+};
+var $gren_lang$node$FileSystem$Path$appendPosixString = F2($gren_lang$node$FileSystem$Path$appendPosixString$);
+var $blaix$prettynice$CLI$Command$Init$FileSystemError = function (a) {
+	return { $: 'FileSystemError', a: a };
+};
+var $blaix$prettynice$CLI$Command$Init$ignores = [ 'node_modules', 'tests', 'dist', 'build', 'docs.json', '.gren', '.devbox' ];
+var $gren_lang$core$Array$findFirst = _Array_findFirst;
+var $gren_lang$core$Array$member$ = function(value, array) {
+	var _v0 = A2($gren_lang$core$Array$findFirst, function(v) {
+			return _Utils_eq(v, value);
+		}, array);
+	if (_v0.$ === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $gren_lang$core$Array$member = F2($gren_lang$core$Array$member$);
+var $blaix$prettynice$CLI$Command$Init$copyDirectory$ = function(fsPerm, sourcePath, targetPath) {
+	return A2($gren_lang$core$Task$andThen, A3($blaix$prettynice$CLI$Command$Init$copyEntries, fsPerm, sourcePath, targetPath), $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Init$FileSystemError, A2($gren_lang$core$Task$andThen, function(_v5) {
+					return $gren_lang$node$FileSystem$listDirectory$(fsPerm, sourcePath);
+				}, $gren_lang$node$FileSystem$makeDirectory$(fsPerm, { recursive: true }, targetPath))));
+};
+var $blaix$prettynice$CLI$Command$Init$copyDirectory = F3($blaix$prettynice$CLI$Command$Init$copyDirectory$);
+var $blaix$prettynice$CLI$Command$Init$copyEntries$ = function(fsPerm, sourcePath, targetPath, entries) {
+	copyEntries:
+	while (true) {
+		var _v0 = $gren_lang$core$Array$popFirst(entries);
+		if (_v0.$ === 'Nothing') {
+			return $gren_lang$core$Task$succeed({  });
+		} else {
+			var _v1 = _v0.a;
+			var entry = _v1.first;
+			var remainingEntries = _v1.rest;
+			var targetEntry = $gren_lang$node$FileSystem$Path$join([ targetPath, entry.path ]);
+			var sourceEntry = $gren_lang$node$FileSystem$Path$join([ sourcePath, entry.path ]);
+			var entryName = $gren_lang$node$FileSystem$Path$filenameWithExtension(entry.path);
+			if ($gren_lang$core$Array$member$(entryName, $blaix$prettynice$CLI$Command$Init$ignores)) {
+				var $temp$fsPerm = fsPerm,
+				$temp$sourcePath = sourcePath,
+				$temp$targetPath = targetPath,
+				$temp$entries = remainingEntries;
+				fsPerm = $temp$fsPerm;
+				sourcePath = $temp$sourcePath;
+				targetPath = $temp$targetPath;
+				entries = $temp$entries;
+				continue copyEntries;
+			} else {
+				var _v2 = entry.entityType;
+				switch (_v2.$) {
+					case 'Directory':
+						return A2($gren_lang$core$Task$andThen, function(_v3) {
+								return $blaix$prettynice$CLI$Command$Init$copyEntries$(fsPerm, sourcePath, targetPath, remainingEntries);
+							}, $blaix$prettynice$CLI$Command$Init$copyDirectory$(fsPerm, sourceEntry, targetEntry));
+					case 'File':
+						return A2($gren_lang$core$Task$andThen, function(_v4) {
+								return $blaix$prettynice$CLI$Command$Init$copyEntries$(fsPerm, sourcePath, targetPath, remainingEntries);
+							}, $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Init$FileSystemError, $gren_lang$node$FileSystem$copyFile$(fsPerm, targetEntry, sourceEntry)));
+					default:
+						var $temp$fsPerm = fsPerm,
+						$temp$sourcePath = sourcePath,
+						$temp$targetPath = targetPath,
+						$temp$entries = remainingEntries;
+						fsPerm = $temp$fsPerm;
+						sourcePath = $temp$sourcePath;
+						targetPath = $temp$targetPath;
+						entries = $temp$entries;
+						continue copyEntries;
+				}
+			}
+		}
+	}
+};
+var $blaix$prettynice$CLI$Command$Init$copyEntries = F4($blaix$prettynice$CLI$Command$Init$copyEntries$);
+var $gren_lang$node$FileSystem$Path$fromWin32String = _FilePath_fromWin32;
+var $blaix$prettynice$CLI$Command$Init$ChildProcessError = function (a) {
+	return { $: 'ChildProcessError', a: a };
+};
+var $blaix$prettynice$CLI$Command$Init$npmInstall$ = function(procPerm, dirName, localPackage) {
+	var runOptions = _Utils_update($gren_lang$node$ChildProcess$defaultRunOptions, { workingDirectory: $gren_lang$node$ChildProcess$SetWorkingDirectory(dirName) });
+	var args = function () {
+		if (localPackage.$ === 'Just') {
+			var pkg = localPackage.a;
+			return [ 'install', pkg ];
+		} else {
+			return [ 'install' ];
+		}
+	}();
+	return $gren_lang$core$Task$mapError$($blaix$prettynice$CLI$Command$Init$ChildProcessError, $gren_lang$core$Task$map$(function(_v0) {
+				return {  };
+			}, $gren_lang$node$ChildProcess$run$(procPerm, 'npm', args, runOptions)));
+};
+var $blaix$prettynice$CLI$Command$Init$npmInstall = F3($blaix$prettynice$CLI$Command$Init$npmInstall$);
 var $blaix$prettynice$CLI$Command$Init$viewInitError = function(error) {
 	var errorMsg = function () {
 		if (error.$ === 'FileSystemError') {
@@ -5918,8 +6829,6 @@ var $blaix$prettynice$CLI$Command$Init$viewInitError = function(error) {
 	}();
 	return $blaix$gren_tui$UI$row$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Red) ], [ $blaix$gren_tui$UI$text$([  ], 'Failed to initialize project: '), $blaix$gren_tui$UI$text$([  ], errorMsg) ]);
 };
-var $blaix$gren_ansi$Ansi$Cyan = { $: 'Cyan' };
-var $blaix$gren_ansi$Ansi$Green = { $: 'Green' };
 var $blaix$gren_ansi$Ansi$Yellow = { $: 'Yellow' };
 var $blaix$prettynice$CLI$Command$Init$viewInitSuccess = function(dirName) {
 	return $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Green) ], '✅ Done!'), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], 'Now what?'), $blaix$gren_tui$UI$row$([  ], (dirName === '.') ? [  ] : [ $blaix$gren_tui$UI$text$([  ], '🌸 Navigate to your new project: '), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Yellow) ], 'cd ' + dirName) ]), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], '🌸 Start the dev server with: '), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Yellow) ], 'npm run dev') ]), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], '🌸 Make changes to your server at: '), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Yellow) ], 'server/src/Main.gren') ]), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], '🌸 View your example client-side component at: '), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Yellow) ], 'client/src/Components/Counter.gren') ]), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], '🌸 View more examples at: '), $blaix$gren_tui$UI$text$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Yellow) ], 'https://github.com/blaix/prettynice/tree/main/examples') ]) ]);
@@ -5996,7 +6905,6 @@ var $gren_lang$node$Node$startProgram = function(initResult) {
 };
 var $blaix$prettynice$CLI$indent = '    ';
 var $blaix$prettynice$CLI$viewUsage = $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], 'Usage:'), $blaix$gren_tui$UI$row$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$text$([  ], 'prettynice <command> [options]') ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'Commands:'), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$column$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], [ $blaix$gren_tui$UI$text$([  ], 'init <directory> '), $blaix$gren_tui$UI$text$([  ], 'build ') ]), $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], ' Initialize a new Prettynice project'), $blaix$gren_tui$UI$text$([  ], ' Build an existing Prettynice project') ]) ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'Options:'), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$text$([  ], '--help '), $blaix$gren_tui$UI$text$([  ], ' Show help information') ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'For more information, visit https://github.com/blaix/prettynice') ]);
-var $blaix$prettynice$CLI$viewHelp = $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], 'A full-stack web framework for Gren.'), $blaix$gren_tui$UI$text$([  ], ''), $blaix$prettynice$CLI$viewUsage ]);
 var $blaix$prettynice$CLI$init = function(env) {
 	return $gren_lang$node$Init$await$($gren_lang$node$FileSystem$initialize, function(fsPerm) {
 			return $gren_lang$node$Init$await$($gren_lang$node$ChildProcess$initialize, function(procPerm) {
@@ -6030,11 +6938,15 @@ var $blaix$prettynice$CLI$init = function(env) {
 												} else {
 													break _v0$3;
 												}
+											case 'build':
+												var _v4 = _v0.a;
+												var args = _v4.rest;
+												return $blaix$prettynice$CLI$Command$Build$run({ args: args, env: env, fsPerm: fsPerm, options: parsedArgs.options, procPerm: procPerm });
 											default:
 												break _v0$3;
 										}
 									} else {
-										return $gren_lang$core$Task$succeed($blaix$prettynice$CLI$viewHelp);
+										break _v0$3;
 									}
 								}
 								return $gren_lang$core$Task$succeed($blaix$prettynice$CLI$viewUsage);
@@ -6099,7 +7011,6 @@ var $blaix$gren_tui$SingleLine$toString = function(_v0) {
 	var string = _v0.a;
 	return string;
 };
-var $gren_lang$core$String$foldl = _String_foldl;
 
 
 // CREATE
@@ -6404,10 +7315,6 @@ var $blaix$gren_tui$UI$mergeAttributes$ = function(parentAttrs, element) {
 	}
 };
 var $blaix$gren_tui$UI$mergeAttributes = F2($blaix$gren_tui$UI$mergeAttributes$);
-var $gren_lang$core$String$dropLast$ = function(n, string) {
-	return (n < 1) ? string : A3($gren_lang$core$String$slice, 0, -n, string);
-};
-var $gren_lang$core$String$dropLast = F2($gren_lang$core$String$dropLast$);
 var $blaix$gren_tui$SingleLine$dropRight$ = function(n, _v0) {
 	var string = _v0.a;
 	return $blaix$gren_tui$SingleLine$SingleLine($gren_lang$core$String$dropLast$(n, string));

@@ -3,6 +3,7 @@ module Prettynice.Internal.Props exposing
     , FieldType
     , get
     , encoder
+    , decoder
     , typeSig
     , supportedFieldTypeNames
     )
@@ -17,7 +18,7 @@ They are similar to [flags](https://gren-lang.org/book/applications/flags/).
 
 ...but it may be helpful to understand how your component props are parsed and what [field types](#FieldType) are supported.
 
-@docs Props, FieldType, get, encoder, typeSig, supportedFieldTypeNames
+@docs Props, FieldType, get, encoder, decoder, typeSig, supportedFieldTypeNames
 
 -}
 
@@ -198,6 +199,62 @@ fieldTypeToEncoder fieldType =
 
         MaybeType t ->
             "(Maybe.map (" ++ (fieldTypeToEncoder t) ++ ") >> Maybe.withDefault Encode.null)"
+
+
+{-| Return a string with the gren code to decode the given props.
+-}
+decoder : Props -> String
+decoder props =
+    let
+        fieldNames =
+            Dict.keys props
+
+        lambda =
+            "\\" ++ String.join " " fieldNames
+                ++ " -> { "
+                ++ (fieldNames
+                        |> Array.map (\n -> n ++ " = " ++ n)
+                        |> String.join ", "
+                   )
+                ++ " }"
+
+        fields =
+            props
+                |> Dict.foldl addFieldDecoder []
+                |> String.join "\n    "
+    in
+    "Decode.succeed (" ++ lambda ++ ")\n    " ++ fields
+
+
+addFieldDecoder : String -> FieldType -> Array String -> Array String
+addFieldDecoder name fieldType decoders =
+    let
+        field =
+            "|> Decode.andMap (Decode.field \"" ++ name ++ "\" " ++ fieldTypeToDecoder fieldType ++ ")"
+    in
+    Array.pushLast field decoders
+
+
+fieldTypeToDecoder : FieldType -> String
+fieldTypeToDecoder fieldType =
+    when fieldType is
+        IntType ->
+            "Decode.int"
+
+        FloatType ->
+            "Decode.float"
+
+        StringType ->
+            "Decode.string"
+
+        BoolType ->
+            "Decode.bool"
+
+        ArrayType t ->
+            "(Decode.array " ++ (fieldTypeToDecoder t) ++ ")"
+
+        MaybeType t ->
+            "(Decode.nullable " ++ (fieldTypeToDecoder t) ++ ")"
 
 
 parser : Parser (Dict String FieldType)

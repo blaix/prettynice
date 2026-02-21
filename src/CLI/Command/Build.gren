@@ -469,46 +469,86 @@ genClientComponents fsPerm components =
 
 genClientComponent : FileSystem.Permission -> ComponentFile -> Task Error {}
 genClientComponent fsPerm component =
-    let
-        modName =
-            componentModuleName component
+    FileSystem.readFile fsPerm component.fullPath
+        |> Task.mapError FileSystemError
+        |> Task.andThen
+            (\bytes ->
+                let
+                    source =
+                        Bytes.toString bytes
+                            |> Maybe.withDefault ""
 
-        baseName =
-            componentBaseName component
+                    propsResult =
+                        Props.get source
 
-        content =
-            toClientComponent modName baseName
+                    modName =
+                        componentModuleName component
 
-        destPath =
-            "client/.prettynice/Gen/Components/" ++ Path.toPosixString component.relativePath
-    in
-    writeStringToFile fsPerm content destPath
-        |> Task.map (\_ -> {})
+                    baseName =
+                        componentBaseName component
+                in
+                when propsResult is
+                    Ok props ->
+                        let
+                            content =
+                                toClientComponent modName baseName props
+
+                            destPath =
+                                "client/.prettynice/Gen/Components/" ++ Path.toPosixString component.relativePath
+                        in
+                        writeStringToFile fsPerm content destPath
+                            |> Task.map (\_ -> {})
+
+                    Err _ ->
+                        Task.fail
+                            (PropsParseError
+                                ("Failed to parse props for " ++ baseName ++ ".\n\n"
+                                    ++ "Could not parse the Props type alias. Supported field types are: "
+                                    ++ String.join ", " Props.supportedFieldTypeNames
+                                    ++ "."
+                                )
+                            )
+            )
 
 
-toClientComponent : String -> String -> String
-toClientComponent modName baseName =
+toClientComponent : String -> String -> Props -> String
+toClientComponent modName baseName props =
     """
     module Gen.{{MODULE_NAME}} exposing (main)
 
+    import Json.Decode as Decode
     import Transmutable.Html.VirtualDom exposing (toVirtualDom)
     import {{MODULE_NAME}} as {{NAME}}
     import Browser
 
-    main : Program {{NAME}}.Props {{NAME}}.Model {{NAME}}.Msg
+    main : Program Decode.Value {{NAME}}.Model {{NAME}}.Msg
     main =
         let
             e = {{NAME}}.component
         in
         Browser.element
-            { init = e.init
+            { init = decodeProps >> e.init
             , update = e.update
             , subscriptions = e.subscriptions
             , view = e.view >> toVirtualDom
             }
+
+    propsDecoder : Decode.Decoder {{NAME}}.Props
+    propsDecoder =
+        {{PROPS_DECODER}}
+
+    decodeProps : Decode.Value -> {{NAME}}.Props
+    decodeProps value =
+        when Decode.decodeValue propsDecoder value is
+            Ok props ->
+                props
+
+            Err error ->
+                Debug.todo (Decode.errorToString error)
     """
         |> String.replace "{{NAME}}" baseName
         |> String.replace "{{MODULE_NAME}}" modName
+        |> String.replace "{{PROPS_DECODER}}" (Props.decoder props)
 
 
 -- GENERATE SERVER PORTS

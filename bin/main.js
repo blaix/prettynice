@@ -5441,23 +5441,25 @@ var $gren_lang$core$Set$Set_gren_builtin = function (a) {
 	return { $: 'Set_gren_builtin', a: a };
 };
 var $gren_lang$core$Set$empty = $gren_lang$core$Set$Set_gren_builtin($gren_lang$core$Dict$empty);
-var $blaix$prettynice$Prettynice$Internal$Props$ArrayType = function (a) {
-	return { $: 'ArrayType', a: a };
+var $blaix$prettynice$Prettynice$Internal$Props$NestedFieldType = function (a) {
+	return { $: 'NestedFieldType', a: a };
 };
-var $blaix$prettynice$Prettynice$Internal$Props$BoolType = { $: 'BoolType' };
-var $blaix$prettynice$Prettynice$Internal$Props$FloatType = { $: 'FloatType' };
-var $blaix$prettynice$Prettynice$Internal$Props$IntType = { $: 'IntType' };
-var $blaix$prettynice$Prettynice$Internal$Props$MaybeType = function (a) {
-	return { $: 'MaybeType', a: a };
+var $blaix$prettynice$Prettynice$Internal$Props$SimpleFieldType = function (a) {
+	return { $: 'SimpleFieldType', a: a };
 };
-var $blaix$prettynice$Prettynice$Internal$Props$NestedType = function (a) {
-	return { $: 'NestedType', a: a };
-};
-var $blaix$prettynice$Prettynice$Internal$Props$SimpleType = function (a) {
-	return { $: 'SimpleType', a: a };
-};
-var $blaix$prettynice$Prettynice$Internal$Props$StringType = { $: 'StringType' };
-var $blaix$prettynice$Prettynice$Internal$Props$fieldTypes = [ $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$IntType, keyword: 'Int' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$FloatType, keyword: 'Float' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$StringType, keyword: 'String' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$BoolType, keyword: 'Bool' }), $blaix$prettynice$Prettynice$Internal$Props$NestedType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$ArrayType, keyword: 'Array' }), $blaix$prettynice$Prettynice$Internal$Props$NestedType({ constructor: $blaix$prettynice$Prettynice$Internal$Props$MaybeType, keyword: 'Maybe' }) ];
+var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeDefinitions = [ $blaix$prettynice$Prettynice$Internal$Props$SimpleFieldType({ decoder: 'Decode.int', encoder: 'Encode.int', keyword: 'Int', name: 'Int' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleFieldType({ decoder: 'Decode.float', encoder: 'Encode.float', keyword: 'Float', name: 'Float' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleFieldType({ decoder: 'Decode.string', encoder: 'Encode.string', keyword: 'String', name: 'String' }), $blaix$prettynice$Prettynice$Internal$Props$SimpleFieldType({ decoder: 'Decode.bool', encoder: 'Encode.bool', keyword: 'Bool', name: 'Bool' }), $blaix$prettynice$Prettynice$Internal$Props$NestedFieldType({ decoder: function(inner) {
+		return '(Decode.array ' + (inner.decoder + ')');
+	}, encoder: function(inner) {
+		return '(Encode.array ' + (inner.encoder + ')');
+	}, keyword: 'Array', name: function(inner) {
+		return '(Array ' + (inner.name + ')');
+	} }), $blaix$prettynice$Prettynice$Internal$Props$NestedFieldType({ decoder: function(inner) {
+		return '(Decode.nullable ' + (inner.decoder + ')');
+	}, encoder: function(inner) {
+		return '(Maybe.map (' + (inner.encoder + ') >> Maybe.withDefault Encode.null)');
+	}, keyword: 'Maybe', name: function(inner) {
+		return '(Maybe ' + (inner.name + ')');
+	} }) ];
 var $gren_lang$parser$Parser$ExpectingKeyword = function (a) {
 	return { $: 'ExpectingKeyword', a: a };
 };
@@ -5493,24 +5495,22 @@ var $gren_lang$parser$Parser$Advanced$spaces = $gren_lang$parser$Parser$Advanced
 	});
 var $gren_lang$parser$Parser$spaces = $gren_lang$parser$Parser$Advanced$spaces;
 function $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser() {
-	var toParser = function(entry) {
-		if (entry.$ === 'SimpleType') {
-			var _v1 = entry.a;
-			var keyword = _v1.keyword;
-			var constructor = _v1.constructor;
-			return A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(constructor), $gren_lang$parser$Parser$keyword(keyword));
+	var toParser = function(def) {
+		if (def.$ === 'SimpleFieldType') {
+			var ft = def.a;
+			return A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(ft), $gren_lang$parser$Parser$keyword(ft.keyword));
 		} else {
-			var _v2 = entry.a;
-			var keyword = _v2.keyword;
-			var constructor = _v2.constructor;
-			return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(constructor), $gren_lang$parser$Parser$keyword(keyword)), $gren_lang$parser$Parser$lazy(function(_v3) {
+			var details = def.a;
+			return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(function(inner) {
+							return { decoder: details.decoder(inner), encoder: details.encoder(inner), keyword: details.keyword, name: details.name(inner) };
+						}), $gren_lang$parser$Parser$keyword(details.keyword)), $gren_lang$parser$Parser$lazy(function(_v1) {
 						return $blaix$prettynice$Prettynice$Internal$Props$cyclic$fieldParser();
 					}));
 		}
 	};
 	return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed($gren_lang$core$Basics$identity), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
 						return _Utils_eq(c, _Utils_chr('('));
-					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf(A2($gren_lang$core$Array$map, toParser, $blaix$prettynice$Prettynice$Internal$Props$fieldTypes)), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
+					})), $gren_lang$parser$Parser$spaces), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$oneOf(A2($gren_lang$core$Array$map, toParser, $blaix$prettynice$Prettynice$Internal$Props$fieldTypeDefinitions)), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$chompWhile(function(c) {
 						return _Utils_eq(c, _Utils_chr(')'));
 					})), $gren_lang$parser$Parser$spaces));
 }
@@ -5765,35 +5765,17 @@ var $gren_lang$node$FileSystem$readFile$ = function(_v0, path) {
 	return _FileSystem_readFile(path);
 };
 var $gren_lang$node$FileSystem$readFile = F2($gren_lang$node$FileSystem$readFile$);
-var $blaix$prettynice$Prettynice$Internal$Props$supportedFieldTypeNames = A2($gren_lang$core$Array$map, function(entry) {
-		if (entry.$ === 'SimpleType') {
-			var keyword = entry.a.keyword;
-			return keyword;
+var $blaix$prettynice$Prettynice$Internal$Props$supportedFieldTypeNames = A2($gren_lang$core$Array$map, function(def) {
+		if (def.$ === 'SimpleFieldType') {
+			var ft = def.a;
+			return ft.keyword;
 		} else {
-			var keyword = entry.a.keyword;
-			return keyword;
+			var details = def.a;
+			return details.keyword;
 		}
-	}, $blaix$prettynice$Prettynice$Internal$Props$fieldTypes);
-var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToDecoder = function(fieldType) {
-	switch (fieldType.$) {
-		case 'IntType':
-			return 'Decode.int';
-		case 'FloatType':
-			return 'Decode.float';
-		case 'StringType':
-			return 'Decode.string';
-		case 'BoolType':
-			return 'Decode.bool';
-		case 'ArrayType':
-			var t = fieldType.a;
-			return '(Decode.array ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToDecoder(t) + ')');
-		default:
-			var t = fieldType.a;
-			return '(Decode.nullable ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToDecoder(t) + ')');
-	}
-};
+	}, $blaix$prettynice$Prettynice$Internal$Props$fieldTypeDefinitions);
 var $blaix$prettynice$Prettynice$Internal$Props$addFieldDecoder$ = function(name, fieldType, decoders) {
-	var field = '|> Decode.andMap (Decode.field \"' + (name + ('\" ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToDecoder(fieldType) + ')')));
+	var field = '|> Decode.andMap (Decode.field \"' + (name + ('\" ' + (fieldType.decoder + ')')));
 	return $gren_lang$core$Array$pushLast$(field, decoders);
 };
 var $blaix$prettynice$Prettynice$Internal$Props$addFieldDecoder = F3($blaix$prettynice$Prettynice$Internal$Props$addFieldDecoder$);
@@ -6197,53 +6179,17 @@ var $gren_lang$node$FileSystem$makeTempDirectory$ = function(_v0, prefix) {
 	return _FileSystem_mkdtemp(prefix);
 };
 var $gren_lang$node$FileSystem$makeTempDirectory = F2($gren_lang$node$FileSystem$makeTempDirectory$);
-var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder = function(fieldType) {
-	switch (fieldType.$) {
-		case 'IntType':
-			return 'Encode.int';
-		case 'FloatType':
-			return 'Encode.float';
-		case 'StringType':
-			return 'Encode.string';
-		case 'BoolType':
-			return 'Encode.bool';
-		case 'ArrayType':
-			var t = fieldType.a;
-			return '(Encode.array ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(t) + ')');
-		default:
-			var t = fieldType.a;
-			return '(Maybe.map (' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(t) + ') >> Maybe.withDefault Encode.null)');
-	}
-};
 var $blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder$ = function(name, fieldType, encoders) {
-	var field = $gren_lang$core$String$replace$('{{ENCODER}}', $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToEncoder(fieldType), $gren_lang$core$String$replace$('{{NAME}}', name, '{ key = "{{NAME}}"\n          , value = {{ENCODER}} props.{{NAME}}\n          }'));
+	var field = $gren_lang$core$String$replace$('{{ENCODER}}', fieldType.encoder, $gren_lang$core$String$replace$('{{NAME}}', name, '{ key = "{{NAME}}"\n          , value = {{ENCODER}} props.{{NAME}}\n          }'));
 	return $gren_lang$core$Array$pushLast$(field, encoders);
 };
 var $blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder = F3($blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder$);
 var $blaix$prettynice$Prettynice$Internal$Props$encoder = function(props) {
 	var fields = A2($gren_lang$core$String$join, '\n        , ', $gren_lang$core$Dict$foldl$($blaix$prettynice$Prettynice$Internal$Props$addFieldEncoder, [  ], props));
-	return $gren_lang$core$String$replace$('{{FIELDS}}', fields, 'Encode.object \n        [ {{FIELDS}}\n        ]');
-};
-var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString = function(fieldType) {
-	switch (fieldType.$) {
-		case 'IntType':
-			return 'Int';
-		case 'FloatType':
-			return 'Float';
-		case 'StringType':
-			return 'String';
-		case 'BoolType':
-			return 'Bool';
-		case 'ArrayType':
-			var t = fieldType.a;
-			return '(Array ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(t) + ')');
-		default:
-			var t = fieldType.a;
-			return '(Maybe ' + ($blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(t) + ')');
-	}
+	return $gren_lang$core$String$replace$('{{FIELDS}}', fields, 'Encode.object\n        [ {{FIELDS}}\n        ]');
 };
 var $blaix$prettynice$Prettynice$Internal$Props$addFieldSig$ = function(name, fieldType, sigs) {
-	var field = name + (' : ' + $blaix$prettynice$Prettynice$Internal$Props$fieldTypeToString(fieldType));
+	var field = name + (' : ' + fieldType.name);
 	return $gren_lang$core$Array$pushLast$(field, sigs);
 };
 var $blaix$prettynice$Prettynice$Internal$Props$addFieldSig = F3($blaix$prettynice$Prettynice$Internal$Props$addFieldSig$);

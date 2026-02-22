@@ -16,7 +16,7 @@ They are similar to [flags](https://gren-lang.org/book/applications/flags/).
 
 **This module is used internally by the framework. It is not intended to be used in your application code.**
 
-...but it may be helpful to understand how your component props are parsed and what [field types](#FieldType) are supported.
+...but it may be helpful to understand how your component props are parsed.
 
 @docs Props, FieldType, get, encoder, decoder, typeSig, supportedFieldTypeNames
 
@@ -37,12 +37,8 @@ For example, props like this:
         , age : Int
         }
 
-would be represented internally like this:
-
-    Dict.fromArray
-        [ { key = "name", value = StringType }
-        , { key = "age", value = IntType }
-        ]
+would be represented internally as a `Dict` mapping field names to
+their [`FieldType`](#FieldType).
 
 See [`FieldType`](#FieldType) for supported types.
 -}
@@ -52,53 +48,91 @@ type alias Props =
 
 {-| Represents the type of a prop field.
 
-See [`supportedFieldTypeNames`](#supportedFieldTypeNames) for the list of
-supported types. If you define props using an unsupported type,
+If you define props using an unsupported type,
 Prettynice will give you an error on the build step.
-
 -}
-type FieldType
-    = IntType
-    | FloatType
-    | StringType
-    | BoolType
-    | ArrayType FieldType
-    | MaybeType FieldType
+type alias FieldType =
+    { keyword : String
+    , name : String
+    , encoder : String
+    , decoder : String
+    }
 
 
-type FieldTypeDetail
-    = SimpleType { keyword : String, constructor : FieldType }
-    | NestedType { keyword : String, constructor : FieldType -> FieldType }
+-- Field Type Definitions
+--
+-- All supported field types are defined in `fieldTypeDefinitions` below.
+-- To add a new field type, add a new entry to that array.
+-- `supportedFieldTypeNames` and `fieldParser` are derived from it.
 
 
-fieldTypes : Array FieldTypeDetail
-fieldTypes =
-    [ SimpleType { keyword = "Int", constructor = IntType }
-    , SimpleType { keyword = "Float", constructor = FloatType }
-    , SimpleType { keyword = "String", constructor = StringType }
-    , SimpleType { keyword = "Bool", constructor = BoolType }
-    , NestedType { keyword = "Array", constructor = ArrayType }
-    , NestedType { keyword = "Maybe", constructor = MaybeType }
+type FieldTypeDefinition
+    = SimpleFieldType FieldType
+    | NestedFieldType
+        { keyword : String
+        , name : FieldType -> String
+        , encoder : FieldType -> String
+        , decoder : FieldType -> String
+        }
+
+
+fieldTypeDefinitions : Array FieldTypeDefinition
+fieldTypeDefinitions =
+    [ SimpleFieldType
+        { keyword = "Int"
+        , name = "Int"
+        , encoder = "Encode.int"
+        , decoder = "Decode.int"
+        }
+    , SimpleFieldType
+        { keyword = "Float"
+        , name = "Float"
+        , encoder = "Encode.float"
+        , decoder = "Decode.float"
+        }
+    , SimpleFieldType
+        { keyword = "String"
+        , name = "String"
+        , encoder = "Encode.string"
+        , decoder = "Decode.string"
+        }
+    , SimpleFieldType
+        { keyword = "Bool"
+        , name = "Bool"
+        , encoder = "Encode.bool"
+        , decoder = "Decode.bool"
+        }
+    , NestedFieldType
+        { keyword = "Array"
+        , name = \inner -> "(Array " ++ inner.name ++ ")"
+        , encoder = \inner -> "(Encode.array " ++ inner.encoder ++ ")"
+        , decoder = \inner -> "(Decode.array " ++ inner.decoder ++ ")"
+        }
+    , NestedFieldType
+        { keyword = "Maybe"
+        , name = \inner -> "(Maybe " ++ inner.name ++ ")"
+        , encoder = \inner -> "(Maybe.map (" ++ inner.encoder ++ ") >> Maybe.withDefault Encode.null)"
+        , decoder = \inner -> "(Decode.nullable " ++ inner.decoder ++ ")"
+        }
     ]
 
 
 {-| The list of supported prop field type names.
 
-This is the single source of truth for what types are supported.
-It drives the parser and can be used for error messages.
+This is derived from `fieldTypeDefinitions` and can be used for error messages.
 -}
 supportedFieldTypeNames : Array String
 supportedFieldTypeNames =
     Array.map
-        (\entry ->
-            when entry is
-                SimpleType { keyword } ->
-                    keyword
+        (\def ->
+            when def is
+                SimpleFieldType ft ->
+                    ft.keyword
 
-                NestedType { keyword } ->
-                    keyword
+                NestedFieldType details ->
+                    details.keyword
         )
-        fieldTypes
+        fieldTypeDefinitions
 
 
 {-| Return a string with the gren type signature for the given props.
@@ -118,31 +152,9 @@ addFieldSig : String -> FieldType -> Array String -> Array String
 addFieldSig name fieldType sigs =
     let
         field =
-            name ++ " : " ++ (fieldTypeToString fieldType)
+            name ++ " : " ++ fieldType.name
     in
     Array.pushLast field sigs
-
-
-fieldTypeToString : FieldType -> String
-fieldTypeToString fieldType =
-    when fieldType is
-        IntType ->
-            "Int"
-
-        FloatType ->
-            "Float"
-
-        StringType ->
-            "String"
-        
-        BoolType ->
-            "Bool"
-
-        ArrayType t ->
-            "(Array " ++ (fieldTypeToString t) ++ ")"
-
-        MaybeType t ->
-            "(Maybe " ++ (fieldTypeToString t) ++ ")"
 
 
 {-| Return a string with the gren code to encode the given props.
@@ -157,7 +169,7 @@ encoder props =
     in
     String.replace "{{FIELDS}}" fields
         """
-        Encode.object 
+        Encode.object
                 [ {{FIELDS}}
                 ]
         """
@@ -174,31 +186,9 @@ addFieldEncoder name fieldType encoders =
                       }
             """
                 |> String.replace "{{NAME}}" name
-                |> String.replace "{{ENCODER}}" (fieldTypeToEncoder fieldType)
+                |> String.replace "{{ENCODER}}" fieldType.encoder
     in
     Array.pushLast field encoders
-
-
-fieldTypeToEncoder : FieldType -> String
-fieldTypeToEncoder fieldType =
-    when fieldType is
-        IntType ->
-            "Encode.int"
-
-        FloatType ->
-            "Encode.float"
-        
-        StringType ->
-            "Encode.string"
-
-        BoolType ->
-            "Encode.bool"
-
-        ArrayType t ->
-            "(Encode.array " ++ (fieldTypeToEncoder t) ++ ")"
-
-        MaybeType t ->
-            "(Maybe.map (" ++ (fieldTypeToEncoder t) ++ ") >> Maybe.withDefault Encode.null)"
 
 
 {-| Return a string with the gren code to decode the given props.
@@ -230,36 +220,15 @@ addFieldDecoder : String -> FieldType -> Array String -> Array String
 addFieldDecoder name fieldType decoders =
     let
         field =
-            "|> Decode.andMap (Decode.field \"" ++ name ++ "\" " ++ fieldTypeToDecoder fieldType ++ ")"
+            "|> Decode.andMap (Decode.field \"" ++ name ++ "\" " ++ fieldType.decoder ++ ")"
     in
     Array.pushLast field decoders
-
-
-fieldTypeToDecoder : FieldType -> String
-fieldTypeToDecoder fieldType =
-    when fieldType is
-        IntType ->
-            "Decode.int"
-
-        FloatType ->
-            "Decode.float"
-
-        StringType ->
-            "Decode.string"
-
-        BoolType ->
-            "Decode.bool"
-
-        ArrayType t ->
-            "(Decode.array " ++ (fieldTypeToDecoder t) ++ ")"
-
-        MaybeType t ->
-            "(Decode.nullable " ++ (fieldTypeToDecoder t) ++ ")"
 
 
 parser : Parser (Dict String FieldType)
 parser =
     P.succeed (Array.foldl (\r d -> Dict.set r.key r.value d) Dict.empty)
+        -- This chomp is safe thanks to the whitespace normalization in `get`.
         |. P.chompUntil "type alias Props"
         |. P.spaces
         |. P.symbol "="
@@ -271,13 +240,13 @@ parser =
             , separator = ","
             , trailing = Forbidden
             , item =
-                P.succeed 
-                    (\field fieldType -> 
+                P.succeed
+                    (\field fieldType ->
                         { key = field, value = fieldType }
                     )
                     |= P.variable
                         { start = Char.isLower
-                        , inner = 
+                        , inner =
                             (\c -> Char.isAlphaNum c || c == '_')
                         , reserved = Set.empty
                         }
@@ -288,25 +257,32 @@ parser =
             }
 
 
-
 fieldParser : Parser FieldType
 fieldParser =
     let
-        toParser entry =
-            when entry is
-                SimpleType { keyword, constructor } ->
-                    P.succeed constructor |. P.keyword keyword
+        toParser def =
+            when def is
+                SimpleFieldType ft ->
+                    P.succeed ft
+                        |. P.keyword ft.keyword
 
-                NestedType { keyword, constructor } ->
-                    P.succeed constructor
-                        |. P.keyword keyword
+                NestedFieldType details ->
+                    P.succeed
+                        (\inner ->
+                            { keyword = details.keyword
+                            , name = details.name inner
+                            , encoder = details.encoder inner
+                            , decoder = details.decoder inner
+                            }
+                        )
+                        |. P.keyword details.keyword
                         |= P.lazy (\_ -> fieldParser)
     in
     P.succeed identity
         |. P.spaces
         |. P.chompWhile (\c -> c == '(')
         |. P.spaces
-        |= P.oneOf (Array.map toParser fieldTypes)
+        |= P.oneOf (Array.map toParser fieldTypeDefinitions)
         |. P.spaces
         |. P.chompWhile (\c -> c == ')')
         |. P.spaces

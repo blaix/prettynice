@@ -12,6 +12,9 @@ examples:
 docs:
   npx gren-doc-preview
 
+test:
+  cd tests && gren run Setup && gren run Tests
+
 build-cli:
   npx gren make CLI --optimize --output=bin/main.js
 

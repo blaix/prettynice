@@ -17,6 +17,7 @@
             "blaix/gren-ansi": "4.0.0",
             "blaix/gren-array2d": "5.0.0",
             "blaix/gren-tui": "5.0.0",
+            "blaix/prettynice-common": "1.0.0",
             "gren-lang/parser": "6.2.0",
             "gren-lang/url": "6.0.0",
             "joeybright/gren-args": "3.0.0",

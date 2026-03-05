@@ -1,0 +1,33 @@
+module ExampleCode exposing
+    ( Simple
+    , SingleLine
+    , MultiLine
+    , WithExtraSpaces
+    )
+
+
+type alias Simple = { intField : Int }
+
+
+type alias SingleLine = { boolField : Bool, nested : Array (Maybe String) }
+
+
+type alias MultiLine =
+    { stringField : String
+    , intField : Int
+    , floatField : Float
+    , boolField : Bool
+    , arrayField : Array Int
+    , maybeField : Maybe String
+    , nestedField : Array (Array (Maybe Bool))
+    }
+
+
+type      alias           WithExtraSpaces           =
+
+
+            {        hey              :         Int
+
+
+
+                                 }

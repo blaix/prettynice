@@ -323,7 +323,7 @@ genServerComponent fsPerm component =
                             |> Maybe.withDefault ""
 
                     propsResult =
-                        Props.get source
+                        Props.parse "Props" source
 
                     modName =
                         componentModuleName component
@@ -411,7 +411,7 @@ toServerComponent modName baseName props =
     module Gen.{{MODULE_NAME}} exposing (init)
 
     import Json.Encode as Encode
-    import Prettynice.Internal.Props as Props
+    import Json.Encode.Extra as EncodeExtra
     import Transmutable.Html as H exposing (Html)
     import Transmutable.Html.Attributes as A
 
@@ -479,7 +479,7 @@ genClientComponent fsPerm component =
                             |> Maybe.withDefault ""
 
                     propsResult =
-                        Props.get source
+                        Props.parse "Props" source
 
                     modName =
                         componentModuleName component

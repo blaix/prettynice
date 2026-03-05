@@ -1,10 +1,10 @@
 module Prettynice.Internal.Props exposing
     ( Props
     , FieldType
-    , get
+    , parse
+    , typeSig
     , encoder
     , decoder
-    , typeSig
     , supportedFieldTypeNames
     )
 
@@ -111,8 +111,8 @@ fieldTypeDefinitions =
     , NestedFieldType
         { keyword = "Maybe"
         , name = \inner -> "(Maybe " ++ inner.name ++ ")"
-        , encoder = \inner -> "(Maybe.map (" ++ inner.encoder ++ ") >> Maybe.withDefault Encode.null)"
-        , decoder = \inner -> "(Decode.nullable " ++ inner.decoder ++ ")"
+        , encoder = \inner -> "(EncodeExtra.maybe " ++ inner.encoder ++ ")"
+        , decoder = \inner -> "(Decode.maybe " ++ inner.decoder ++ ")"
         }
     ]
 
@@ -225,11 +225,11 @@ addFieldDecoder name fieldType decoders =
     Array.pushLast field decoders
 
 
-parser : Parser (Dict String FieldType)
-parser =
+parser : String -> Parser (Dict String FieldType)
+parser typeAliasName =
     P.succeed (Array.foldl (\r d -> Dict.set r.key r.value d) Dict.empty)
-        -- This chomp is safe thanks to the whitespace normalization in `get`.
-        |. P.chompUntil "type alias Props"
+        -- This chomp is safe thanks to the whitespace normalization in `parse`.
+        |. P.chompUntil ("type alias " ++ typeAliasName)
         |. P.spaces
         |. P.symbol "="
         |. P.spaces
@@ -288,18 +288,15 @@ fieldParser =
         |. P.spaces
 
 
-{-| Given the string contents of a component source file,
-parse the [Props](#Props) and return the result.
--}
-get : String -> Result (Array P.DeadEnd) Props
-get content =
+parse : String -> String -> Result (Array P.DeadEnd) Props
+parse typeAliasName content =
     let
         normalized =
             content
                 -- Normalize whitespace
                 -- so we can safely do things like
-                -- chomp until "type alias Props"
+                -- chomp until "type alias <Name>"
                 |> String.words
                 |> String.join " "
     in
-    P.run parser normalized
+    P.run (parser typeAliasName) normalized

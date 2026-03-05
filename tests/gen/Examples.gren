@@ -1,0 +1,109 @@
+module Examples exposing (..)
+
+
+import Json.Encode as Encode
+import Json.Encode.Extra as EncodeExtra
+import Json.Decode as Decode
+
+type alias Simple =
+    { intField : Int }
+
+
+encodeSimple : Simple -> Encode.Value
+encodeSimple props =
+    Encode.object
+        [ { key = "intField"
+          , value = Encode.int props.intField
+          }
+        ]
+
+
+simpleDecoder : Decode.Decoder Simple
+simpleDecoder =
+    Decode.succeed (\intField -> { intField = intField })
+    |> Decode.andMap (Decode.field "intField" Decode.int)
+
+
+type alias SingleLine =
+    { boolField : Bool, nested : (Array (Maybe String)) }
+
+
+encodeSingleLine : SingleLine -> Encode.Value
+encodeSingleLine props =
+    Encode.object
+        [ { key = "boolField"
+          , value = Encode.bool props.boolField
+          }
+        , { key = "nested"
+          , value = (Encode.array (EncodeExtra.maybe Encode.string)) props.nested
+          }
+        ]
+
+
+singleLineDecoder : Decode.Decoder SingleLine
+singleLineDecoder =
+    Decode.succeed (\boolField nested -> { boolField = boolField, nested = nested })
+    |> Decode.andMap (Decode.field "boolField" Decode.bool)
+    |> Decode.andMap (Decode.field "nested" (Decode.array (Decode.maybe Decode.string)))
+
+
+type alias MultiLine =
+    { arrayField : (Array Int), boolField : Bool, floatField : Float, intField : Int, maybeField : (Maybe String), nestedField : (Array (Array (Maybe Bool))), stringField : String }
+
+
+encodeMultiLine : MultiLine -> Encode.Value
+encodeMultiLine props =
+    Encode.object
+        [ { key = "arrayField"
+          , value = (Encode.array Encode.int) props.arrayField
+          }
+        , { key = "boolField"
+          , value = Encode.bool props.boolField
+          }
+        , { key = "floatField"
+          , value = Encode.float props.floatField
+          }
+        , { key = "intField"
+          , value = Encode.int props.intField
+          }
+        , { key = "maybeField"
+          , value = (EncodeExtra.maybe Encode.string) props.maybeField
+          }
+        , { key = "nestedField"
+          , value = (Encode.array (Encode.array (EncodeExtra.maybe Encode.bool))) props.nestedField
+          }
+        , { key = "stringField"
+          , value = Encode.string props.stringField
+          }
+        ]
+
+
+multiLineDecoder : Decode.Decoder MultiLine
+multiLineDecoder =
+    Decode.succeed (\arrayField boolField floatField intField maybeField nestedField stringField -> { arrayField = arrayField, boolField = boolField, floatField = floatField, intField = intField, maybeField = maybeField, nestedField = nestedField, stringField = stringField })
+    |> Decode.andMap (Decode.field "arrayField" (Decode.array Decode.int))
+    |> Decode.andMap (Decode.field "boolField" Decode.bool)
+    |> Decode.andMap (Decode.field "floatField" Decode.float)
+    |> Decode.andMap (Decode.field "intField" Decode.int)
+    |> Decode.andMap (Decode.field "maybeField" (Decode.maybe Decode.string))
+    |> Decode.andMap (Decode.field "nestedField" (Decode.array (Decode.array (Decode.maybe Decode.bool))))
+    |> Decode.andMap (Decode.field "stringField" Decode.string)
+
+
+type alias WithExtraSpaces =
+    { hey : Int }
+
+
+encodeWithExtraSpaces : WithExtraSpaces -> Encode.Value
+encodeWithExtraSpaces props =
+    Encode.object
+        [ { key = "hey"
+          , value = Encode.int props.hey
+          }
+        ]
+
+
+withExtraSpacesDecoder : Decode.Decoder WithExtraSpaces
+withExtraSpacesDecoder =
+    Decode.succeed (\hey -> { hey = hey })
+    |> Decode.andMap (Decode.field "hey" Decode.int)

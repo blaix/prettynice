@@ -1,0 +1,90 @@
+module Tests.Props exposing (tests)
+
+import Examples
+import Expect
+import Json.Decode as Decode
+import Json.Encode as Encode
+import Test exposing (Test, describe, test)
+
+
+tests : Test
+tests =
+    Test.concat
+        [ simpleTests
+        , singleLineTests
+        , multiLineTests
+        , withExtraSpacesTests
+        ]
+
+
+roundTrip : String -> (a -> Encode.Value) -> Decode.Decoder a -> a -> Test
+roundTrip name encoder decoder record =
+    test name <| \_ ->
+        when Decode.decodeValue decoder (encoder record) is
+            Ok decoded ->
+                Expect.equal record decoded
+
+            Err err ->
+                Expect.fail (Decode.errorToString err)
+
+
+simpleTests : Test
+simpleTests =
+    describe "Simple"
+        [ roundTrip "positive int"
+            Examples.encodeSimple Examples.simpleDecoder
+            { intField = 42 }
+        , roundTrip "zero"
+            Examples.encodeSimple Examples.simpleDecoder
+            { intField = 0 }
+        , roundTrip "negative int"
+            Examples.encodeSimple Examples.simpleDecoder
+            { intField = -5 }
+        ]
+
+
+singleLineTests : Test
+singleLineTests =
+    describe "SingleLine"
+        [ roundTrip "with values"
+            Examples.encodeSingleLine Examples.singleLineDecoder
+            { boolField = True, nested = [ Just "hello", Nothing ] }
+        , roundTrip "empty array"
+            Examples.encodeSingleLine Examples.singleLineDecoder
+            { boolField = False, nested = [] }
+        ]
+
+
+multiLineTests : Test
+multiLineTests =
+    describe "MultiLine"
+        [ roundTrip "all fields populated"
+            Examples.encodeMultiLine Examples.multiLineDecoder
+            { stringField = "hello"
+            , intField = 42
+            , floatField = 1.5
+            , boolField = True
+            , arrayField = [ 1, 2, 3 ]
+            , maybeField = Just "world"
+            , nestedField = [ [ Just True, Nothing ], [ Just False ] ]
+            }
+        , roundTrip "nothing and empty"
+            Examples.encodeMultiLine Examples.multiLineDecoder
+            { stringField = ""
+            , intField = 0
+            , floatField = 0.0
+            , boolField = False
+            , arrayField = []
+            , maybeField = Nothing
+            , nestedField = []
+            }
+        ]
+
+
+withExtraSpacesTests : Test
+withExtraSpacesTests =
+    describe "WithExtraSpaces"
+        [ roundTrip "simple value"
+            Examples.encodeWithExtraSpaces Examples.withExtraSpacesDecoder
+            { hey = 99 }
+        ]

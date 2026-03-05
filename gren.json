@@ -14,9 +14,10 @@
     ],
     "gren-version": "0.6.0 <= v < 0.7.0",
     "dependencies": {
+        "blaix/prettynice-common": "local:../prettynice-common",
         "blaix/gren-ansi": "4.0.0 <= v < 5.0.0",
         "blaix/gren-tui": "5.0.0 <= v < 6.0.0",
-        "gren-lang/core": "7.2.0 <= v < 8.0.0",
+        "gren-lang/core": "7.3.0 <= v < 8.0.0",
         "gren-lang/node": "6.0.0 <= v < 7.0.0",
         "gren-lang/parser": "6.2.0 <= v < 7.0.0",
         "gren-lang/url": "6.0.0 <= v < 7.0.0",

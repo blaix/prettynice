@@ -5454,9 +5454,9 @@ var $blaix$prettynice$Prettynice$Internal$Props$fieldTypeDefinitions = [ $blaix$
 	}, keyword: 'Array', name: function(inner) {
 		return '(Array ' + (inner.name + ')');
 	} }), $blaix$prettynice$Prettynice$Internal$Props$NestedFieldType({ decoder: function(inner) {
-		return '(Decode.nullable ' + (inner.decoder + ')');
+		return '(Decode.maybe ' + (inner.decoder + ')');
 	}, encoder: function(inner) {
-		return '(Maybe.map (' + (inner.encoder + ') >> Maybe.withDefault Encode.null)');
+		return '(EncodeExtra.maybe ' + (inner.encoder + ')');
 	}, keyword: 'Maybe', name: function(inner) {
 		return '(Maybe ' + (inner.name + ')');
 	} }) ];
@@ -5749,18 +5749,21 @@ var $gren_lang$parser$Parser$Advanced$variable = function(i) {
 var $gren_lang$parser$Parser$variable = function(i) {
 	return $gren_lang$parser$Parser$Advanced$variable({ expecting: $gren_lang$parser$Parser$ExpectingVariable, inner: i.inner, reserved: i.reserved, start: i.start });
 };
-var $blaix$prettynice$Prettynice$Internal$Props$parser = A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(A2($gren_lang$core$Array$foldl, F2(function(r, d) {
-									return $gren_lang$core$Dict$set$(r.key, r.value, d);
-								}), $gren_lang$core$Dict$empty)), $gren_lang$parser$Parser$chompUntil('type alias Props')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol('=')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$sequence({ end: '}', item: A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed(F2(function(field, fieldType) {
-							return { key: field, value: fieldType };
-						})), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$variable({ inner: function(c) {
-									return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, _Utils_chr('_'));
-								}, reserved: $gren_lang$core$Set$empty, start: $gren_lang$core$Char$isLower }), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol(':')), $gren_lang$parser$Parser$spaces)), $blaix$prettynice$Prettynice$Internal$Props$fieldParser), separator: ',', spaces: $gren_lang$parser$Parser$spaces, start: '{', trailing: $gren_lang$parser$Parser$Forbidden }));
-var $gren_lang$core$String$words = _String_words;
-var $blaix$prettynice$Prettynice$Internal$Props$get = function(content) {
-	var normalized = A2($gren_lang$core$String$join, ' ', $gren_lang$core$String$words(content));
-	return $gren_lang$parser$Parser$run$($blaix$prettynice$Prettynice$Internal$Props$parser, normalized);
+var $blaix$prettynice$Prettynice$Internal$Props$parser = function(typeAliasName) {
+	return A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$succeed(A2($gren_lang$core$Array$foldl, F2(function(r, d) {
+										return $gren_lang$core$Dict$set$(r.key, r.value, d);
+									}), $gren_lang$core$Dict$empty)), $gren_lang$parser$Parser$chompUntil('type alias ' + typeAliasName)), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol('=')), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$sequence({ end: '}', item: A2($gren_lang$parser$Parser$keeper, A2($gren_lang$parser$Parser$keeper, $gren_lang$parser$Parser$succeed(F2(function(field, fieldType) {
+								return { key: field, value: fieldType };
+							})), A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, A2($gren_lang$parser$Parser$ignorer, $gren_lang$parser$Parser$variable({ inner: function(c) {
+										return $gren_lang$core$Char$isAlphaNum(c) || _Utils_eq(c, _Utils_chr('_'));
+									}, reserved: $gren_lang$core$Set$empty, start: $gren_lang$core$Char$isLower }), $gren_lang$parser$Parser$spaces), $gren_lang$parser$Parser$symbol(':')), $gren_lang$parser$Parser$spaces)), $blaix$prettynice$Prettynice$Internal$Props$fieldParser), separator: ',', spaces: $gren_lang$parser$Parser$spaces, start: '{', trailing: $gren_lang$parser$Parser$Forbidden }));
 };
+var $gren_lang$core$String$words = _String_words;
+var $blaix$prettynice$Prettynice$Internal$Props$parse$ = function(typeAliasName, content) {
+	var normalized = A2($gren_lang$core$String$join, ' ', $gren_lang$core$String$words(content));
+	return $gren_lang$parser$Parser$run$($blaix$prettynice$Prettynice$Internal$Props$parser(typeAliasName), normalized);
+};
+var $blaix$prettynice$Prettynice$Internal$Props$parse = F2($blaix$prettynice$Prettynice$Internal$Props$parse$);
 var $gren_lang$node$FileSystem$readFile$ = function(_v0, path) {
 	return _FileSystem_readFile(path);
 };
@@ -6096,7 +6099,7 @@ var $blaix$prettynice$CLI$Command$Build$writeStringToFile = F3($blaix$prettynice
 var $blaix$prettynice$CLI$Command$Build$genClientComponent$ = function(fsPerm, component) {
 	return A2($gren_lang$core$Task$andThen, function(bytes) {
 			var source = $gren_lang$core$Maybe$withDefault$('', $gren_lang$core$Bytes$toString(bytes));
-			var propsResult = $blaix$prettynice$Prettynice$Internal$Props$get(source);
+			var propsResult = $blaix$prettynice$Prettynice$Internal$Props$parse$('Props', source);
 			var modName = $blaix$prettynice$CLI$Command$Build$componentModuleName(component);
 			var baseName = $blaix$prettynice$CLI$Command$Build$componentBaseName(component);
 			if (propsResult.$ === 'Ok') {
@@ -6198,13 +6201,13 @@ var $blaix$prettynice$Prettynice$Internal$Props$typeSig = function(props) {
 	return '{ ' + (fields + ' }');
 };
 var $blaix$prettynice$CLI$Command$Build$toServerComponent$ = function(modName, baseName, props) {
-	return $gren_lang$core$String$replace$('{{PROPS_ENCODER}}', $blaix$prettynice$Prettynice$Internal$Props$encoder(props), $gren_lang$core$String$replace$('{{PROPS_TYPE}}', $blaix$prettynice$Prettynice$Internal$Props$typeSig(props), $gren_lang$core$String$replace$('{{MODULE_NAME}}', modName, 'module Gen.{{MODULE_NAME}} exposing (init)\n\nimport Json.Encode as Encode\nimport Prettynice.Internal.Props as Props\nimport Transmutable.Html as H exposing (Html)\nimport Transmutable.Html.Attributes as A\n\ntype alias Props =\n    {{PROPS_TYPE}}\n\nencoder : Props -> Encode.Value\nencoder props =\n    {{PROPS_ENCODER}}\n\ninit : Props -> Html msg\ninit props =\n    let\n        propJson = Encode.encode 0 (encoder props)\n    in\n    H.span []\n        [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []\n        , H.node "script" []\n            [ H.text <|\n                \"""\n\n                var $__components = $__components || {};\n                $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];\n                $__components["{{MODULE_NAME}}"].push(\n                    Gren.Gen.{{MODULE_NAME}}.init({\n\n                        flags:\n                            \""" ++ propJson ++ \"""\n                        ,\n                        node: document.currentScript.parentNode.getElementsByClassName(\n                            "prettynice-component-{{MODULE_NAME}}"\n                        )[0],\n                    })\n                );\n\n                \"""\n            ]\n        ]')));
+	return $gren_lang$core$String$replace$('{{PROPS_ENCODER}}', $blaix$prettynice$Prettynice$Internal$Props$encoder(props), $gren_lang$core$String$replace$('{{PROPS_TYPE}}', $blaix$prettynice$Prettynice$Internal$Props$typeSig(props), $gren_lang$core$String$replace$('{{MODULE_NAME}}', modName, 'module Gen.{{MODULE_NAME}} exposing (init)\n\nimport Json.Encode as Encode\nimport Json.Encode.Extra as EncodeExtra\nimport Transmutable.Html as H exposing (Html)\nimport Transmutable.Html.Attributes as A\n\ntype alias Props =\n    {{PROPS_TYPE}}\n\nencoder : Props -> Encode.Value\nencoder props =\n    {{PROPS_ENCODER}}\n\ninit : Props -> Html msg\ninit props =\n    let\n        propJson = Encode.encode 0 (encoder props)\n    in\n    H.span []\n        [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []\n        , H.node "script" []\n            [ H.text <|\n                \"""\n\n                var $__components = $__components || {};\n                $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];\n                $__components["{{MODULE_NAME}}"].push(\n                    Gren.Gen.{{MODULE_NAME}}.init({\n\n                        flags:\n                            \""" ++ propJson ++ \"""\n                        ,\n                        node: document.currentScript.parentNode.getElementsByClassName(\n                            "prettynice-component-{{MODULE_NAME}}"\n                        )[0],\n                    })\n                );\n\n                \"""\n            ]\n        ]')));
 };
 var $blaix$prettynice$CLI$Command$Build$toServerComponent = F3($blaix$prettynice$CLI$Command$Build$toServerComponent$);
 var $blaix$prettynice$CLI$Command$Build$genServerComponent$ = function(fsPerm, component) {
 	return A2($gren_lang$core$Task$andThen, function(bytes) {
 			var source = $gren_lang$core$Maybe$withDefault$('', $gren_lang$core$Bytes$toString(bytes));
-			var propsResult = $blaix$prettynice$Prettynice$Internal$Props$get(source);
+			var propsResult = $blaix$prettynice$Prettynice$Internal$Props$parse$('Props', source);
 			var modName = $blaix$prettynice$CLI$Command$Build$componentModuleName(component);
 			var baseName = $blaix$prettynice$CLI$Command$Build$componentBaseName(component);
 			if (propsResult.$ === 'Ok') {
@@ -7035,7 +7038,7 @@ var _Regex_fromStringWith = F2(function (options, string) {
     return $gren_lang$core$Maybe$Nothing;
   }
 
-  var flags = "g";
+  var flags = "gu";
   if (options.multiline) {
     flags += "m";
   }
@@ -7108,15 +7111,59 @@ var _Regex_replaceAtMost = F4(function (n, re, replacer, string) {
 var _Regex_splitAtMost = F3(function (n, re, str) {
   return str.split(re, n);
 });
-
-var _Regex_infinity = Number.MAX_SAFE_INTEGER;
 var $gren_lang$core$String$Regex$fromStringWith = _Regex_fromStringWith;
 var $gren_lang$core$String$Regex$fromString = function(string) {
 	return A2($gren_lang$core$String$Regex$fromStringWith, { caseInsensitive: false, multiline: false }, string);
 };
 var $gren_lang$core$String$Regex$never = _Regex_never;
 var $blaix$gren_ansi$Ansi$regex = $gren_lang$core$Maybe$withDefault$($gren_lang$core$String$Regex$never, $gren_lang$core$String$Regex$fromString(A2($gren_lang$core$String$join, '|', [ '[\u001B\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\u0007)', '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))' ])));
-var $gren_lang$core$String$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
+
+
+// MATH
+
+var _Math_remainderBy = F2(function (b, a) {
+  return a % b;
+});
+
+// https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
+var _Math_modBy = F2(function (modulus, x) {
+  var answer = x % modulus;
+  return modulus === 0
+    ? _Debug_crash(11)
+    : (answer > 0 && modulus < 0) || (answer < 0 && modulus > 0)
+      ? answer + modulus
+      : answer;
+});
+
+// CONSTANTS
+
+var _Math_pi = Math.PI;
+var _Math_e = Math.E;
+var _Math_maxSafeInteger = Number.MAX_SAFE_INTEGER;
+var _Math_minSafeInteger = Number.MIN_SAFE_INTEGER;
+var _Math_maxFloat = Number.MAX_VALUE;
+
+// TRIGONOMETRY
+
+var _Math_cos = Math.cos;
+var _Math_sin = Math.sin;
+var _Math_tan = Math.tan;
+var _Math_acos = Math.acos;
+var _Math_asin = Math.asin;
+var _Math_atan = Math.atan;
+var _Math_atan2 = F2(Math.atan2);
+
+// MORE MATH
+
+var _Math_truncate = Math.trunc;
+var _Math_ceiling = Math.ceil;
+var _Math_floor = Math.floor;
+var _Math_round = Math.round;
+var _Math_sqrt = Math.sqrt;
+var _Math_log = Math.log;
+var _Math_log10 = Math.log10;
+var $gren_lang$core$Math$maxSafeInteger = _Math_maxSafeInteger;
+var $gren_lang$core$String$Regex$replace = _Regex_replaceAtMost($gren_lang$core$Math$maxSafeInteger);
 var $blaix$gren_ansi$Ansi$strip = A2($gren_lang$core$String$Regex$replace, $blaix$gren_ansi$Ansi$regex, function(_v0) {
 		return '';
 	});

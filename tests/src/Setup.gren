@@ -1,0 +1,124 @@
+module Setup exposing (main)
+
+import Bytes
+import FileSystem
+import FileSystem.Path as Path
+import Init
+import Node
+import Prettynice.Internal.Props as Props
+import Stream.Log
+import Task
+
+
+typeAliases :
+    Array
+        { name : String
+        , lower : String
+        }
+typeAliases =
+    [ { name = "Simple", lower = "simple" }
+    , { name = "SingleLine", lower = "singleLine" }
+    , { name = "MultiLine", lower = "multiLine" }
+    , { name = "WithExtraSpaces", lower = "withExtraSpaces" }
+    ]
+
+
+main : Node.SimpleProgram a
+main =
+    Node.defineSimpleProgram <| \env ->
+        Init.await FileSystem.initialize <| \fsPerm ->
+            readAndGenerate fsPerm
+                |> Task.andThen (\_ -> Stream.Log.line env.stdout "Generated examples")
+                |> Node.endSimpleProgram
+
+
+readAndGenerate : FileSystem.Permission -> Task.Task Never {}
+readAndGenerate fsPerm =
+    let
+        inputPath =
+            Path.fromPosixString "ExampleRecords.gren"
+
+        outputPath =
+            Path.fromPosixString "gen/Examples.gren"
+    in
+    FileSystem.readFile fsPerm inputPath
+        |> Task.andThen
+            (\bytes ->
+                let
+                    content =
+                        Bytes.toString bytes
+                            |> Maybe.withDefault ""
+
+                    output =
+                        generateModule content
+                in
+                FileSystem.writeFile fsPerm (Bytes.fromString output) outputPath
+            )
+        |> Task.map (\_ -> {})
+        |> Task.onError (\err -> Debug.todo ("File operation failed: " ++ Debug.toString err))
+
+
+generateModule : String -> String
+generateModule content =
+    let
+        header =
+            String.join "\n"
+                [ "module Examples exposing (..)"
+                , ""
+                , ""
+                , "import Json.Encode as Encode"
+                , "import Json.Encode.Extra as EncodeExtra"
+                , "import Json.Decode as Decode"
+                , ""
+                , ""
+                ]
+
+        sections =
+            Array.foldl
+                (\alias acc ->
+                    when generateSection content alias is
+                        Just section ->
+                            Array.pushLast section acc
+
+                        Nothing ->
+                            acc
+                )
+                []
+                typeAliases
+                |> String.join "\n\n\n"
+    in
+    header ++ sections ++ "\n"
+
+
+generateSection : String -> { name : String, lower : String } -> Maybe String
+generateSection content alias =
+    when Props.parse alias.name content is
+        Ok props ->
+            let
+                typeSig =
+                    Props.typeSig props
+
+                encoderBody =
+                    Props.encoder props
+
+                decoderBody =
+                    Props.decoder props
+            in
+            Just <|
+                String.join "\n"
+                    [ "type alias " ++ alias.name ++ " ="
+                    , "    " ++ typeSig
+                    , ""
+                    , ""
+                    , "encode" ++ alias.name ++ " : " ++ alias.name ++ " -> Encode.Value"
+                    , "encode" ++ alias.name ++ " props ="
+                    , "    " ++ encoderBody
+                    , ""
+                    , ""
+                    , alias.lower ++ "Decoder : Decode.Decoder " ++ alias.name
+                    , alias.lower ++ "Decoder ="
+                    , "    " ++ decoderBody
+                    ]
+
+        Err _ ->
+            Nothing

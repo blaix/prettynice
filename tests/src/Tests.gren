@@ -1,0 +1,16 @@
+module Tests exposing (main)
+
+import Test
+import Test.Runner.Node exposing (Program, run)
+import Tests.Props
+
+
+main : Program
+main =
+    run all
+
+
+all =
+    Test.concat
+        [ Tests.Props.tests
+        ]

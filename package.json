@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/blaix/prettynice",
   "dependencies": {
-    "gren-lang": ">=0.6.0 <0.7"
+    "gren-lang": "^0.6.6"
   },
   "devDependencies": {
     "gren-packages": "^6.0.1"

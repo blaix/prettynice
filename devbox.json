@@ -3,7 +3,7 @@
   "packages": [
     "flyctl@latest",
     "just@latest",
-    "nodejs@20",
+    "nodejs@22",
     "sqlite@latest"
   ],
   "shell": {

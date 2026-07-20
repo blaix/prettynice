@@ -1,5 +1,13 @@
 module Setup exposing (main)
 
+{-| Generates `gen/Examples.gren` so the test suite can verify that `Props`
+codegen produces real, compilable Gren. Rather than assert on generated strings,
+we emit encoders/decoders into an actual module and let the compiler and tests
+prove they work end to end. This must run before the tests:
+
+    gren run Setup && gren run Tests
+-}
+
 import Bytes
 import FileSystem
 import FileSystem.Path as Path

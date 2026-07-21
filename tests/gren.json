@@ -1,5 +1,4 @@
 {
-    "_note": "Using ../src in source-directories instead of depending on blaix/prettynice because nested local deps don't work well. Change to a direct dep on blaix/prettynice once blaix/prettynice-common is published.",
     "type": "application",
     "platform": "node",
     "source-directories": [
@@ -7,9 +6,10 @@
         "gen",
         "../src"
     ],
-    "gren-version": "0.6.3",
+    "gren-version": "0.6.6",
     "dependencies": {
         "direct": {
+            "blaix/gren-effectful-tests": "7.0.2",
             "blaix/prettynice-common": "local:../../prettynice-common",
             "gren-lang/core": "7.3.0",
             "gren-lang/node": "6.1.0",
@@ -18,6 +18,7 @@
             "gren-lang/test-runner-node": "7.0.0"
         },
         "indirect": {
+            "blaix/gren-base64": "2.0.0",
             "gren-lang/url": "6.0.0"
         }
     }

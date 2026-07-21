@@ -6,6 +6,7 @@ import ChildProcess
 import CLI.Command as Command
 import CLI.Command.Build
 import CLI.Command.Init
+import CLI.Command.Version
 import Dict
 import FileSystem
 import Init
@@ -79,8 +80,21 @@ init env =
                             , env = env
                             }
 
+                    Just { first = "version", rest = _ } ->
+                        CLI.Command.Version.run
+                            { fsPerm = fsPerm
+                            , env = env
+                            }
+
                     _ ->
-                        Task.succeed viewUsage
+                        if Dict.member "version" parsedArgs.options || Dict.member "v" parsedArgs.options then
+                            CLI.Command.Version.run
+                                { fsPerm = fsPerm
+                                , env = env
+                                }
+
+                        else
+                            Task.succeed viewUsage
         in
         Node.startProgram
             { model = 
@@ -147,10 +161,12 @@ viewUsage =
             , UI.column [ Attr.color Ansi.Cyan ]
                 [ UI.text [] "init <directory> "
                 , UI.text [] "build "
+                , UI.text [] "version "
                 ]
             , UI.column []
                 [ UI.text [] " Initialize a new Prettynice project"
                 , UI.text [] " Build an existing Prettynice project"
+                , UI.text [] " Print the prettynice cli version"
                 ]
             ]
         , UI.text [] ""

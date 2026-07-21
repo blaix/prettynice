@@ -1,16 +1,25 @@
 module Tests exposing (main)
 
-import Test
-import Test.Runner.Node exposing (Program, run)
+import ChildProcess
+import Init
+import Node
+import Test.Runner.Effectful as Effectful
+import Tests.CLI
 import Tests.Props
 
 
-main : Program
-main =
-    run all
-
-
-all =
-    Test.concat
-        [ Tests.Props.tests
+tests : ChildProcess.Permission -> Effectful.Test
+tests procPerm =
+    Effectful.concat
+        [ Effectful.wrap Tests.Props.tests
+        , Tests.CLI.tests procPerm
         ]
+
+
+main : Node.SimpleProgram a
+main =
+    Node.defineSimpleProgram <| \env ->
+        Effectful.initialize env <| \config ->
+        Init.await ChildProcess.initialize <| \procPerm ->
+            Effectful.run config (tests procPerm)
+                |> Node.endSimpleProgram

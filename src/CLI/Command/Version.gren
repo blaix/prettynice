@@ -1,0 +1,70 @@
+module CLI.Command.Version exposing (run)
+
+{-| cli command to print the cli version number.
+-}
+
+import Ansi
+import Bytes
+import CLI.Command as Command
+import FileSystem
+import FileSystem.Path as Path exposing (Path)
+import Json.Decode as Decode
+import Node exposing (Environment)
+import Task exposing (Task)
+import UI
+import UI.Attribute as Attr
+
+
+run :
+    { fsPerm : FileSystem.Permission
+    , env : Environment
+    }
+    -> Task Command.Error UI.Element
+run { fsPerm, env } =
+    let
+        packageJsonPath =
+            Path.parentPath env.applicationPath
+                |> Maybe.andThen Path.parentPath -- pop out of the bin dir
+                |> Maybe.withDefault Path.empty
+                |> Path.appendPosixString "package.json"
+    in
+    FileSystem.readFile fsPerm packageJsonPath
+        |> Task.mapError FileSystem.errorToString
+        |> Task.mapError (\e -> { exitCode = 1, message = viewError e})
+        |> Task.andThen
+            (\bytes ->
+                let
+                    source =
+                        Bytes.toString bytes
+                            |> Maybe.withDefault ""
+
+                    versionResult =
+                        Decode.decodeString
+                            (Decode.field "version" Decode.string)
+                            source
+                in
+                when versionResult is
+                    Ok version ->
+                        Task.succeed (viewVersion version)
+
+                    Err _ ->
+                        Task.fail 
+                            { exitCode = 2
+                            , message = 
+                                "Error parsing version number from npm package."
+                                    |> viewError 
+                            }
+            )
+
+
+viewVersion : String -> UI.Element
+viewVersion version =
+    UI.text [] version
+
+
+viewError : String -> UI.Element
+viewError reason =
+    UI.column [ Attr.color Ansi.Red ] 
+        [ UI.text [] "Could not read prettynice version:"
+        , UI.text [] reason
+        ]

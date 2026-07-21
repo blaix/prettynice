@@ -1,0 +1,41 @@
+module Tests.CLI exposing (tests)
+
+import Bytes
+import ChildProcess
+import Expect
+import Task exposing (Task)
+import Test.Runner.Effectful as Effectful exposing (await, describe, test)
+
+
+tests : ChildProcess.Permission -> Effectful.Test
+tests procPerm =
+    let
+        version : String
+        version = "4.0.0"
+
+        runCli : Array String -> Task ChildProcess.FailedRun String
+        runCli args =
+            ChildProcess.run procPerm
+                "node"
+                (Array.pushFirst "../bin/index.js" args)
+                ChildProcess.defaultRunOptions
+                    |> Task.map
+                        (\result ->
+                            result.stdout
+                                |> Bytes.toString
+                                |> Maybe.withDefault ""
+                        )
+    in
+    describe "CLI version command" <|
+        Array.map
+            (\option ->
+                (await ("run with " ++ option))
+                (runCli [ option ])
+                (\output ->
+                    test "prints the version number" <| \_ ->
+                        Expect.equal version (String.trim output)
+                )
+            )
+            [ "-v", "--version", "version" ]
+
+

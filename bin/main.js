@@ -3239,10 +3239,6 @@ var $gren_lang$node$Terminal$Permission = { $: 'Permission' };
 var $gren_lang$node$Terminal$initialize = $gren_lang$node$Internal$Init$Task($gren_lang$core$Task$map$(function(raw) {
 			return raw.isTTY ? $gren_lang$core$Maybe$Just({ colorDepth: raw.colorDepth, columns: raw.columns, permission: $gren_lang$node$Terminal$Permission, rows: raw.rows }) : $gren_lang$core$Maybe$Nothing;
 		}, _Terminal_init));
-var $joeybright$gren_args$Args$ParsingArgs = { $: 'ParsingArgs' };
-var $joeybright$gren_args$Args$ParsingOptions = function (a) {
-	return { $: 'ParsingOptions', a: a };
-};
 var $gren_lang$core$Dict$get$ = function(targetKey, dict) {
 	get:
 	while (true) {
@@ -3275,6 +3271,19 @@ var $gren_lang$core$Dict$get$ = function(targetKey, dict) {
 	}
 };
 var $gren_lang$core$Dict$get = F2($gren_lang$core$Dict$get$);
+var $gren_lang$core$Dict$member$ = function(key, dict) {
+	var _v0 = $gren_lang$core$Dict$get$(key, dict);
+	if (_v0.$ === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $gren_lang$core$Dict$member = F2($gren_lang$core$Dict$member$);
+var $joeybright$gren_args$Args$ParsingArgs = { $: 'ParsingArgs' };
+var $joeybright$gren_args$Args$ParsingOptions = function (a) {
+	return { $: 'ParsingOptions', a: a };
+};
 var $gren_lang$core$Maybe$map$ = function(f, maybe) {
 	if (maybe.$ === 'Just') {
 		var value = maybe.a;
@@ -5520,7 +5529,7 @@ try {
 		return $blaix$prettynice$Prettynice$Internal$Props$fieldParser;
 	};
 } catch ($) {
-	throw 'Some top-level definitions from `Prettynice.Internal.Props` are causing infinite recursion:\n\n  ┌─────┐\n  │    fieldParser\n  └─────┘\n\nThese errors are very tricky, so read https://github.com/gren-lang/compiler/blob/0.6.3/hints/bad-recursion.md to learn how to fix it!';}
+	throw 'Some top-level definitions from `Prettynice.Internal.Props` are causing infinite recursion:\n\n  ┌─────┐\n  │    fieldParser\n  └─────┘\n\nThese errors are very tricky, so read https://github.com/gren-lang/compiler/blob/0.6.6/hints/bad-recursion.md to learn how to fix it!';}
 var $gren_lang$parser$Parser$Advanced$revAlways$ = function(_v0, b) {
 	return b;
 };
@@ -5676,15 +5685,6 @@ var $gren_lang$parser$Parser$symbol = function(str) {
 	return $gren_lang$parser$Parser$Advanced$symbol($gren_lang$parser$Parser$Advanced$Token({ expecting: $gren_lang$parser$Parser$ExpectingSymbol(str), str: str }));
 };
 var $gren_lang$parser$Parser$ExpectingVariable = { $: 'ExpectingVariable' };
-var $gren_lang$core$Dict$member$ = function(key, dict) {
-	var _v0 = $gren_lang$core$Dict$get$(key, dict);
-	if (_v0.$ === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $gren_lang$core$Dict$member = F2($gren_lang$core$Dict$member$);
 var $gren_lang$core$Set$member$ = function(key, _v0) {
 	var dict = _v0.a;
 	return $gren_lang$core$Dict$member$(key, dict);
@@ -6916,11 +6916,37 @@ var $blaix$prettynice$CLI$Command$Init$run = function(_v0) {
 			return $gren_lang$core$Task$fail({ exitCode: 1, message: $blaix$prettynice$CLI$Command$Init$viewUsage });
 	}
 };
+var $gren_lang$core$Json$Decode$decodeString = _Json_runOnString;
+var $gren_lang$core$Json$Decode$field = _Json_decodeField;
+var $gren_lang$core$Json$Decode$string = _Json_decodeString;
+var $blaix$prettynice$CLI$Command$Version$viewError = function(reason) {
+	return $blaix$gren_tui$UI$column$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Red) ], [ $blaix$gren_tui$UI$text$([  ], 'Could not read prettynice version:'), $blaix$gren_tui$UI$text$([  ], reason) ]);
+};
+var $blaix$prettynice$CLI$Command$Version$viewVersion = function(version) {
+	return $blaix$gren_tui$UI$text$([  ], version);
+};
+var $blaix$prettynice$CLI$Command$Version$run = function(_v0) {
+	var fsPerm = _v0.fsPerm;
+	var env = _v0.env;
+	var packageJsonPath = $gren_lang$node$FileSystem$Path$appendPosixString$('package.json', $gren_lang$core$Maybe$withDefault$($gren_lang$node$FileSystem$Path$empty, $gren_lang$core$Maybe$andThen$($gren_lang$node$FileSystem$Path$parentPath, $gren_lang$node$FileSystem$Path$parentPath(env.applicationPath))));
+	return A2($gren_lang$core$Task$andThen, function(bytes) {
+			var source = $gren_lang$core$Maybe$withDefault$('', $gren_lang$core$Bytes$toString(bytes));
+			var versionResult = A2($gren_lang$core$Json$Decode$decodeString, A2($gren_lang$core$Json$Decode$field, 'version', $gren_lang$core$Json$Decode$string), source);
+			if (versionResult.$ === 'Ok') {
+				var version = versionResult.a;
+				return $gren_lang$core$Task$succeed($blaix$prettynice$CLI$Command$Version$viewVersion(version));
+			} else {
+				return $gren_lang$core$Task$fail({ exitCode: 2, message: $blaix$prettynice$CLI$Command$Version$viewError('Error parsing version number from npm package.') });
+			}
+		}, $gren_lang$core$Task$mapError$(function(e) {
+				return { exitCode: 1, message: $blaix$prettynice$CLI$Command$Version$viewError(e) };
+			}, $gren_lang$core$Task$mapError$($gren_lang$node$FileSystem$errorToString, $gren_lang$node$FileSystem$readFile$(fsPerm, packageJsonPath))));
+};
 var $gren_lang$node$Node$startProgram = function(initResult) {
 	return $gren_lang$node$Internal$Init$Task($gren_lang$core$Task$succeed(initResult));
 };
 var $blaix$prettynice$CLI$indent = '    ';
-var $blaix$prettynice$CLI$viewUsage = $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], 'Usage:'), $blaix$gren_tui$UI$row$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$text$([  ], 'prettynice <command> [options]') ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'Commands:'), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$column$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], [ $blaix$gren_tui$UI$text$([  ], 'init <directory> '), $blaix$gren_tui$UI$text$([  ], 'build ') ]), $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], ' Initialize a new Prettynice project'), $blaix$gren_tui$UI$text$([  ], ' Build an existing Prettynice project') ]) ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'Options:'), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$text$([  ], '--help '), $blaix$gren_tui$UI$text$([  ], ' Show help information') ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'For more information, visit https://github.com/blaix/prettynice') ]);
+var $blaix$prettynice$CLI$viewUsage = $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], 'Usage:'), $blaix$gren_tui$UI$row$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$text$([  ], 'prettynice <command> [options]') ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'Commands:'), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$column$([ $blaix$gren_tui$UI$Attribute$color($blaix$gren_ansi$Ansi$Cyan) ], [ $blaix$gren_tui$UI$text$([  ], 'init <directory> '), $blaix$gren_tui$UI$text$([  ], 'build '), $blaix$gren_tui$UI$text$([  ], 'version ') ]), $blaix$gren_tui$UI$column$([  ], [ $blaix$gren_tui$UI$text$([  ], ' Initialize a new Prettynice project'), $blaix$gren_tui$UI$text$([  ], ' Build an existing Prettynice project'), $blaix$gren_tui$UI$text$([  ], ' Print the prettynice cli version') ]) ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'Options:'), $blaix$gren_tui$UI$row$([  ], [ $blaix$gren_tui$UI$text$([  ], $blaix$prettynice$CLI$indent), $blaix$gren_tui$UI$text$([  ], '--help '), $blaix$gren_tui$UI$text$([  ], ' Show help information') ]), $blaix$gren_tui$UI$text$([  ], ''), $blaix$gren_tui$UI$text$([  ], 'For more information, visit https://github.com/blaix/prettynice') ]);
 var $blaix$prettynice$CLI$init = function(env) {
 	return $gren_lang$node$Init$await$($gren_lang$node$FileSystem$initialize, function(fsPerm) {
 			return $gren_lang$node$Init$await$($gren_lang$node$ChildProcess$initialize, function(procPerm) {
@@ -6936,7 +6962,7 @@ var $blaix$prettynice$CLI$init = function(env) {
 							var parsedArgs = $joeybright$gren_args$Args$parse($gren_lang$core$Array$dropFirst$(2, env.args));
 							var commandTask = function () {
 								var _v0 = $gren_lang$core$Array$popFirst(parsedArgs.args);
-								_v0$3:
+								_v0$4:
 								while (true) {
 									if (_v0.$ === 'Just') {
 										switch (_v0.a.first) {
@@ -6952,20 +6978,23 @@ var $blaix$prettynice$CLI$init = function(env) {
 													var targetDir = _v3[1];
 													return $blaix$prettynice$CLI$Command$Init$run({ args: [ targetDir ], env: env, fsPerm: fsPerm, localPackage: $gren_lang$core$Maybe$Just(localPackage), options: parsedArgs.options, procPerm: procPerm });
 												} else {
-													break _v0$3;
+													break _v0$4;
 												}
 											case 'build':
 												var _v4 = _v0.a;
 												var args = _v4.rest;
 												return $blaix$prettynice$CLI$Command$Build$run({ args: args, env: env, fsPerm: fsPerm, options: parsedArgs.options, procPerm: procPerm });
+											case 'version':
+												var _v5 = _v0.a;
+												return $blaix$prettynice$CLI$Command$Version$run({ env: env, fsPerm: fsPerm });
 											default:
-												break _v0$3;
+												break _v0$4;
 										}
 									} else {
-										break _v0$3;
+										break _v0$4;
 									}
 								}
-								return $gren_lang$core$Task$succeed($blaix$prettynice$CLI$viewUsage);
+								return ($gren_lang$core$Dict$member$('version', parsedArgs.options) || $gren_lang$core$Dict$member$('v', parsedArgs.options)) ? $blaix$prettynice$CLI$Command$Version$run({ env: env, fsPerm: fsPerm }) : $gren_lang$core$Task$succeed($blaix$prettynice$CLI$viewUsage);
 							}();
 							return $gren_lang$node$Node$startProgram({ command: $gren_lang$core$Task$attempt$($blaix$prettynice$CLI$RanCommand, commandTask), model: { env: env, termWidth: termWidth } });
 						});

@@ -1,41 +1,136 @@
 module Tests.CLI exposing (tests)
 
+{-| End-to-end tests that run the compiled CLI (`bin/index.js`) as a subprocess
+and assert on its exit code, stdout, and stderr. `just test` rebuilds the CLI
+first, so these run against the current source.
+-}
+
 import Bytes
 import ChildProcess
-import Expect
+import Expect exposing (Expectation)
 import Task exposing (Task)
-import Test.Runner.Effectful as Effectful exposing (await, describe, test)
+import Test.Runner.Effectful as Effectful exposing (await, concat, describe, test)
+
+
+type alias CliResult =
+    { exitCode : Int
+    , stdout : String
+    , stderr : String
+    }
 
 
 tests : ChildProcess.Permission -> Effectful.Test
 tests procPerm =
     let
         version : String
-        version = "4.0.0"
+        version =
+            "4.0.0"
 
-        runCli : Array String -> Task ChildProcess.FailedRun String
+        runCli : Array String -> Task Never CliResult
         runCli args =
             ChildProcess.run procPerm
                 "node"
                 (Array.pushFirst "../bin/index.js" args)
                 ChildProcess.defaultRunOptions
-                    |> Task.map
-                        (\result ->
-                            result.stdout
-                                |> Bytes.toString
-                                |> Maybe.withDefault ""
-                        )
+                |> Task.map
+                    (\ok ->
+                        { exitCode = 0
+                        , stdout = bytesToString ok.stdout
+                        , stderr = bytesToString ok.stderr
+                        }
+                    )
+                |> Task.onError
+                    (\err ->
+                        Task.succeed <|
+                            when err is
+                                ChildProcess.ProgramError e ->
+                                    { exitCode = e.exitCode
+                                    , stdout = bytesToString e.stdout
+                                    , stderr = bytesToString e.stderr
+                                    }
+
+                                ChildProcess.InitError e ->
+                                    { exitCode = -1
+                                    , stdout = ""
+                                    , stderr =
+                                        "Failed to start " ++ e.program ++ ": " ++ e.errorCode
+                                    }
+                    )
     in
-    describe "CLI version command" <|
-        Array.map
-            (\option ->
-                (await ("run with " ++ option))
-                (runCli [ option ])
-                (\output ->
-                    test "prints the version number" <| \_ ->
-                        Expect.equal version (String.trim output)
+    describe "CLI"
+        [ describe "version command" <|
+            Array.map
+                (\arg ->
+                    await ("run with " ++ arg) (runCli [ arg ]) <| \result ->
+                        describe ("`prettynice " ++ arg ++ "`")
+                            [ test "prints the version number" <| \_ ->
+                                Expect.equal version (String.trim result.stdout)
+                            , test "exits successfully" <| \_ ->
+                                Expect.equal 0 result.exitCode
+                            ]
                 )
-            )
-            [ "-v", "--version", "version" ]
+                [ "-v", "--version", "version" ]
+
+        , await "run with no command" (runCli []) <| \result ->
+            concat
+                [ test "prints usage" <| \_ ->
+                    expectContains "prettynice <command> [options]" result.stdout
+                , test "lists the available commands" <| \_ ->
+                    expectContains "Print the prettynice cli version" result.stdout
+                , test "exits successfully" <| \_ ->
+                    Expect.equal 0 result.exitCode
+                ]
+
+        , await "run with an unknown command" (runCli [ "boguscmd" ]) <| \result ->
+            concat
+                [ test "falls back to usage" <| \_ ->
+                    expectContains "prettynice <command> [options]" result.stdout
+                , test "exits successfully" <| \_ ->
+                    Expect.equal 0 result.exitCode
+                ]
+
+        , await "run init without a directory" (runCli [ "init" ]) <| \result ->
+            concat
+                [ test "prints init usage to stderr" <| \_ ->
+                    expectContains "prettynice init <directory>" result.stderr
+                , test "exits with a usage error code" <| \_ ->
+                    Expect.equal 1 result.exitCode
+                ]
+
+        , await "run init --help" (runCli [ "init", "--help" ]) <| \result ->
+            concat
+                [ test "prints init help" <| \_ ->
+                    expectContains "Initialize a new Prettynice project" result.stdout
+                , test "exits successfully" <| \_ ->
+                    Expect.equal 0 result.exitCode
+                ]
+
+        , await "run build --help" (runCli [ "build", "--help" ]) <| \result ->
+            concat
+                [ test "prints build help" <| \_ ->
+                    expectContains "Build a Prettynice project" result.stdout
+                , test "exits successfully" <| \_ ->
+                    Expect.equal 0 result.exitCode
+                ]
+        ]
 
 
+bytesToString : Bytes.Bytes -> String
+bytesToString bytes =
+    Bytes.toString bytes
+        |> Maybe.withDefault ""
+
+
+expectContains : String -> String -> Expectation
+expectContains substr string =
+    if String.contains substr string then
+        Expect.pass
+
+    else
+        Expect.fail <|
+            String.join "\n"
+                [ "Expected output to contain:"
+                , "    " ++ substr
+                , "but got:"
+                , string
+                ]

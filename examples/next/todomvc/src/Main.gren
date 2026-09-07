@@ -1,0 +1,70 @@
+module Main exposing (main)
+
+
+import Node exposing (Environment)
+import Prettynice
+import Prettynice.Request as Request exposing (Request)
+import Prettynice.Response as Response exposing (Response)
+
+
+main : Prettynice.Server Model Msg
+main =
+    Prettynice.defineServer
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , onRequest = onRequest
+        }
+
+
+-- MODEL
+
+
+type alias Model =
+    {}
+
+
+init : Environment -> Prettynice.Init Model Msg
+init env =
+    Prettynice.startServer
+        { env = env
+        , host = "0.0.0.0"
+        , port_ = 3000
+        , model = {}
+        }
+
+
+-- REQUEST HANDLING
+
+
+onRequest : Model -> Request -> Task Never Response
+onRequest model request =
+    when Route.fromPath request.path is
+        Home ->
+            Response.text "Hello, World!" |> Task.succeed
+            -- Response.fromBackend Home.backend
+
+
+-- UPDATE
+
+
+type Msg
+    = NoMsg
+
+
+update : Model -> Msg -> { model : Model, command : Cmd Msg }
+update model msg =
+    when msg is
+        NoMsg ->
+            { model = model
+            , command = Cmd.none
+            }
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+

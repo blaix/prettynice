@@ -1,0 +1,19 @@
+{
+    "type": "application",
+    "platform": "browser",
+    "source-directories": [
+        "../../src"
+    ],
+    "gren-version": "0.6.6",
+    "dependencies": {
+        "direct": {
+            "gren-lang/browser": "6.0.2",
+            "gren-lang/core": "7.4.2"
+            "blaix/prettynice-frontend": "local:../../../new-packages/prettynice-frontend",
+            "blaix/prettynice-common": "local:../../../new-packages/prettynice-common"
+        },
+        "indirect": {
+            "gren-lang/url": "6.0.0"
+        }
+    }
+}

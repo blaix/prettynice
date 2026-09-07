@@ -1,0 +1,14 @@
+{
+    "type": "package",
+    "platform": "node",
+    "name": "example/package",
+    "summary": "",
+    "license": "BSD-3-Clause",
+    "version": "1.0.0",
+    "exposed-modules": [],
+    "gren-version": "0.6.0 <= v < 0.7.0",
+    "dependencies": {
+        "gren-lang/core": "7.4.0 <= v < 8.0.0",
+        "gren-lang/node": "6.1.0 <= v < 7.0.0"
+    }
+}

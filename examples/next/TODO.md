@@ -1,11 +1,14 @@
 # TODO
 
 - [ ] server responds
+- [ ] does parametric modules get us anything here?
+    - [ ] ready to use?
 - [ ] render html from backend
 - [ ] render a frontend
 - [ ] unit, integration, browser tests in the project
 - [ ] project generator
     - [ ] e2e-tested
+- [ ] up to date with latest gren before release?
 
 ## Docsite
 

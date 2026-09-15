@@ -1,6 +1,11 @@
 # TODO
 
-- [ ] server responds
+- [o] server responds
+    - [X] cli scaffolding (help and version)
+    - [X] cli test scafoolding (hel pand version) (in progress)
+    - [ ] cli build step?
+    - [ ] cli dev server step?
+- [ ] Consider `Frontend.frontend` should call a function and return a sum type so we have headroom to have pure html / ssr returned for static pages?
 - [ ] does parametric modules get us anything here?
     - [ ] ready to use?
 - [ ] render html from backend
@@ -9,6 +14,7 @@
 - [ ] project generator
     - [ ] e2e-tested
 - [ ] up to date with latest gren before release?
+- [ ] Add to README: something like "Every single page is a... single page application."
 
 ## Docsite
 

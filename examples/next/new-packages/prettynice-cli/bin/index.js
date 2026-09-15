@@ -1,2 +1,4 @@
-import main from "./main.js";
+#!/usr/bin/env node
+
+const main = require("./main.js");
 const app = main.Gren.Main.init({});

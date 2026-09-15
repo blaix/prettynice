@@ -1,0 +1,200 @@
+module Main exposing (main)
+
+import Bytes exposing (Bytes)
+import Cli.Parser
+import Cli.PrettyPrinter as PP
+import Cli.Report as Report
+import Dict
+import FileSystem
+import FileSystem.Path as Path exposing (Path)
+import Init
+import Json.Decode as Decode
+import Node
+import Stream
+import Stream.Log
+import Task exposing (Task)
+import Terminal
+
+
+main : Node.Program Model Msg
+main =
+    Node.defineProgram
+        { init = init
+        , update = update
+        , subscriptions = \_model -> Sub.none
+        }
+
+
+-- MODEL
+
+
+type alias Model =
+    { args : Array String
+    , stdout : Stream.Writable Bytes
+    , stderr : Stream.Writable Bytes
+    , useColor : Bool
+    , pathToString : Path -> String
+    }
+
+
+init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Init.await FileSystem.initialize <| \fsPerm ->
+    Init.await Terminal.initialize <| \termConfig ->
+    Init.awaitTask Node.getEnvironmentVariables <| \envVars ->
+        Node.startProgram
+            { model =
+                { args = Array.dropFirst 2 env.args -- node and file name
+                , stdout = env.stdout
+                , stderr = env.stderr
+                , useColor =
+                    when termConfig is
+                        Just _ ->
+                            not (Dict.member "NO_COLOR" envVars)
+
+                        Nothing ->
+                            False
+                , pathToString =
+                    when env.platform is
+                        Node.Win32 ->
+                            Path.toWin32String
+
+                        _ ->
+                            Path.toPosixString
+                }
+            , command =
+                readPackageVersion fsPerm env.applicationPath
+                    |> Task.attempt GotVersion
+            }
+
+
+-- UPDATE
+
+
+type Msg
+    = GotVersion (Result String String)
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotVersion (Ok version) ->
+            { model = model
+            , command = runCommand model version
+            }
+
+        GotVersion (Err error) ->
+            { model = model
+            , command =
+                fail model <|
+                    Report.create "ERROR GETTING VERSION" Nothing (PP.words error)
+            }
+
+
+runCommand : Model -> String -> Cmd Msg
+runCommand model version =
+    when Cli.Parser.run model.args (cli version) is
+        Cli.Parser.HelpText helpText ->
+            print model helpText
+
+        -- There are no commands to run yet.
+        Cli.Parser.Success _ ->
+            Cmd.none
+
+        Cli.Parser.UnknownCommand command ->
+            fail model <|
+                Report.create "UNKNOWN COMMAND" Nothing <|
+                    PP.verticalBlock
+                        [ PP.block
+                            [ PP.text "I don't recognize this command: "
+                            , PP.color PP.Red (PP.text command)
+                            ]
+                        , PP.empty
+                        , PP.block
+                            [ PP.text "Run "
+                            , PP.color PP.Cyan (PP.text "prettynice --help")
+                            , PP.text " to see the commands I do recognize."
+                            ]
+                        ]
+
+        Cli.Parser.BadFlags error ->
+            fail model <|
+                Report.create "BAD FLAGS" Nothing <|
+                    Cli.Parser.flagErrorPrettified error
+
+        Cli.Parser.BadArguments error ->
+            fail model <|
+                Report.create "BAD ARGUMENTS" Nothing <|
+                    Cli.Parser.argumentErrorPrettified error
+
+
+{-| Print to stdout and exit successfully.
+-}
+print : Model -> PP.Document -> Cmd Msg
+print model doc =
+    Report.prettyPrint { useColor = model.useColor } doc
+        |> Stream.Log.line model.stdout
+        |> Task.execute
+
+
+{-| Print to stderr and exit with an error code.
+-}
+fail : Model -> Report.Report -> Cmd Msg
+fail model report =
+    report
+        |> Report.toString (Report.Terminal { useColor = model.useColor }) model.pathToString
+        |> Stream.Log.string model.stderr
+        |> Task.map (\_ -> Node.exitWithCode 1)
+        |> Task.executeCmd
+
+
+{-| Read the cli version from the npm package.json.
+-}
+readPackageVersion : FileSystem.Permission -> Path -> Task String String
+readPackageVersion fsPerm applicationPath =
+    let
+        packageJsonPath =
+            Path.parentPath applicationPath
+                |> Maybe.andThen Path.parentPath -- pop out of the bin dir
+                |> Maybe.withDefault Path.empty
+                |> Path.appendPosixString "package.json"
+    in
+    FileSystem.readFile fsPerm packageJsonPath
+        |> Task.mapError FileSystem.errorToString
+        |> Task.andThen
+            (\bytes ->
+                let
+                    version =
+                        Bytes.toString bytes
+                            |> Maybe.withDefault ""
+                            |> Decode.decodeString (Decode.field "version" Decode.string)
+                in
+                when version is
+                    Ok v ->
+                        Task.succeed v
+
+                    Err _ ->
+                        Task.fail "I could not parse a version from the prettynice package.json."
+            )
+
+
+-- COMMANDS
+
+
+cli : String -> Cli.Parser.App {}
+cli version =
+    { name = "prettynice"
+    , version = version
+    , intro =
+        PP.block
+            [ PP.text "Prettynice "
+            , PP.intenseColor PP.Green (PP.text version)
+            , PP.text ": a fullstack web framework for Gren."
+            ]
+    , outro =
+        PP.words
+            """
+            Documentation can be found at https://prettynice.dev
+            """
+    , commands = Cli.Parser.defineGroup
+    }

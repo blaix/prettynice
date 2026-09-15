@@ -4,8 +4,13 @@
   "description": "CLI for Prettynice, the Gren fullstack web framework.",
   "license": "BSD-3-Clause",
   "author": "Justin Blake",
-  "type": "esm",
   "main": "bin/index.js",
+  "bin": {
+    "prettynice": "bin/index.js"
+  },
+  "files": [
+    "bin"
+  ],
   "scripts": {
     "build": "gren make Main --output=bin/main.js"
   }

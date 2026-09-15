@@ -12,6 +12,8 @@
     "bin"
   ],
   "scripts": {
-    "build": "gren make Main --output=bin/main.js"
+    "build": "gren make Main --output=bin/main.js",
+    "pretest": "npm run build",
+    "test": "gren run Tests.Main"
   }
 }

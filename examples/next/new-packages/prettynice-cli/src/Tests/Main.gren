@@ -1,0 +1,119 @@
+module Tests.Main exposing (main)
+
+import Bytes exposing (Bytes)
+import ChildProcess
+import Expect
+import FileSystem
+import FileSystem.Path as Path
+import Init
+import Node
+import Task exposing (Task)
+import Test.Runner.Effectful as Effectful exposing (await, describe, test)
+
+
+main : Node.SimpleProgram a
+main =
+    Node.defineSimpleProgram <| \env ->
+    Init.await ChildProcess.initialize <| \procPerm ->
+    Init.await FileSystem.initialize <| \fsPerm ->
+    Effectful.initialize env <| \config ->
+        tests { procPerm = procPerm, fsPerm = fsPerm }
+            |> Effectful.run config
+            |> Node.endSimpleProgram
+
+
+tests :
+    { procPerm : ChildProcess.Permission
+    , fsPerm : FileSystem.Permission
+    }
+    -> Effectful.Test
+tests { procPerm, fsPerm } =
+    let
+        run =
+            prettynice procPerm
+    in
+    describe "prettynice cli"
+        [ describe "with no arguments"
+            [ await "`npm exec prettynice`" (run []) <| \output ->
+                describe "prints the help output"
+                    [ test "with the intro" <| \_ ->
+                        expectContains "a fullstack web framework for Gren." output
+                    , test "with the command list preamble" <| \_ ->
+                        expectContains "you need to give me a command" output
+                    , test "with the --help hint" <| \_ ->
+                        expectContains "Adding the --help flag gives you more details" output
+                    , test "with the outro" <| \_ ->
+                        expectContains "https://prettynice.dev" output
+                    ]
+            ]
+        , describe "with --version"
+            [ await "`npm exec prettynice --version`" (run [ "--version" ]) <| \output ->
+              await "read package.json" (packageJson fsPerm) <| \contents ->
+              test "prints the version from package.json" <| \_ ->
+                expectContains ("\"" ++ String.trim output ++ "\"") contents
+            ]
+        ]
+
+
+{-| Expect output to contain a substring, showing both if it doesn't.
+-}
+expectContains : String -> String -> Expect.Expectation
+expectContains substring output =
+    if String.contains substring output then
+        Expect.pass
+
+    else
+        Expect.fail <|
+            "I expected to find this:\n\n    "
+            ++ substring
+            ++ "\n\nIn this output:\n\n"
+            ++ output
+
+
+{-| Run the cli the way an npm user would, and return its stdout.
+-}
+prettynice : ChildProcess.Permission -> Array String -> Task String String
+prettynice procPerm args_ =
+    let
+        args =
+            if Array.length args_ > 0 then
+                -- make sure args are passed to prettynice, not npm:
+                [ "--" ] ++ args_
+
+            else
+                args_
+    in
+    ChildProcess.run procPerm
+        "npm"
+        (Array.prepend [ "exec", "prettynice" ] args)
+        ChildProcess.defaultRunOptions
+        |> Task.mapError
+            (\error ->
+                when error is
+                    ChildProcess.InitError { program, errorCode } ->
+                        "Failed to start " ++ program ++ ": " ++ errorCode
+
+                    ChildProcess.ProgramError { exitCode, stderr } ->
+                        "Exited with code "
+                            ++ String.fromInt exitCode
+                            ++ ": "
+                            ++ (Bytes.toString stderr |> Maybe.withDefault "")
+            )
+        |> Task.map
+            (\{ stdout } ->
+                Bytes.toString stdout
+                    |> Maybe.withDefault ""
+            )
+
+
+{-| The contents of the npm package.json file.
+-}
+packageJson : FileSystem.Permission -> Task String String
+packageJson fsPerm =
+    FileSystem.readFile fsPerm (Path.fromPosixString "package.json")
+        |> Task.mapError FileSystem.errorToString
+        |> Task.map
+            (\bytes ->
+                Bytes.toString bytes
+                    |> Maybe.withDefault ""
+            )

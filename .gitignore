@@ -8,3 +8,7 @@ templates/init/**/gren_packages
 examples/v1/**/gren_packages
 examples/v2/**/gren_packages
 examples/v3/**/gren_packages
+
+# nix and direnv
+.direnv
+result

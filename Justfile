@@ -37,3 +37,39 @@ header MSG:
 
 progress MSG:
     @echo -e "🌸 {{ MSG }}..."
+
+[doc("Make a worktree and branch: `just worktree my-branch origin/main`")]
+worktree name base="main":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    main=$(git worktree list --porcelain | sed -n '1s/^worktree //p')
+    dir="$main.worktrees/{{ name }}"
+    git worktree add -b "{{ name }}" "$dir" "{{ base }}"
+    echo
+    echo "Worktree: $dir"
+    echo "Branch:   {{ name }}"
+
+[doc("Remove a worktree made by `just worktree` (keeps the branch)")]
+worktree-rm name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    main=$(git worktree list --porcelain | sed -n '1s/^worktree //p')
+    git worktree remove "$main.worktrees/{{ name }}"
+    # Branch names with slashes leave empty parent directories.
+    d=$(dirname "$main.worktrees/{{ name }}")
+    while [ "$d" != "$main.worktrees" ] && rmdir "$d" 2>/dev/null; do d=$(dirname "$d"); done
+    echo "Removed $main.worktrees/{{ name }}; branch {{ name }} kept"
+
+[doc("Format source files and scripts")]
+format:
+    nixfmt flake.nix
+    just --format --unstable
+
+[doc("Check formatting without changing anything")]
+lint:
+    nixfmt --check flake.nix
+    just --format --check --unstable
+
+[doc("Every check CI runs (in the nix sandbox)")]
+check:
+    nix flake check -L

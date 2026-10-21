@@ -1,0 +1,23 @@
+# CI for branches: `nix flake check -L` on every pull request, the same checks
+# `just check` runs locally.
+name: CI
+
+on:
+  pull_request:
+
+# A newer push to the same PR cancels the run it supersedes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    strategy:
+      # A failure on one platform doesn't cancel the other.
+      fail-fast: false
+      matrix:
+        runner: [nixos, macos]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: nix flake check -L

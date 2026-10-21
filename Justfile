@@ -3,37 +3,37 @@ green := '\033[0;32m'
 nc := '\033[0m' # No Color
 
 example NAME:
-  @just header "RUNNING EXAMPLE: v4/{{NAME}}"
-  cd examples/v4/{{NAME}} && npm install && npm run dev
+    @just header "RUNNING EXAMPLE: v4/{{ NAME }}"
+    cd examples/v4/{{ NAME }} && npm install && npm run dev
 
 examples:
-  for example in `ls examples/v4`; do just example $example; done
+    for example in `ls examples/v4`; do just example $example; done
 
 docs:
-  npx gren-doc-preview
+    npx gren-doc-preview
 
 test:
-  just build-cli-debug && cd tests && gren run Setup && gren run Tests
+    just build-cli-debug && cd tests && gren run Setup && gren run Tests
 
 build-cli:
-  npx gren make CLI --optimize --output=bin/main.js
+    npx gren make CLI --optimize --output=bin/main.js
 
 build-cli-debug:
-  npx gren make CLI --output=bin/main.js
+    npx gren make CLI --output=bin/main.js
 
 # `init-local` runs `prettynice init` but points the generated
 # project at this directory for its prettynice npm dependency.
 init-local TARGET:
-  npx prettynice init-local ${PWD} {{TARGET}}
+    npx prettynice init-local ${PWD} {{ TARGET }}
 
 web:
-  cd website/v2 && npm install && npm run dev
+    cd website/v2 && npm install && npm run dev
 
 deploy-web:
-  cd website/v2 && flyctl deploy
+    cd website/v2 && flyctl deploy
 
 header MSG:
-  @echo -e "\n{{green}}{{MSG}}{{nc}}"
-    
+    @echo -e "\n{{ green }}{{ MSG }}{{ nc }}"
+
 progress MSG:
-  @echo -e "🌸 {{MSG}}..."
+    @echo -e "🌸 {{ MSG }}..."

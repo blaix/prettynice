@@ -2,9 +2,10 @@
 
 - [o] server responds
     - [X] cli scaffolding (help and version)
-    - [X] cli test scafoolding (hel pand version) (in progress)
+    - [X] cli test scafoolding (help and version) (in progress)
     - [ ] cli build step?
     - [ ] cli dev server step?
+        - [ ] run as a gren-tui app? see dev server's like serverpod 4 as inspiration.
 - [ ] Consider `Frontend.frontend` should call a function and return a sum type so we have headroom to have pure html / ssr returned for static pages?
 - [ ] does parametric modules get us anything here?
     - [ ] ready to use?

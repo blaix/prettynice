@@ -413,6 +413,7 @@ For more details on using Prettynice, see:
 
 This project uses [nix](https://nixos.org) flakes.
 `nix develop` opens a shell with the tools it needs.
+There is an [`.envrc`](.envrc) file that will open a dev shell automatically if you allow it with [`direnv`](https://direnv.net/).
 If you don't want to use nix, see `flake.nix` for the dependencies you will need to install.
 
 From the root of the repo with [`just`](https://github.com/casey/just):

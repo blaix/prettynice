@@ -1,0 +1,15 @@
+{
+    "type": "package",
+    "platform": "common",
+    "name": "blaix/prettynice-common",
+    "summary": "Common utilities shared between prettynice server and browser code",
+    "license": "BSD-3-Clause",
+    "version": "1.0.0",
+    "exposed-modules": [
+        "Json.Encode.Extra"
+    ],
+    "gren-version": "0.6.0 <= v < 0.7.0",
+    "dependencies": {
+        "gren-lang/core": "7.3.0 <= v < 8.0.0"
+    }
+}

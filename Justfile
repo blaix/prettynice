@@ -12,14 +12,40 @@ examples:
 docs:
     npx gren-doc-preview
 
-test:
-    just build-cli-debug && cd tests && gren run Setup && gren run Tests
+[doc("Compile the package and the CLI")]
+build:
+    gren make
+    gren make CLI --output=bin/main.js
 
-build-cli:
-    npx gren make CLI --optimize --output=bin/main.js
+[doc("Run all framework and package tests")]
+test: build
+    cd tests && gren run Setup && gren run Tests
+    cd packages/prettynice-common/tests && gren run Tests
 
-build-cli-debug:
-    npx gren make CLI --output=bin/main.js
+[doc("Check and build the CLI, then publish to npm")]
+publish-cli: publish-cli-preflight test
+    gren make CLI --optimize --output=bin/main.js
+    npm publish
+
+# Fail unless the tree is clean, HEAD is tagged `cli-<version>`
+# for package.json's version, and npm doesn't have that version yet.
+[private]
+publish-cli-preflight:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    version=$(node -p "require('./package.json').version")
+    if [ -n "$(git status --porcelain)" ]; then
+        echo "The git tree isn't clean." >&2
+        exit 1
+    fi
+    if ! git tag --points-at HEAD | grep -qx "cli-$version"; then
+        echo "HEAD isn't tagged cli-$version." >&2
+        exit 1
+    fi
+    if [ -n "$(npm view "prettynice@$version" version 2>/dev/null)" ]; then
+        echo "prettynice $version is already on npm. Bump package.json's version." >&2
+        exit 1
+    fi
 
 # `init-local` runs `prettynice init` but points the generated
 # project at this directory for its prettynice npm dependency.

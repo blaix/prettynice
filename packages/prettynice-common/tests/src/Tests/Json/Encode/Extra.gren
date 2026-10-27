@@ -1,0 +1,50 @@
+module Tests.Json.Encode.Extra exposing (tests)
+
+import Expect
+import Json.Encode as Encode
+import Json.Encode.Extra as EncodeExtra
+import Test exposing (Test, describe, test)
+
+
+tests : Test
+tests =
+    describe "Json.Encode.Extra.maybe"
+        [ test "Just 42 with int encoder" <| \_ ->
+            EncodeExtra.maybe Encode.int (Just 42)
+                |> Encode.encode 0
+                |> Expect.equal "42"
+        , test "Nothing with int encoder" <| \_ ->
+            EncodeExtra.maybe Encode.int Nothing
+                |> Encode.encode 0
+                |> Expect.equal "null"
+        , test "Just hello with string encoder" <| \_ ->
+            EncodeExtra.maybe Encode.string (Just "hello")
+                |> Encode.encode 0
+                |> Expect.equal "\"hello\""
+        , test "Just (Just 42) with nested maybe encoders" <| \_ ->
+            EncodeExtra.maybe (EncodeExtra.maybe Encode.int) (Just (Just 42))
+                |> Encode.encode 0
+                |> Expect.equal "42"
+        , test "Just Nothing with nested maybe encoders" <| \_ ->
+            EncodeExtra.maybe (EncodeExtra.maybe Encode.int) (Just Nothing)
+                |> Encode.encode 0
+                |> Expect.equal "null"
+        , test "Just an array with array encoder" <| \_ ->
+            EncodeExtra.maybe (Encode.array Encode.int) (Just [ 1, 2 ])
+                |> Encode.encode 0
+                |> Expect.equal "[1,2]"
+        , test "Nothing with array encoder" <| \_ ->
+            EncodeExtra.maybe (Encode.array Encode.int) Nothing
+                |> Encode.encode 0
+                |> Expect.equal "null"
+        , test "array of maybes" <| \_ ->
+            Encode.array (EncodeExtra.maybe Encode.int) [ Just 1, Nothing ]
+                |> Encode.encode 0
+                |> Expect.equal "[1,null]"
+        , test "Just an array of maybes" <| \_ ->
+            EncodeExtra.maybe
+                (Encode.array (EncodeExtra.maybe Encode.int))
+                (Just [ Just 1, Nothing ])
+                |> Encode.encode 0
+                |> Expect.equal "[1,null]"
+        ]

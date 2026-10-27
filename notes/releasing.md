@@ -4,6 +4,8 @@
 * [ ] check gren docs
 * [ ] gren package validate
 * [ ] tag new version
+* [ ] bump `package.json` version, commit, and tag it `cli-<version>`
+* [ ] `just publish-cli`
 
 * [ ] `cp -r examples/next examples/v[n]`
 * [ ] update gren.json in `examples/v[n]` to use published package and test

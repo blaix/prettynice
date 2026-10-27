@@ -49,7 +49,10 @@
         let
           pkgs = pkgsFor system;
         in
-        nixpkgs.lib.genAttrs [ "lint" ] (justCheck pkgs)
+        nixpkgs.lib.genAttrs [
+          "lint"
+          "test"
+        ] (justCheck pkgs)
       );
 
       devShells = forAllSystems (

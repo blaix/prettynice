@@ -1,0 +1,14 @@
+module Json.Encode.Extra exposing (maybe)
+
+
+import Json.Encode
+
+
+maybe : (a -> Json.Encode.Value) -> Maybe a -> Json.Encode.Value
+maybe encoder val =
+    when val is
+        Just x ->
+            encoder x
+
+        Nothing ->
+            Json.Encode.null

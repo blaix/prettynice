@@ -411,13 +411,23 @@ For more details on using Prettynice, see:
 
 ## Working on the Framework Locally
 
-This project uses [devbox](https://www.jetify.com/devbox).
-If you don't want to use devbox, see `devbox.json` for the dependencies you will need to install.
+This project uses [nix](https://nixos.org) flakes.
+`nix develop` opens a shell with the tools it needs.
+If you don't want to use nix, see `flake.nix` for the dependencies you will need to install.
+
+From the root of the repo with [`just`](https://github.com/casey/just):
+
+* `just build` compiles the gren package and the CLI.
+* `just test` runs the tests.
+* `just check` runs every check CI runs.
+
+See [`Justfile`](Justfile) for all the recipes and details.
 
 ### Important Directories
 
 * `src/`: Source files for the gren package.
-* `cli/`: The CLI. Gren source files are under `cli/src/` and are built to `cli/bin/`.
+* `src/CLI.gren`: The `prettynice` CLI. It's built to `bin/main.js`.
+* `packages/prettynice-common/`: The `blaix/prettynice-common` package.
 * `website/`: The prettynice website.
 * `examples/`: Several working examples of prettynice sites exercising various features.
 

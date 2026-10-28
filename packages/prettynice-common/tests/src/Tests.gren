@@ -12,5 +12,4 @@ main =
 
 all =
     Test.concat
-        [ Tests.Json.Encode.Extra.tests
-        ]
+        [ Tests.Json.Encode.Extra.tests ]

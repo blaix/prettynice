@@ -32,13 +32,16 @@ simpleTests : Test
 simpleTests =
     describe "Simple"
         [ roundTrip "positive int"
-            Examples.encodeSimple Examples.simpleDecoder
+            Examples.encodeSimple
+            Examples.simpleDecoder
             { intField = 42 }
         , roundTrip "zero"
-            Examples.encodeSimple Examples.simpleDecoder
+            Examples.encodeSimple
+            Examples.simpleDecoder
             { intField = 0 }
         , roundTrip "negative int"
-            Examples.encodeSimple Examples.simpleDecoder
+            Examples.encodeSimple
+            Examples.simpleDecoder
             { intField = -5 }
         ]
 
@@ -47,10 +50,12 @@ singleLineTests : Test
 singleLineTests =
     describe "SingleLine"
         [ roundTrip "with values"
-            Examples.encodeSingleLine Examples.singleLineDecoder
+            Examples.encodeSingleLine
+            Examples.singleLineDecoder
             { boolField = True, nested = [ Just "hello", Nothing ] }
         , roundTrip "empty array"
-            Examples.encodeSingleLine Examples.singleLineDecoder
+            Examples.encodeSingleLine
+            Examples.singleLineDecoder
             { boolField = False, nested = [] }
         ]
 
@@ -59,7 +64,8 @@ multiLineTests : Test
 multiLineTests =
     describe "MultiLine"
         [ roundTrip "all fields populated"
-            Examples.encodeMultiLine Examples.multiLineDecoder
+            Examples.encodeMultiLine
+            Examples.multiLineDecoder
             { stringField = "hello"
             , intField = 42
             , floatField = 1.5
@@ -69,7 +75,8 @@ multiLineTests =
             , nestedField = [ [ Just True, Nothing ], [ Just False ] ]
             }
         , roundTrip "nothing and empty"
-            Examples.encodeMultiLine Examples.multiLineDecoder
+            Examples.encodeMultiLine
+            Examples.multiLineDecoder
             { stringField = ""
             , intField = 0
             , floatField = 0.0
@@ -85,6 +92,7 @@ withExtraSpacesTests : Test
 withExtraSpacesTests =
     describe "WithExtraSpaces"
         [ roundTrip "simple value"
-            Examples.encodeWithExtraSpaces Examples.withExtraSpacesDecoder
+            Examples.encodeWithExtraSpaces
+            Examples.withExtraSpacesDecoder
             { hey = 99 }
         ]

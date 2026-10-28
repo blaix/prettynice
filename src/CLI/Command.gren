@@ -1,9 +1,8 @@
 module CLI.Command exposing
-    ( Error
-    , Args
+    ( Args
+    , Error
     , Options
     )
-
 
 import Args
 import Dict exposing (Dict)

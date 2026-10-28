@@ -34,10 +34,10 @@ typeAliases =
 main : Node.SimpleProgram a
 main =
     Node.defineSimpleProgram <| \env ->
-        Init.await FileSystem.initialize <| \fsPerm ->
-            readAndGenerate fsPerm
-                |> Task.andThen (\_ -> Stream.Log.line env.stdout "Generated examples")
-                |> Node.endSimpleProgram
+    Init.await FileSystem.initialize <| \fsPerm ->
+        readAndGenerate fsPerm
+            |> Task.andThen (\_ -> Stream.Log.line env.stdout "Generated examples")
+            |> Node.endSimpleProgram
 
 
 readAndGenerate : FileSystem.Permission -> Task.Task Never {}

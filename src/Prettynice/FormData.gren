@@ -5,7 +5,6 @@ module Prettynice.FormData exposing
     , getAll
     )
 
-
 {-| Normal `<form>` elements with `action="post"` will have the data available at `Request.formData`.
 
 It is a [`FormData`](#FormData) value which is a mapping of field names to arrays of values.
@@ -28,7 +27,6 @@ you can turn it into a [`FormData`](#FormData) value with [`fromString`](#fromSt
 @docs fromString
 
 -}
-
 
 import Dict exposing (Dict)
 import Url
@@ -75,7 +73,7 @@ get : String -> FormData -> Maybe String
 get key data =
     data
         |> getAll key
-        |> Array.first 
+        |> Array.first
 
 
 {-| Get an array of all the values associated with a form field name.
@@ -92,5 +90,5 @@ decode name value =
     value
         |> String.replace "+" " "
         |> Url.percentDecode
-        |> Maybe.map 
+        |> Maybe.map
             (\v -> { name = name, value = v })

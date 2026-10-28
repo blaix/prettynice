@@ -2,6 +2,17 @@ red := '\033[0;31m'
 green := '\033[0;32m'
 nc := '\033[0m' # No Color
 
+# The Gren files `format` and `lint` cover: every one fd finds, which skips
+# gitignored files. Left alone: examples/v1-v3 (older Gren syntax that
+# gren-format can't parse) and tests/ExampleRecords.gren (its odd layout is what
+# the tests parse).
+gren_files := ```
+    fd -e gren \
+        -E examples/v1 -E examples/v2 -E examples/v3 \
+        -E tests/ExampleRecords.gren \
+        | tr '\n' ' '
+```
+
 example NAME:
     @just header "RUNNING EXAMPLE: v4/{{ NAME }}"
     cd examples/v4/{{ NAME }} && npm install && npm run dev
@@ -90,11 +101,13 @@ worktree-rm name:
 format:
     nixfmt flake.nix
     just --format --unstable
+    gren-format {{ gren_files }}
 
 [doc("Check formatting without changing anything")]
 lint:
     nixfmt --check flake.nix
     just --format --check --unstable
+    gren-format --check {{ gren_files }}
 
 [doc("Every check CI runs (in the nix sandbox)")]
 check:

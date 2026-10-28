@@ -30,7 +30,7 @@ run { fsPerm, env } =
     in
     FileSystem.readFile fsPerm packageJsonPath
         |> Task.mapError FileSystem.errorToString
-        |> Task.mapError (\e -> { exitCode = 1, message = viewError e})
+        |> Task.mapError (\e -> { exitCode = 1, message = viewError e })
         |> Task.andThen
             (\bytes ->
                 let
@@ -48,11 +48,11 @@ run { fsPerm, env } =
                         Task.succeed (viewVersion version)
 
                     Err _ ->
-                        Task.fail 
+                        Task.fail
                             { exitCode = 2
-                            , message = 
+                            , message =
                                 "Error parsing version number from npm package."
-                                    |> viewError 
+                                    |> viewError
                             }
             )
 
@@ -64,7 +64,7 @@ viewVersion version =
 
 viewError : String -> UI.Element
 viewError reason =
-    UI.column [ Attr.color Ansi.Red ] 
+    UI.column [ Attr.color Ansi.Red ]
         [ UI.text [] "Could not read prettynice version:"
         , UI.text [] reason
         ]

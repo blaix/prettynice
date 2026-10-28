@@ -2,11 +2,11 @@ module CLI exposing (main)
 
 import Ansi
 import Args
-import ChildProcess
 import CLI.Command as Command
 import CLI.Command.Build
 import CLI.Command.Init
 import CLI.Command.Version
+import ChildProcess
 import Dict
 import FileSystem
 import Init
@@ -41,8 +41,11 @@ init env =
         let
             termWidth =
                 when termConfig is
-                    Just t -> t.columns
-                    Nothing -> 80
+                    Just t ->
+                        t.columns
+
+                    Nothing ->
+                        80
 
             parsedArgs =
                 env.args
@@ -97,12 +100,11 @@ init env =
                             Task.succeed viewUsage
         in
         Node.startProgram
-            { model = 
-                { termWidth = termWidth 
+            { model =
+                { termWidth = termWidth
                 , env = env
                 }
-            , command = 
-                Task.attempt RanCommand commandTask
+            , command = Task.attempt RanCommand commandTask
             }
 
 
@@ -136,6 +138,7 @@ update msg model =
 indent : String
 indent =
     "    "
+
 
 viewHelp : UI.Element
 viewHelp =
@@ -174,7 +177,7 @@ viewUsage =
         , UI.row []
             [ UI.text [] indent
             , UI.text [] "--help "
-            , UI.text [] " Show help information" 
+            , UI.text [] " Show help information"
             ]
         , UI.text [] ""
         , UI.text [] "For more information, visit https://github.com/blaix/prettynice"

@@ -1,24 +1,15 @@
-module Prettynice.Response exposing 
-
-    -- Response type
+module Prettynice.Response exposing
     ( Response
-    , new
-    , unwrap
-
-    -- Setting response body
-    , asText
+    , asBytes
     , asHtml
     , asJson
-    , asBytes
-
-    -- Setting headers and status
+    , asText
+    , new
+    , onSend
     , setHeader
     , setStatus
-
-    -- Events
-    , onSend
-    ) 
-
+    , unwrap
+    )
 
 {-| HTTP Responses
 
@@ -48,9 +39,9 @@ weird and cool I'm not going to stop you.
 
 import Bytes exposing (Bytes)
 import HttpServer.Response as Http
+import Json.Encode
 import Prettynice.Internal.Response as Internal
 import Prettynice.Request exposing (Request)
-import Json.Encode
 import Task exposing (Task)
 import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Attributes as A
@@ -65,7 +56,7 @@ type alias Response msg =
 {-| Custom type for response bodies.
 -}
 type Body msg
-    = HtmlBody 
+    = HtmlBody
         { title : String
         , head : Array (Html msg)
         , body : Array (Html msg)
@@ -155,7 +146,7 @@ not from gren-lang/browser. The API is the same, but html-gren is needed because
 See [the html example](https://github.com/blaix/prettynice/tree/main/examples/v3/html) for a working usage example.
 -}
 asHtml :
-    { title : String, head : Array (Html msg), body : Array (Html msg) } 
+    { title : String, head : Array (Html msg), body : Array (Html msg) }
     -> Response msg
     -> Response msg
 asHtml html =
@@ -171,45 +162,48 @@ withBody bodyVariant response =
             when bodyVariant is
                 HtmlBody { title, head, body } ->
                     { contentType = "text/html"
-                    , rawBody = RawBodyString <|
-                        ( H.toString H.doctype ) ++ 
-                        ( H.toString
-                            ( H.html [ A.lang "en" ]
-                                [ H.head []
-                                    ( [ H.meta [ A.charset "utf-8" ]
-                                      , H.meta [ A.name "viewport", A.content "width=device-width, initial-scale=1.0" ]
-                                      , H.node "script" [ A.src "/main.js" ] []
-                                      , H.title [ H.text title ]
-                                      ] ++ head
-                                    )
-                                , H.body [] <|
-                                    body ++
-                                    [ H.node "script" []
-                                        [ H.text <|
-                                            """
-                                            if (typeof($__components) !== 'undefined') {
-                                                Object.keys($__components).map((name) => {
-                                                    let path = name.replace(/\\./g, '/');
-                                                    import("/" + path + ".js").then((mod) => {
-                                                        if (mod.init) {
-                                                            $__components[name].map((comp) => {
-                                                                mod.init(comp);
+                    , rawBody =
+                        RawBodyString <|
+                            (H.toString H.doctype)
+                            ++ (H.toString
+                                    (H.html [ A.lang "en" ]
+                                        [ H.head []
+                                            ([ H.meta [ A.charset "utf-8" ]
+                                             , H.meta [ A.name "viewport", A.content "width=device-width, initial-scale=1.0" ]
+                                             , H.node "script" [ A.src "/main.js" ] []
+                                             , H.title [ H.text title ]
+                                             ]
+                                                ++ head
+                                            )
+                                        , H.body [] <|
+                                            body
+                                            ++ [ H.node "script"
+                                                    []
+                                                    [ H.text <|
+                                                        """
+                                                        if (typeof($__components) !== 'undefined') {
+                                                            Object.keys($__components).map((name) => {
+                                                                let path = name.replace(/\\./g, '/');
+                                                                import("/" + path + ".js").then((mod) => {
+                                                                    if (mod.init) {
+                                                                        $__components[name].map((comp) => {
+                                                                            mod.init(comp);
+                                                                        });
+                                                                    }
+                                                                });
                                                             });
                                                         }
-                                                    });
-                                                });
-                                            }
-                                            """
+                                                        """
+                                                    ]
+                                               ]
                                         ]
-                                    ]
-                                ]
-                            )
-                        )
+                                    )
+                               )
                     }
 
                 JsonBody json ->
                     { contentType = "application/json"
-                    , rawBody = RawBodyString <| Json.Encode.encode 2 json 
+                    , rawBody = RawBodyString <| Json.Encode.encode 2 json
                     }
 
                 TextBody text ->
@@ -221,7 +215,7 @@ withBody bodyVariant response =
                     { contentType = "application/octet-stream"
                     , rawBody = RawBodyBytes bytes
                     }
-        
+
         { httpResponse, appMsg } =
             unwrapFull response
     in
@@ -230,12 +224,13 @@ withBody bodyVariant response =
         , httpResponse =
             httpResponse
                 |> Http.setHeader "Content-type" contentType
-                |> ( when rawBody is
+                |> (when rawBody is
                         RawBodyString body ->
                             Http.setBody body
+
                         RawBodyBytes body ->
                             Http.setBodyAsBytes body
-                    )
+                   )
         }
 
 
@@ -245,8 +240,7 @@ setHeader : String -> String -> Response msg -> Response msg
 setHeader key val (Internal.Response { httpResponse, appMsg }) =
     Internal.Response
         { appMsg = appMsg
-        , httpResponse =
-            Http.setHeader key val httpResponse
+        , httpResponse = Http.setHeader key val httpResponse
         }
 
 
@@ -256,9 +250,9 @@ setStatus : Int -> Response msg -> Response msg
 setStatus status (Internal.Response { httpResponse, appMsg }) =
     Internal.Response
         { appMsg = appMsg
-        , httpResponse =
-            Http.setStatus status httpResponse
+        , httpResponse = Http.setStatus status httpResponse
         }
+
 
 {-| Send a message to your `update` function when a response is sent.
 

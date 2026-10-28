@@ -1,13 +1,12 @@
-module Prettynice exposing 
-    ( Program
-    , Init
-    , defineProgram
+module Prettynice exposing
+    ( Init
+    , Program
     , defineFullProgram
-    , startProgram
+    , defineProgram
     , startFullProgram
+    , startProgram
     )
 
- 
 {-| Use this module to define and start a Prettynice web server.
 
 @docs Program
@@ -33,8 +32,8 @@ If so, you can use these functions to create a program that includes `update` an
 
 import Bytes exposing (Bytes)
 import FileSystem
-import HttpServer as Http exposing (ServerError(..), Method(..))
-import HttpServer.Response as HttpResponse 
+import HttpServer as Http exposing (Method(..), ServerError(..))
+import HttpServer.Response as HttpResponse
 import Init
 import Node exposing (Environment, Program)
 import Prettynice.Internal.Response as Internal
@@ -75,6 +74,7 @@ type alias Init model msg =
         , command : Cmd (Msg model msg)
         }
 
+
 {-| Define a Prettynice web server.
 
 Servers are defined with two functions: `init` is used to [start your program](#startProgram)
@@ -85,7 +85,8 @@ See `server/src/Main.gren` in the [example projects](https://github.com/blaix/pr
 defineProgram :
     { init : Environment -> Init model msg
     , router : model -> Request -> Response msg -> Task Never (Response msg)
-    } -> Program model msg
+    }
+    -> Program model msg
 defineProgram app =
     Node.defineProgram <|
         defineFullProgramRecord <|
@@ -94,6 +95,7 @@ defineProgram app =
             , update = (\_ model -> { model = model, command = Cmd.none })
             , subscriptions = (\_ -> Sub.none)
             }
+
 
 {-| Define a Prettynice web server that uses the full
 [Elm Architecture](https://gren-lang.org/book/applications/tea/).
@@ -116,7 +118,8 @@ defineFullProgram :
     , update : msg -> model -> { model : model, command : Cmd msg }
     , subscriptions : model -> Sub msg
     , router : model -> Request -> Response msg -> Task Never (Response msg)
-    } -> Program model msg
+    }
+    -> Program model msg
 defineFullProgram app =
     Node.defineProgram <|
         defineFullProgramRecord app
@@ -137,16 +140,17 @@ to define a Prettynice program. For example:
 
 This is a more explicit alternative to (defineFullProgram)[#defineFullProgram].
 -}
-defineFullProgramRecord :    
+defineFullProgramRecord :
     { init : Environment -> Init model msg
     , update : msg -> model -> { model : model, command : Cmd msg }
     , subscriptions : model -> Sub msg
     , router : model -> Request -> Response msg -> Task Never (Response msg)
-    } -> 
-    { init : Environment -> Init model msg
-    , update : Msg model msg -> Model model -> { model : Model model, command : Cmd (Msg model msg) }
-    , subscriptions : Model model -> Sub (Msg model msg)
     }
+    ->
+        { init : Environment -> Init model msg
+        , update : Msg model msg -> Model model -> { model : Model model, command : Cmd (Msg model msg) }
+        , subscriptions : Model model -> Sub (Msg model msg)
+        }
 defineFullProgramRecord app =
     { init = app.init
     , update = update { router = app.router, update = app.update }
@@ -173,7 +177,8 @@ startProgram :
     , host : String
     , port_ : Int
     , model : model
-    } -> Init model msg
+    }
+    -> Init model msg
 startProgram config =
     startFullProgram
         { host = config.host
@@ -198,8 +203,9 @@ startFullProgram :
     , port_ : Int
     , model : model
     , command : Cmd msg
-    } -> Init model msg
-startFullProgram  config =
+    }
+    -> Init model msg
+startFullProgram config =
     Init.await Http.initialize <| \serverPermission ->
     Init.await FileSystem.initialize <| \fsPermission ->
         Node.startProgram <|
@@ -251,10 +257,11 @@ startFullProgramRecord :
         { fileSystem : FileSystem.Permission
         , server : Http.Permission
         }
-    } ->
-    { model : Model model
-    , command : Cmd (Msg model msg)
     }
+    ->
+        { model : Model model
+        , command : Cmd (Msg model msg)
+        }
 startFullProgramRecord config =
     { model =
         { server = Nothing
@@ -300,7 +307,7 @@ type alias AppUpdate appModel appMsg =
     appMsg -> appModel -> { model : appModel, command : Cmd appMsg }
 
 
-update : 
+update :
     { router : appModel -> Request -> Response appMsg -> Task Never (Response appMsg)
     , update : AppUpdate appModel appMsg
     }
@@ -313,20 +320,21 @@ update appUpdate msg model =
             when result is
                 Ok server ->
                     { model = { model | server = Just server }
-                    , command = 
+                    , command =
                         print model.stdout <|
                             "Server started on http://" ++ model.host ++ ":" ++ String.fromInt model.port_
                     }
+
                 Err (ServerError { code, message }) ->
                     { model = model
-                    , command = 
+                    , command =
                         print model.stderr <|
                             "Server failed to start: " ++ code ++ "\n" ++ message
                     }
-        
+
         GotRequest { request = req, response = res } ->
             let
-                request = 
+                request =
                     Prettynice.Request.new req
 
                 response =
@@ -369,7 +377,7 @@ update appUpdate msg model =
                             Cmd.none
             in
             { model = model
-            , command = 
+            , command =
                 Cmd.batch
                     [ HttpResponse.send httpResponse
                     , msgToApp

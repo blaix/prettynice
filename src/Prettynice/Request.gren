@@ -1,14 +1,12 @@
-module Prettynice.Request exposing 
+module Prettynice.Request exposing
     ( Request
     , new
     )
-
 
 {-| HTTP requests
 
 @docs Request, new
 -}
-
 
 import Array exposing (Array)
 import Bytes exposing (Bytes)
@@ -43,7 +41,7 @@ new request =
     , url = request.url
     , method = request.method
     , formData = toFormData request
-    , path = 
+    , path =
         request.url.path
             |> String.split "/"
             |> Array.keepIf (\s -> s /= "")

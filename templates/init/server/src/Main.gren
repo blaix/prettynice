@@ -18,7 +18,8 @@ main =
         }
 
 
-type alias Model = {}
+type alias Model =
+    {}
 
 
 init : Environment -> Prettynice.Init Model {}
@@ -34,13 +35,12 @@ init env =
 router : Model -> Request -> Response msg -> Task Never (Response msg)
 router model request response =
     when request.path is
-
         -- root path: /
         [] ->
             response
                 |> viewHome
                 |> Task.succeed
-        
+
         -- paths like: /hello/mary
         [ "hello", name ] ->
             response
@@ -53,8 +53,6 @@ router model request response =
                 |> Response.setStatus 404
                 |> Response.asText "not found"
                 |> Task.succeed
-
-
 
 
 viewHome : Response msg -> Response msg

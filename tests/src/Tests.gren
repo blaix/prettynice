@@ -19,7 +19,7 @@ tests procPerm =
 main : Node.SimpleProgram a
 main =
     Node.defineSimpleProgram <| \env ->
-        Effectful.initialize env <| \config ->
-        Init.await ChildProcess.initialize <| \procPerm ->
-            Effectful.run config (tests procPerm)
-                |> Node.endSimpleProgram
+    Effectful.initialize env <| \config ->
+    Init.await ChildProcess.initialize <| \procPerm ->
+        Effectful.run config (tests procPerm)
+            |> Node.endSimpleProgram

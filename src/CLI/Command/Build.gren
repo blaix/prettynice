@@ -2,8 +2,8 @@ module CLI.Command.Build exposing (run)
 
 import Ansi
 import Bytes
-import ChildProcess exposing (WorkingDirectory(..))
 import CLI.Command as Command
+import ChildProcess exposing (WorkingDirectory(..))
 import Dict exposing (Dict)
 import FileSystem
 import FileSystem.Path as Path exposing (Path)
@@ -130,6 +130,7 @@ clean fsPerm =
                     (\e ->
                         if FileSystem.errorIsNoSuchFileOrDirectory e then
                             Task.succeed {}
+
                         else
                             Task.fail e
                     )
@@ -216,6 +217,7 @@ discoverComponents fsPerm =
                     FileSystemError fsErr ->
                         if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
                             Task.succeed []
+
                         else
                             Task.fail e
 
@@ -231,14 +233,14 @@ listGrenFiles fsPerm basePath thisPath =
         |> Task.andThen (processEntries fsPerm basePath thisPath)
 
 
-processEntries : 
-    FileSystem.Permission 
-    -> Path 
-    -> Path 
-    -> Array 
+processEntries :
+    FileSystem.Permission
+    -> Path
+    -> Path
+    -> Array
         { entityType : FileSystem.EntityType
-        , path : Path 
-        } 
+        , path : Path
+        }
     -> Task Error (Array ComponentFile)
 processEntries fsPerm basePath thisPath entries =
     when Array.popFirst entries is
@@ -263,6 +265,7 @@ processEntries fsPerm basePath thisPath entries =
                         in
                         processEntries fsPerm basePath thisPath remainingEntries
                             |> Task.map (\rest -> Array.pushFirst { relativePath = relativePath, fullPath = fullPath } rest)
+
                     else
                         processEntries fsPerm basePath thisPath remainingEntries
 
@@ -293,6 +296,7 @@ makeRelativePath basePath fullPath =
     if String.startsWith basePrefix fullStr then
         String.dropFirst (String.count basePrefix) fullStr
             |> Path.fromPosixString
+
     else
         fullPath
 
@@ -348,8 +352,10 @@ genServerComponent fsPerm component =
                             deadEndStr =
                                 Array.map
                                     (\de ->
-                                        "row=" ++ String.fromInt de.row
-                                            ++ " col=" ++ String.fromInt de.col
+                                        "row="
+                                            ++ String.fromInt de.row
+                                            ++ " col="
+                                            ++ String.fromInt de.col
                                     )
                                     deadEnds
                                     |> String.join "; "
@@ -360,9 +366,15 @@ genServerComponent fsPerm component =
                                     |> String.join " "
 
                             debugContent =
-                                "deadEnds: " ++ deadEndStr ++ "\n"
-                                    ++ "normalized length: " ++ String.fromInt (String.count normalized) ++ "\n"
-                                    ++ "normalized content:\n" ++ normalized ++ "\n"
+                                "deadEnds: "
+                                    ++ deadEndStr
+                                    ++ "\n"
+                                    ++ "normalized length: "
+                                    ++ String.fromInt (String.count normalized)
+                                    ++ "\n"
+                                    ++ "normalized content:\n"
+                                    ++ normalized
+                                    ++ "\n"
 
                             hasPropsAlias =
                                 String.contains "type alias Props" normalized
@@ -372,6 +384,7 @@ genServerComponent fsPerm component =
                                     "Could not parse the Props type alias. Supported field types are: "
                                         ++ String.join ", " Props.supportedFieldTypeNames
                                         ++ "."
+
                                 else
                                     "No 'type alias Props' found. Components in client/src/Components/ must define a Props type alias. Example:\n\n    type alias Props =\n        { name : String\n        }"
 
@@ -396,7 +409,9 @@ genServerComponent fsPerm component =
                                 (\debugNote ->
                                     Task.fail
                                         (PropsParseError
-                                            ("Failed to parse props for " ++ baseName ++ ".\n\n"
+                                            ("Failed to parse props for "
+                                                ++ baseName
+                                                ++ ".\n\n"
                                                 ++ guidance
                                                 ++ debugNote
                                             )
@@ -431,20 +446,23 @@ toServerComponent modName baseName props =
             [ H.span [ A.class "prettynice-component-{{MODULE_NAME}}" ] []
             , H.node "script" []
                 [ H.text <|
-                    \"""\n
+                    \"\"\"
+
                     var $__components = $__components || {};
                     $__components["{{MODULE_NAME}}"] = $__components["{{MODULE_NAME}}"] || [];
                     $__components["{{MODULE_NAME}}"].push(
-                        Gren.Gen.{{MODULE_NAME}}.init({\n
+                        Gren.Gen.{{MODULE_NAME}}.init({
+
                             flags:
-                                \""" ++ propJson ++ \"""
+                                \"\"\" ++ propJson ++ \"\"\"
                             ,
                             node: document.currentScript.parentNode.getElementsByClassName(
                                 "prettynice-component-{{MODULE_NAME}}"
                             )[0],
                         })
-                    );\n
-                    \"""
+                    );
+
+                    \"\"\"
                 ]
             ]
     """
@@ -502,7 +520,9 @@ genClientComponent fsPerm component =
                     Err _ ->
                         Task.fail
                             (PropsParseError
-                                ("Failed to parse props for " ++ baseName ++ ".\n\n"
+                                ("Failed to parse props for "
+                                    ++ baseName
+                                    ++ ".\n\n"
                                     ++ "Could not parse the Props type alias. Supported field types are: "
                                     ++ String.join ", " Props.supportedFieldTypeNames
                                     ++ "."
@@ -573,6 +593,7 @@ genServerPorts fsPerm =
                         if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
                             writeStringToFile fsPerm "" "dist/server/ports.js"
                                 |> Task.map (\_ -> {})
+
                         else
                             Task.fail e
 
@@ -620,6 +641,7 @@ genClientPort fsPerm component =
                         if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
                             writeStringToFile fsPerm "" ("dist/client/Components/" ++ jsRelStr)
                                 |> Task.map (\_ -> {})
+
                         else
                             Task.fail e
 
@@ -647,6 +669,7 @@ copyPublicAssets fsPerm =
                     FileSystemError fsErr ->
                         if FileSystem.errorIsNoSuchFileOrDirectory fsErr then
                             Task.succeed {}
+
                         else
                             Task.fail e
 
@@ -698,6 +721,7 @@ buildClientComponents : ChildProcess.Permission -> Array ComponentFile -> Bool -
 buildClientComponents procPerm components optimize =
     if Array.isEmpty components then
         Task.succeed {}
+
     else
         let
             moduleNames =
@@ -706,17 +730,18 @@ buildClientComponents procPerm components optimize =
             optimizeArgs =
                 if optimize then
                     [ "--optimize" ]
+
                 else
                     []
 
             args =
-                [ "gren", "make" ] ++ optimizeArgs ++ moduleNames ++
-                    [ "--output=../dist/client/main.js" ]
+                [ "gren", "make" ]
+                    ++ optimizeArgs
+                    ++ moduleNames
+                    ++ [ "--output=../dist/client/main.js" ]
 
             runOptions =
-                { ChildProcess.defaultRunOptions
-                    | workingDirectory = SetWorkingDirectory "./client"
-                }
+                { ChildProcess.defaultRunOptions | workingDirectory = SetWorkingDirectory "./client" }
         in
         ChildProcess.run procPerm "npx" args runOptions
             |> Task.map (\_ -> {})
@@ -732,17 +757,17 @@ buildServer procPerm optimize =
         optimizeArgs =
             if optimize then
                 [ "--optimize" ]
+
             else
                 []
 
         args =
-            [ "gren", "make" ] ++ optimizeArgs ++
-            [ "Main", "--output=../dist/server/main.js" ]
+            [ "gren", "make" ]
+                ++ optimizeArgs
+                ++ [ "Main", "--output=../dist/server/main.js" ]
 
         runOptions =
-            { ChildProcess.defaultRunOptions
-                | workingDirectory = SetWorkingDirectory "./server"
-            }
+            { ChildProcess.defaultRunOptions | workingDirectory = SetWorkingDirectory "./server" }
     in
     ChildProcess.run procPerm "npx" args runOptions
         |> Task.map (\_ -> {})
@@ -812,8 +837,13 @@ viewBuildError error =
                     FileSystem.errorToString fsError
 
                 ChildProcessError (ChildProcess.InitError { program, arguments, errorCode }) ->
-                    "`" ++ program ++ " " ++ String.join " " arguments ++ "`" ++
-                    " exited with error code " ++ errorCode
+                    "`"
+                        ++ program
+                        ++ " "
+                        ++ String.join " " arguments
+                        ++ "`"
+                        ++ " exited with error code "
+                        ++ errorCode
 
                 ChildProcessError (ChildProcess.ProgramError { stderr }) ->
                     stderr

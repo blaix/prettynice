@@ -1,5 +1,26 @@
 {
   "nodes": {
+    "gren-format": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792884969,
+        "narHash": "sha256-xGDw5AJQrhIcIkQH9fJp1hJp+TD9eOad/niLgwUZT2Q=",
+        "owner": "gilramir",
+        "repo": "gren-format",
+        "rev": "ab599ff4721323d538ada01fb0574615e5e268b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gilramir",
+        "ref": "main",
+        "repo": "gren-format",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1792503283,
@@ -18,6 +39,7 @@
     },
     "root": {
       "inputs": {
+        "gren-format": "gren-format",
         "nixpkgs": "nixpkgs"
       }
     }

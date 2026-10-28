@@ -1,6 +1,5 @@
 module Json.Encode.Extra exposing (maybe)
 
-
 import Json.Encode
 
 

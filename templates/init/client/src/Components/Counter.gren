@@ -1,8 +1,8 @@
-module Components.Counter exposing (component, Model, Msg, Props)
+module Components.Counter exposing (Model, Msg, Props, component)
 
+import Prettynice.Component exposing (Component)
 import Transmutable.Html as H exposing (Html)
 import Transmutable.Html.Events as E
-import Prettynice.Component exposing (Component)
 
 
 component : Component Props Model Msg
@@ -20,8 +20,7 @@ component =
 {-| Your model holds the current state of your component.
 -}
 type alias Model =
-    { count : Int
-    }
+    { count : Int }
 
 
 {-| Props provide the interface for initializing your component.
@@ -34,8 +33,7 @@ https://packages.gren-lang.org/package/blaix/prettynice
 and navigate to the docs for Prettynice.Internal.Props#FieldType
 -}
 type alias Props =
-    { start : Int
-    }
+    { start : Int }
 
 
 {-| Initialize your component with the given props.
@@ -92,4 +90,3 @@ view model =
             [ E.onClick Increment ]
             [ H.text "+" ]
         ]
-

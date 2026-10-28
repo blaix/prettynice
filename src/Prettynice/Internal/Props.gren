@@ -1,13 +1,12 @@
 module Prettynice.Internal.Props exposing
-    ( Props
-    , FieldType
-    , parse
-    , typeSig
-    , encoder
+    ( FieldType
+    , Props
     , decoder
+    , encoder
+    , parse
     , supportedFieldTypeNames
+    , typeSig
     )
-
 
 {-| Extract and encode Prettynice component props.
 
@@ -21,7 +20,6 @@ They are similar to [flags](https://gren-lang.org/book/applications/flags/).
 @docs Props, FieldType, get, encoder, decoder, typeSig, supportedFieldTypeNames
 
 -}
-
 
 import Dict exposing (Dict)
 import Parser as P exposing ((|.), (|=), Parser, Trailing(..))
@@ -167,7 +165,8 @@ encoder props =
                 |> Dict.foldl addFieldEncoder []
                 |> String.join "\n        , "
     in
-    String.replace "{{FIELDS}}" fields
+    String.replace "{{FIELDS}}"
+        fields
         """
         Encode.object
                 [ {{FIELDS}}
@@ -200,7 +199,8 @@ decoder props =
             Dict.keys props
 
         lambda =
-            "\\" ++ String.join " " fieldNames
+            "\\"
+                ++ String.join " " fieldNames
                 ++ " -> { "
                 ++ (fieldNames
                         |> Array.map (\n -> n ++ " = " ++ n)
@@ -246,8 +246,7 @@ parser typeAliasName =
                     )
                     |= P.variable
                         { start = Char.isLower
-                        , inner =
-                            (\c -> Char.isAlphaNum c || c == '_')
+                        , inner = (\c -> Char.isAlphaNum c || c == '_')
                         , reserved = Set.empty
                         }
                     |. P.spaces

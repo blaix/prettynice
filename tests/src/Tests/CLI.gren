@@ -52,8 +52,7 @@ tests procPerm =
                                 ChildProcess.InitError e ->
                                     { exitCode = -1
                                     , stdout = ""
-                                    , stderr =
-                                        "Failed to start " ++ e.program ++ ": " ++ e.errorCode
+                                    , stderr = "Failed to start " ++ e.program ++ ": " ++ e.errorCode
                                     }
                     )
     in
@@ -70,7 +69,6 @@ tests procPerm =
                             ]
                 )
                 [ "-v", "--version", "version" ]
-
         , await "run with no command" (runCli []) <| \result ->
             concat
                 [ test "prints usage" <| \_ ->
@@ -80,7 +78,6 @@ tests procPerm =
                 , test "exits successfully" <| \_ ->
                     Expect.equal 0 result.exitCode
                 ]
-
         , await "run with an unknown command" (runCli [ "boguscmd" ]) <| \result ->
             concat
                 [ test "falls back to usage" <| \_ ->
@@ -88,7 +85,6 @@ tests procPerm =
                 , test "exits successfully" <| \_ ->
                     Expect.equal 0 result.exitCode
                 ]
-
         , await "run init without a directory" (runCli [ "init" ]) <| \result ->
             concat
                 [ test "prints init usage to stderr" <| \_ ->
@@ -96,7 +92,6 @@ tests procPerm =
                 , test "exits with a usage error code" <| \_ ->
                     Expect.equal 1 result.exitCode
                 ]
-
         , await "run init --help" (runCli [ "init", "--help" ]) <| \result ->
             concat
                 [ test "prints init help" <| \_ ->
@@ -104,7 +99,6 @@ tests procPerm =
                 , test "exits successfully" <| \_ ->
                     Expect.equal 0 result.exitCode
                 ]
-
         , await "run build --help" (runCli [ "build", "--help" ]) <| \result ->
             concat
                 [ test "prints build help" <| \_ ->

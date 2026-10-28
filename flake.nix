@@ -3,10 +3,15 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    # pointing at main because `--check` isn't released yet.
+    gren-format = {
+      url = "github:gilramir/gren-format/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { self, nixpkgs }:
+    { nixpkgs, gren-format, ... }:
     let
       supportedSystems = [
         "x86_64-linux"
@@ -19,6 +24,8 @@
       # The dev shell's tools. git isn't here on purpose, to force the system's
       # git (with the user's configs, etc.) to be used.
       devToolsFor = pkgs: [
+        gren-format.packages.${pkgs.stdenv.hostPlatform.system}.default
+        pkgs.fd
         pkgs.gren
         pkgs.just
         pkgs.nixfmt
@@ -31,7 +38,7 @@
         pkgs: recipe:
         pkgs.runCommand "prettynice-${recipe}"
           {
-            nativeBuildInputs = devToolsFor pkgs ++ [ pkgs.gitMinimal ];
+            nativeBuildInputs = devToolsFor pkgs;
           }
           ''
             cp -r ${./.} src

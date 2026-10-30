@@ -30,8 +30,7 @@ build:
 
 [doc("Run all framework and package tests")]
 test: build
-    cd tests && gren run Setup && gren run Tests
-    cd packages/prettynice-common/tests && gren run Tests
+    sh scripts/test.sh
 
 [doc("Check and build the CLI, then publish to npm")]
 publish-cli: publish-cli-preflight test

@@ -111,3 +111,7 @@ lint:
 [doc("Every check CI runs (in the nix sandbox)")]
 check:
     nix flake check -L
+
+[doc("Run the tests on Windows, over `ssh windows-ci` (uncommitted changes included)")]
+check-windows:
+    sh scripts/check_windows-host.sh

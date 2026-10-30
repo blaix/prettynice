@@ -1,5 +1,4 @@
-# CI for branches: `nix flake check -L` on every pull request, the same checks
-# `just check` runs locally.
+# CI for branches, on every pull request.
 name: CI
 
 on:
@@ -11,6 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
+  # nix flake check (equivalent of `just check`)
+  # runs all tests and checks in the nix sandbox
   check:
     strategy:
       # A failure on one platform doesn't cancel the other.
@@ -21,3 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: nix flake check -L
+
+  # Can't run nix on windows so we have a separate test script for that
+  # on shire, where `ssh windows-ci` reaches a Windows VM runner.
+  windows:
+    runs-on: shire
+    steps:
+      - uses: actions/checkout@v4
+      - run: nix develop -c just check-windows

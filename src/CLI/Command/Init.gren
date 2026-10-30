@@ -3,7 +3,7 @@ module CLI.Command.Init exposing (run)
 import Ansi
 import Bytes
 import CLI.Command as Command
-import ChildProcess exposing (WorkingDirectory(..))
+import ChildProcess exposing (Shell(..), WorkingDirectory(..))
 import Dict exposing (Dict)
 import FileSystem
 import FileSystem.Path as Path exposing (Path)
@@ -104,7 +104,10 @@ npmInstall : ChildProcess.Permission -> String -> Maybe String -> Task Error {}
 npmInstall procPerm dirName localPackage =
     let
         runOptions =
-            { ChildProcess.defaultRunOptions | workingDirectory = SetWorkingDirectory dirName }
+            { ChildProcess.defaultRunOptions
+                | shell = NoShell
+                , workingDirectory = SetWorkingDirectory dirName
+            }
 
         args =
             when localPackage is

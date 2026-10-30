@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+* Upgrade to gren 0.6 and associated packages
+* Require gren-lang/node 6.1.0 or later
+
 ## 3.0.0 (2025-02-20)
 
 * Upgrade to gren 0.5 and associated packages

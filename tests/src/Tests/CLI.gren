@@ -26,9 +26,15 @@ tests procPerm =
         version =
             "4.0.0"
 
-        longPath : String
-        longPath =
-            "gren.json/a-very-long-directory-name-to-push-the-error-past-eighty-columns"
+        longFileName : String
+        longFileName =
+            "a-file-with-a-name-long-enough-to-push-init-errors-past-80-columns"
+
+        longBadPath : String
+        longBadPath =
+            -- Force an error by treating file as a directory.
+            -- (something like "[...] is a file, not a directory")
+            "fixtures/" ++ longFileName ++ "/x"
 
         runCli : Array String -> Task Never CliResult
         runCli args =
@@ -103,10 +109,10 @@ tests procPerm =
                 , test "exits successfully" <| \_ ->
                     Expect.equal 0 result.exitCode
                 ]
-        , await "run init with a long error" (runCli [ "init", longPath ]) <| \result ->
+        , await "run init with a long error" (runCli [ "init", longBadPath ]) <| \result ->
             concat
                 [ test "prints the whole error" <| \_ ->
-                    expectContains longPath result.stderr
+                    expectContains longFileName result.stderr
                 , test "exits with an error code" <| \_ ->
                     Expect.equal 2 result.exitCode
                 ]

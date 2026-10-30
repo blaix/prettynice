@@ -1,0 +1,2 @@
+A file, so `prettynice init` can't make a directory under it. See the long
+error message test in tests/src/Tests/CLI.gren.

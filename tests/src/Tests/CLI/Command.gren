@@ -1,0 +1,29 @@
+module Tests.CLI.Command exposing (tests)
+
+import Bytes
+import CLI.Command as Command
+import ChildProcess
+import Expect
+import Test exposing (Test, describe, test)
+
+
+tests : Test
+tests =
+    describe "Command.failedRunToString"
+        [ test "says which command couldn't start, and why" <| \_ ->
+            ChildProcess.InitError
+                { program = "npm"
+                , arguments = [ "install" ]
+                , errorCode = "ENOENT"
+                }
+                |> Command.failedRunToString
+                |> Expect.equal "Couldn't run `npm install`: ENOENT"
+        , test "gives a failed program's stderr" <| \_ ->
+            ChildProcess.ProgramError
+                { exitCode = 1
+                , stdout = Bytes.fromString ""
+                , stderr = Bytes.fromString "something broke"
+                }
+                |> Command.failedRunToString
+                |> Expect.equal "something broke"
+        ]

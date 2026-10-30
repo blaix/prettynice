@@ -5,13 +5,15 @@ import Init
 import Node
 import Test.Runner.Effectful as Effectful
 import Tests.CLI
+import Tests.CLI.Command
 import Tests.Props
 
 
 tests : ChildProcess.Permission -> Effectful.Test
 tests procPerm =
     Effectful.concat
-        [ Effectful.wrap Tests.Props.tests
+        [ Tests.Props.tests |> Effectful.wrap
+        , Tests.CLI.Command.tests |> Effectful.wrap
         , Tests.CLI.tests procPerm
         ]
 

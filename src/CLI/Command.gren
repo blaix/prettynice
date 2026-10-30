@@ -2,9 +2,12 @@ module CLI.Command exposing
     ( Args
     , Error
     , Options
+    , failedRunToString
     )
 
 import Args
+import Bytes
+import ChildProcess
 import Dict exposing (Dict)
 import UI
 
@@ -21,3 +24,20 @@ type alias Args =
 
 type alias Options =
     Dict String { optionType : Args.OptionType, values : Array String }
+
+
+{-| Describe a child process's failure, for a command's error message.
+-}
+failedRunToString : ChildProcess.FailedRun -> String
+failedRunToString failedRun =
+    when failedRun is
+        ChildProcess.InitError { program, arguments, errorCode } ->
+            "Couldn't run `"
+                ++ String.join " " (Array.pushFirst program arguments)
+                ++ "`: "
+                ++ errorCode
+
+        ChildProcess.ProgramError { stderr } ->
+            stderr
+                |> Bytes.toString
+                |> Maybe.withDefault "(failed to decode error message)"

@@ -2,10 +2,11 @@ red := '\033[0;31m'
 green := '\033[0;32m'
 nc := '\033[0m' # No Color
 
-# The Gren files `format` and `lint` cover: every one fd finds, which skips
-# gitignored files. Left alone: examples/v1-v3 (older Gren syntax that
-# gren-format can't parse) and tests/ExampleRecords.gren (its odd layout is what
-# the tests parse).
+# Lazy so `gren_files` doesn't try to run in check-windows.
+# See https://just.systems/man/en/lazy.html
+set lazy
+
+# The Gren files `format` and `lint` cover. Using `fd` to honor gitignores.
 gren_files := ```
     fd -e gren \
         -E examples/v1 -E examples/v2 -E examples/v3 \

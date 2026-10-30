@@ -26,6 +26,10 @@ tests procPerm =
         version =
             "4.0.0"
 
+        longPath : String
+        longPath =
+            "gren.json/a-very-long-directory-name-to-push-the-error-past-eighty-columns"
+
         runCli : Array String -> Task Never CliResult
         runCli args =
             ChildProcess.run procPerm
@@ -98,6 +102,13 @@ tests procPerm =
                     expectContains "Initialize a new Prettynice project" result.stdout
                 , test "exits successfully" <| \_ ->
                     Expect.equal 0 result.exitCode
+                ]
+        , await "run init with a long error" (runCli [ "init", longPath ]) <| \result ->
+            concat
+                [ test "prints the whole error" <| \_ ->
+                    expectContains longPath result.stderr
+                , test "exits with an error code" <| \_ ->
+                    Expect.equal 2 result.exitCode
                 ]
         , await "run build --help" (runCli [ "build", "--help" ]) <| \result ->
             concat

@@ -13,7 +13,6 @@ import Init
 import Node exposing (Environment)
 import Stream.Log
 import Task
-import Terminal
 import UI
 import UI.Attribute as Attr
 
@@ -28,25 +27,14 @@ main =
 
 
 type alias Model =
-    { termWidth : Int
-    , env : Environment
-    }
+    { env : Environment }
 
 
 init : Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Init.await FileSystem.initialize <| \fsPerm ->
     Init.await ChildProcess.initialize <| \procPerm ->
-    Init.await Terminal.initialize <| \termConfig ->
         let
-            termWidth =
-                when termConfig is
-                    Just t ->
-                        t.columns
-
-                    Nothing ->
-                        80
-
             parsedArgs =
                 env.args
                     |> Array.dropFirst 2 -- node and file name
@@ -100,10 +88,7 @@ init env =
                             Task.succeed viewUsage
         in
         Node.startProgram
-            { model =
-                { termWidth = termWidth
-                , env = env
-                }
+            { model = { env = env }
             , command = Task.attempt RanCommand commandTask
             }
 
@@ -119,7 +104,7 @@ update msg model =
             { model = model
             , command =
                 message
-                    |> UI.toString model.termWidth
+                    |> UI.toString outputWidth
                     |> Stream.Log.line model.env.stdout
                     |> Task.execute
             }
@@ -128,11 +113,20 @@ update msg model =
             { model = model
             , command =
                 error.message
-                    |> UI.toString model.termWidth
+                    |> UI.toString outputWidth
                     |> Stream.Log.line model.env.stderr
                     |> Task.map (\_ -> Node.exitWithCode error.exitCode)
                     |> Task.executeCmd
             }
+
+
+{-| gren-tui's `UI.toString` cuts off anything wider than the width it's given,
+so render as if the terminal were very wide and let the terminal wrap long
+lines. This goes away when the CLI stops using gren-tui's UI.
+-}
+outputWidth : Int
+outputWidth =
+    10000
 
 
 indent : String

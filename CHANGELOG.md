@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-* Upgrade to gren 0.6 and associated packages
+* Fix CLI output being cut off at the terminal's width
 * Require gren-lang/node 6.1.0 or later
+* Upgrade to gren 0.6 and associated packages
 
 ## 3.0.0 (2025-02-20)
 

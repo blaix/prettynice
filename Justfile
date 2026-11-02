@@ -59,7 +59,7 @@ publish-cli-preflight:
     fi
 
 # `init-local` runs `prettynice init` but points the generated
-# project at this directory for its prettynice npm dependency.
+# project at this directory for its prettynice dependencies.
 init-local TARGET:
     npx prettynice init-local ${PWD} {{ TARGET }}
 

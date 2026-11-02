@@ -63,12 +63,6 @@ publish-cli-preflight:
 init-local TARGET:
     npx prettynice init-local ${PWD} {{ TARGET }}
 
-web:
-    cd website/v2 && npm install && npm run dev
-
-deploy-web:
-    cd website/v2 && flyctl deploy
-
 header MSG:
     @echo -e "\n{{ green }}{{ MSG }}{{ nc }}"
 
